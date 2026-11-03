@@ -41,6 +41,8 @@ class FitConfig:
     refine_samples: int = 2048
     outside_weight: float = 10.0
     refine_reference: str = "voxel"
+    voxelizer: str = "subdivide"
+    voxel_solid_policy: str = "single"
 
     def __post_init__(self) -> None:
         if self.method not in {
@@ -71,6 +73,10 @@ class FitConfig:
             raise ValueError("refine_samples must be >= 32")
         if self.refine_reference not in {"voxel", "mesh"}:
             raise ValueError("refine_reference must be voxel or mesh")
+        if self.voxelizer not in {"subdivide", "open3d", "warp"}:
+            raise ValueError("voxelizer must be subdivide, open3d, or warp")
+        if self.voxel_solid_policy not in {"single", "union-components"}:
+            raise ValueError("voxel_solid_policy must be single or union-components")
         if self.device not in {"cpu", "cuda"}:
             raise ValueError("device must be cpu or cuda")
         if self.device == "cuda" and self.method not in {"voxel", "refined"}:

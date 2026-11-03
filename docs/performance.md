@@ -1,5 +1,7 @@
 # CPU / CUDA 与生成算法实验
 
+这是 v0.2 的历史实验记录。v0.3 已新增可选的原 mesh 距离后端与易用 CLI，见 [voxelizer-performance.md](voxelizer-performance.md)；下面“尚未实现”的描述以 v0.2 当时状态为准。
+
 日期：2026-11-03。结论基于本机实测，尚不是跨硬件的性能保证。完整原始记录位于本地 `outputs/benchmark-{parallel,tensor,algorithms}.json`；仓库保留了去掉源资产路径的[实验快照](benchmarks-2026-11-03.json)和可复现脚本。
 
 ## 当前建议

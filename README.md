@@ -16,14 +16,17 @@ source .venv/bin/activate
 python -m pip install -e '.[viewer]'
 
 # 自带的双连杆示例，无需下载机器人 mesh
-assetspheres fit examples/two_link.urdf \
-  --method voxel --count 24 --padding 0.003 -o outputs/demo
+assetspheres methods
+assetspheres inspect examples/two_link.urdf
+assetspheres fit examples/two_link.urdf --method slab --count 24 --padding 0.003
 
 # 打开 http://127.0.0.1:8890
-assetspheres view outputs/demo/spheres.json
+assetspheres view outputs/two_link/spheres.json
 ```
 
 `--count` 是**每个 link 的球数上限**，不是整台机器人的总数；候选球覆盖不再增加时可能提前结束。默认使用 collision，缺少 collision 的 link 才使用 visual。具体使用来源写入每个 link 的报告。
+
+`fit` 可省略 `-o`，默认输出到 `outputs/<输入文件名>`；已有结果仍需显式 `--force`。完成后会显示可复制的 `report` / `view` 命令。`methods --json`、`inspect INPUT --json`、`report RESULT --json` 可供脚本读取。完整参数分组与错误约定见 [CLI 文档](docs/cli.md)，Python 用法见 [API 文档](docs/api.md)。
 
 ## 支持范围
 
@@ -81,9 +84,29 @@ assetspheres fit part.stl --method refined --refine-reference mesh -o outputs/re
 
 PyTorch 是可选依赖，使用 CUDA 前需按机器安装兼容构建；也可通过 `pip install -e '.[cuda]'` 安装，但 CUDA 可用性仍取决于具体 PyTorch 构建和驱动。`--device cuda` 只用于 `voxel` / `refined`，明确请求后不静默回退。CUDA 模式保持一个 GPU 执行者，不能同时开启多个 link worker。
 
-**当前不是全流程 GPU 球化**：URDF/mesh 读取、体素化与 EDT 仍在 CPU；候选球选择、距离评价和 `refined` 优化可以在 CUDA 执行。小任务冷启动可能更慢。线程/进程并行、冷热 CUDA 和质量对比见 [性能与算法实验](docs/performance.md)，论文与后续路线见 [算法调研](docs/research-algorithms.md)。
+默认 `subdivide` 的三角细分和 EDT 仍在 CPU；候选球选择、距离评价和 `refined` 优化可以在 CUDA 执行。新增可选 `--voxelizer warp --device cuda` 还可把原 mesh 的距离查询移到 GPU，省掉该路径的细分和 EDT。输入读取、候选数组准备和导出仍有 CPU 工作，小任务冷启动也可能更慢。旧版本线程/进程与 CUDA 基准见 [v0.2 实验](docs/performance.md)，新后端见 [体素化与易用性改进](docs/voxelizer-performance.md)。
 
 `refined` 默认使用体素内外标签，速度较快但受边界栅格偏差影响；`--refine-reference mesh` 使用原三角表面的内外查询，通常能降低外扩但增加准备时间，仅支持单个闭合表面体，并假设没有自交。`--outside-weight` 越大越偏向限制外扩，不能保证覆盖率同时提升。优化还有一个 `0.15 × voxel_size` 的正样本目标裕量，它与最后添加的用户 padding 分别记录。
+
+## 可选的原 mesh 距离后端
+
+```bash
+# Open3D 使用 CPU；不要求 PyTorch
+python -m pip install -e '.[open3d]'
+assetspheres fit part.stl --voxelizer open3d
+
+# Warp 可在 CPU 或 CUDA 查询几何；CUDA 张量阶段还需兼容的 PyTorch
+python -m pip install -e '.[warp,cuda]'
+assetspheres fit part.stl --voxelizer warp --device cuda --padding 0.003
+
+# 多闭合组件显式按实体并集解释；这会填实嵌套壳的空腔
+assetspheres fit robot.urdf --voxelizer warp --device cuda \
+  --voxel-solid-policy union-components --method refined
+```
+
+新后端使用**严格内部格点和原 mesh 距离半径**，与旧的表面壳填充/EDT 不同，不能只比较速度后自动替换。它们通常减少外扩，但原始 `voxel` 的表面覆盖可能降低；仍需检查报告或选择 `refined` / 表面包络方法。默认 `single` 要求一个闭合表面体，遇多壳会提示明确实体语义。
+
+每个组件没有内部格点时会报出薄壁/分辨率问题；有样本的小组件会保留最深内部代表点，球预算不足或优化后丢掉代表点也会明确失败。这个检查只确保组件代表点没有消失，不证明整个组件被覆盖。查询几何使用居中归一化的 float32，并考虑最终球心的物理坐标舍入；精度不足时建议先把 mesh 移近原点。
 
 ## 常用命令
 

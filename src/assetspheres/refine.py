@@ -15,130 +15,252 @@ from scipy import ndimage
 
 from .model import FitConfig, Sphere
 
+SURFACE_COVERAGE_WEIGHT = 8.0
+INTERIOR_COVERAGE_WEIGHT = 1.0
+RADIUS_REGULARIZATION_WEIGHT = 0.002
+MINIMUM_CENTER_DISTANCE = 1e-12
+NORMALIZED_LEARNING_RATE = 0.006
+MAXIMUM_TRAINING_PAIRS = 4_000_000
 
-def _training_data(mesh, occupied, pitch, cfg):
-    from .fit import sample_surface
 
-    rng = np.random.default_rng(cfg.seed + 1009)
-    count = cfg.refine_samples
-    inside = occupied[rng.choice(len(occupied), min(count, len(occupied)), replace=False)]
-    surface = sample_surface(mesh, count, cfg.seed + 2017)
-    if cfg.refine_reference == "mesh":
-        if mesh.body_count != 1:
-            raise ValueError(
-                "Mesh-reference refinement requires one closed surface body; "
-                "multiple shells need an explicit solid interpretation. Use voxel reference."
-            )
-        proposals = np.concatenate(
-            [
-                surface + rng.normal(size=surface.shape) * pitch * factor
-                for factor in (0.15, 0.6, 1.8)
-            ]
-            + [rng.uniform(mesh.bounds[0] - pitch * 2, mesh.bounds[1] + pitch * 2, size=(count, 3))]
+def _sample_mesh_reference_regions(
+    mesh: trimesh.Trimesh,
+    interior_candidates: np.ndarray,
+    surface_samples: np.ndarray,
+    voxel_size_m: float,
+    sample_count: int,
+    random_generator: np.random.Generator,
+) -> tuple[np.ndarray, np.ndarray]:
+    if mesh.body_count != 1:
+        raise ValueError(
+            "Mesh-reference refinement requires one closed surface body; "
+            "multiple shells need an explicit solid interpretation. Use voxel reference."
         )
-        probes = np.concatenate((inside, proposals))
-        try:
-            contains = np.concatenate(
-                [
-                    mesh.contains(probes[start : start + 2048])
-                    for start in range(0, len(probes), 2048)
-                ]
-            )
-        except ImportError as exc:
-            raise ValueError(
-                "Mesh-reference refinement requires the optional rtree package"
-            ) from exc
-        positives, negatives = probes[contains], probes[~contains]
-        if not len(positives) or not len(negatives):
-            raise ValueError("Insufficient mesh-reference samples; increase resolution/samples")
-        inside = positives[rng.choice(len(positives), min(count, len(positives)), replace=False)]
-        outside = negatives[rng.choice(len(negatives), min(count, len(negatives)), replace=False)]
-        return _pack_training(surface, inside, outside, cfg)
-    # Reconstruct a padded lattice from occupied centers. Keep negative samples
-    # away from the ambiguous rasterized boundary by at least 1.5 voxel pitches.
-    low = occupied.min(axis=0)
-    indices = np.rint((occupied - low) / pitch).astype(int)
-    border = 4
-    shape = tuple(indices.max(axis=0) + 1 + 2 * border)
-    solid = np.zeros(shape, dtype=bool)
-    solid[tuple((indices + border).T)] = True
-    distance = ndimage.distance_transform_edt(~solid)
-    exterior_indices = np.argwhere((distance >= 1.5) & (distance <= border))
+    near_surface_proposals = [
+        surface_samples
+        + random_generator.normal(size=surface_samples.shape) * voxel_size_m * distance_factor
+        for distance_factor in (0.15, 0.6, 1.8)
+    ]
+    bounding_box_proposals = random_generator.uniform(
+        mesh.bounds[0] - voxel_size_m * 2,
+        mesh.bounds[1] + voxel_size_m * 2,
+        size=(sample_count, 3),
+    )
+    region_proposals = np.concatenate(near_surface_proposals + [bounding_box_proposals])
+    query_points = np.concatenate((interior_candidates, region_proposals))
+    try:
+        inside_mask = np.concatenate(
+            [
+                mesh.contains(query_points[first_point : first_point + 2048])
+                for first_point in range(0, len(query_points), 2048)
+            ]
+        )
+    except ImportError as exc:
+        raise ValueError("Mesh-reference refinement requires the optional rtree package") from exc
+    interior_points, exterior_points = query_points[inside_mask], query_points[~inside_mask]
+    if not len(interior_points) or not len(exterior_points):
+        raise ValueError("Insufficient mesh-reference samples; increase resolution/samples")
+    selected_interior = interior_points[
+        random_generator.choice(
+            len(interior_points), min(sample_count, len(interior_points)), replace=False
+        )
+    ]
+    selected_exterior = exterior_points[
+        random_generator.choice(
+            len(exterior_points), min(sample_count, len(exterior_points)), replace=False
+        )
+    ]
+    return selected_interior, selected_exterior
+
+
+def _sample_voxel_exterior(
+    occupied_points: np.ndarray,
+    voxel_size_m: float,
+    sample_count: int,
+    random_generator: np.random.Generator,
+) -> np.ndarray:
+    # Keep negative labels away from the ambiguous rasterized boundary.
+    lattice_origin = occupied_points.min(axis=0)
+    occupied_indices = np.rint((occupied_points - lattice_origin) / voxel_size_m).astype(int)
+    border_cells = 4
+    grid_shape = tuple(occupied_indices.max(axis=0) + 1 + 2 * border_cells)
+    occupied_cells = np.zeros(grid_shape, dtype=bool)
+    occupied_cells[tuple((occupied_indices + border_cells).T)] = True
+    exterior_distance = ndimage.distance_transform_edt(~occupied_cells)
+    exterior_indices = np.argwhere((exterior_distance >= 1.5) & (exterior_distance <= border_cells))
     if not len(exterior_indices):
         raise ValueError("No exterior training samples; increase voxel resolution")
-    selected = rng.choice(len(exterior_indices), min(count, len(exterior_indices)), replace=False)
-    outside = low + (exterior_indices[selected] - border) * pitch
-    return _pack_training(surface, inside, outside, cfg)
+    selected_indices = random_generator.choice(
+        len(exterior_indices), min(sample_count, len(exterior_indices)), replace=False
+    )
+    return lattice_origin + (exterior_indices[selected_indices] - border_cells) * voxel_size_m
 
 
-def _pack_training(surface, inside, outside, cfg):
-    points = np.concatenate((surface, inside, outside))
-    positive = np.arange(len(points)) < len(surface) + len(inside)
-    weights = np.r_[
-        np.full(len(surface), 8.0 / len(surface)),
-        np.full(len(inside), 1.0 / len(inside)),
-        np.full(len(outside), cfg.outside_weight / len(outside)),
+def _pack_training_samples(
+    surface_samples: np.ndarray,
+    interior_samples: np.ndarray,
+    exterior_samples: np.ndarray,
+    configuration: FitConfig,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, dict[str, int]]:
+    training_points = np.concatenate((surface_samples, interior_samples, exterior_samples))
+    positive_mask = np.arange(len(training_points)) < len(surface_samples) + len(interior_samples)
+    sample_weights = np.r_[
+        np.full(len(surface_samples), SURFACE_COVERAGE_WEIGHT / len(surface_samples)),
+        np.full(len(interior_samples), INTERIOR_COVERAGE_WEIGHT / len(interior_samples)),
+        np.full(len(exterior_samples), configuration.outside_weight / len(exterior_samples)),
     ]
-    return (
-        points,
-        positive,
-        weights,
-        {
-            "surface": len(surface),
-            "interior": len(inside),
-            "exterior": len(outside),
-        },
+    sample_counts = {
+        "surface": len(surface_samples),
+        "interior": len(interior_samples),
+        "exterior": len(exterior_samples),
+    }
+    return training_points, positive_mask, sample_weights, sample_counts
+
+
+def _prepare_training_samples(
+    mesh: trimesh.Trimesh,
+    occupied_points: np.ndarray,
+    voxel_size_m: float,
+    configuration: FitConfig,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, dict[str, int]]:
+    from .fit import sample_surface
+
+    random_generator = np.random.default_rng(configuration.seed + 1009)
+    sample_count = configuration.refine_samples
+    interior_samples = occupied_points[
+        random_generator.choice(
+            len(occupied_points), min(sample_count, len(occupied_points)), replace=False
+        )
+    ]
+    surface_samples = sample_surface(mesh, sample_count, configuration.seed + 2017)
+    if configuration.refine_reference == "mesh":
+        interior_samples, exterior_samples = _sample_mesh_reference_regions(
+            mesh, interior_samples, surface_samples, voxel_size_m, sample_count, random_generator
+        )
+    else:
+        exterior_samples = _sample_voxel_exterior(
+            occupied_points, voxel_size_m, sample_count, random_generator
+        )
+    return _pack_training_samples(
+        surface_samples, interior_samples, exterior_samples, configuration
     )
 
 
-def _loss_gradient(parameters, points, positive, weights, margin):
+def _loss_gradient(
+    sphere_parameters: np.ndarray,
+    training_points: np.ndarray,
+    positive_mask: np.ndarray,
+    sample_weights: np.ndarray,
+    coverage_margin: float,
+) -> tuple[float, np.ndarray]:
     """Piecewise analytic gradient; ties select the first ball deterministically."""
-    centers, radii = parameters[:, :3], parameters[:, 3]
-    delta = centers[None, :, :] - points[:, None, :]
-    raw_distances = np.linalg.norm(delta, axis=2)
-    distances = np.maximum(raw_distances, 1e-12)
-    gaps = distances - radii[None]
-    labels = np.argmin(gaps, axis=1)
-    row = np.arange(len(points))
-    gap = gaps[row, labels]
-    error = np.where(positive, np.maximum(gap + margin, 0), np.minimum(gap, 0))
-    coefficient = 2 * weights * error
-    gradient = np.zeros_like(parameters)
-    direction = delta[row, labels] / distances[row, labels, None]
-    direction[raw_distances[row, labels] < 1e-12] = 0
-    np.add.at(
-        gradient[:, :3],
-        labels,
-        coefficient[:, None] * direction,
+    sphere_centers, sphere_radii = sphere_parameters[:, :3], sphere_parameters[:, 3]
+    center_offsets = sphere_centers[None, :, :] - training_points[:, None, :]
+    center_distances = np.linalg.norm(center_offsets, axis=2)
+    safe_distances = np.maximum(center_distances, MINIMUM_CENTER_DISTANCE)
+    all_gaps = safe_distances - sphere_radii[None]
+    nearest_sphere_indices = np.argmin(all_gaps, axis=1)
+    point_indices = np.arange(len(training_points))
+    nearest_gaps = all_gaps[point_indices, nearest_sphere_indices]
+    coverage_errors = np.where(
+        positive_mask,
+        np.maximum(nearest_gaps + coverage_margin, 0),
+        np.minimum(nearest_gaps, 0),
     )
-    np.add.at(gradient[:, 3], labels, -coefficient)
-    regularizer = 0.002
-    loss = float(np.sum(weights * error**2) + regularizer * np.mean(radii**3))
-    gradient[:, 3] += 3 * regularizer * radii**2 / len(radii)
-    return loss, gradient
+    gap_derivatives = 2 * sample_weights * coverage_errors
+    parameter_gradient = np.zeros_like(sphere_parameters)
+    center_directions = (
+        center_offsets[point_indices, nearest_sphere_indices]
+        / safe_distances[point_indices, nearest_sphere_indices, None]
+    )
+    # Match the derivative of torch.clamp_min, including its exact boundary.
+    center_directions[
+        center_distances[point_indices, nearest_sphere_indices] < MINIMUM_CENTER_DISTANCE
+    ] = 0
+    np.add.at(
+        parameter_gradient[:, :3],
+        nearest_sphere_indices,
+        gap_derivatives[:, None] * center_directions,
+    )
+    np.add.at(parameter_gradient[:, 3], nearest_sphere_indices, -gap_derivatives)
+    loss = float(
+        np.sum(sample_weights * coverage_errors**2)
+        + RADIUS_REGULARIZATION_WEIGHT * np.mean(sphere_radii**3)
+    )
+    parameter_gradient[:, 3] += (
+        3 * RADIUS_REGULARIZATION_WEIGHT * sphere_radii**2 / len(sphere_radii)
+    )
+    return loss, parameter_gradient
 
 
-def _numpy_adam(parameters, points, positive, weights, margin, lower, upper, iterations):
-    first = np.zeros_like(parameters)
-    second = np.zeros_like(parameters)
-    best = parameters.copy()
-    initial_loss, _ = _loss_gradient(parameters, points, positive, weights, margin)
+def _numpy_adam(
+    sphere_parameters: np.ndarray,
+    training_points: np.ndarray,
+    positive_mask: np.ndarray,
+    sample_weights: np.ndarray,
+    coverage_margin: float,
+    lower_bounds: np.ndarray,
+    upper_bounds: np.ndarray,
+    iterations: int,
+) -> tuple[np.ndarray, float, float]:
+    """Optimize the shared objective, retaining the lowest-loss training iterate."""
+    first_moment = np.zeros_like(sphere_parameters)
+    second_moment = np.zeros_like(sphere_parameters)
+    best_parameters = sphere_parameters.copy()
+    initial_loss, _ = _loss_gradient(
+        sphere_parameters, training_points, positive_mask, sample_weights, coverage_margin
+    )
     best_loss = initial_loss
     for step in range(1, iterations + 1):
-        loss, gradient = _loss_gradient(parameters, points, positive, weights, margin)
-        if loss < best_loss:
-            best_loss, best = loss, parameters.copy()
-        first = 0.9 * first + 0.1 * gradient
-        second = 0.999 * second + 0.001 * gradient**2
-        update = 0.006 * (first / (1 - 0.9**step)) / (np.sqrt(second / (1 - 0.999**step)) + 1e-8)
-        parameters = np.clip(parameters - update, lower, upper)
-    loss, _ = _loss_gradient(parameters, points, positive, weights, margin)
-    if loss < best_loss:
-        best_loss, best = loss, parameters.copy()
-    return best, initial_loss, best_loss
+        current_loss, gradient = _loss_gradient(
+            sphere_parameters, training_points, positive_mask, sample_weights, coverage_margin
+        )
+        if current_loss < best_loss:
+            best_loss, best_parameters = current_loss, sphere_parameters.copy()
+        first_moment = 0.9 * first_moment + 0.1 * gradient
+        second_moment = 0.999 * second_moment + 0.001 * gradient**2
+        parameter_update = (
+            NORMALIZED_LEARNING_RATE
+            * (first_moment / (1 - 0.9**step))
+            / (np.sqrt(second_moment / (1 - 0.999**step)) + 1e-8)
+        )
+        sphere_parameters = np.clip(
+            sphere_parameters - parameter_update, lower_bounds, upper_bounds
+        )
+    final_loss, _ = _loss_gradient(
+        sphere_parameters, training_points, positive_mask, sample_weights, coverage_margin
+    )
+    if final_loss < best_loss:
+        best_loss, best_parameters = final_loss, sphere_parameters.copy()
+    return best_parameters, initial_loss, best_loss
 
 
-def _cuda_adam(parameters, points, positive, weights, margin, lower, upper, iterations):
+def _torch_loss(
+    torch, sphere_parameters, training_points, positive_mask, sample_weights, coverage_margin
+):
+    center_offsets = sphere_parameters[None, :, :3] - training_points[:, None, :]
+    center_distances = torch.linalg.vector_norm(center_offsets, dim=2).clamp_min(
+        MINIMUM_CENTER_DISTANCE
+    )
+    nearest_gaps = (center_distances - sphere_parameters[None, :, 3]).min(dim=1).values
+    coverage_errors = torch.where(
+        positive_mask, (nearest_gaps + coverage_margin).clamp_min(0), nearest_gaps.clamp_max(0)
+    )
+    return (
+        sample_weights * coverage_errors.square()
+    ).sum() + RADIUS_REGULARIZATION_WEIGHT * sphere_parameters[:, 3].pow(3).mean()
+
+
+def _cuda_adam(
+    initial_parameters: np.ndarray,
+    training_points: np.ndarray,
+    positive_mask: np.ndarray,
+    sample_weights: np.ndarray,
+    coverage_margin: float,
+    lower_bounds: np.ndarray,
+    upper_bounds: np.ndarray,
+    iterations: int,
+) -> tuple[np.ndarray, float, float]:
     try:
         import torch
     except ImportError as exc:
@@ -146,41 +268,49 @@ def _cuda_adam(parameters, points, positive, weights, margin, lower, upper, iter
     if not torch.cuda.is_available():
         raise ValueError("CUDA refinement requested, but torch.cuda.is_available() is false")
 
-    def tensor(value):
-        return torch.as_tensor(value, device="cuda", dtype=torch.float64)
+    def as_cuda_tensor(values):
+        return torch.as_tensor(values, device="cuda", dtype=torch.float64)
 
-    parameter = tensor(parameters).requires_grad_(True)
-    target, weight = tensor(points), tensor(weights)
-    mask = torch.as_tensor(positive, device="cuda", dtype=torch.bool)
-    lo, hi = tensor(lower), tensor(upper)
-    optimizer = torch.optim.Adam([parameter], lr=0.006)
+    sphere_parameters = as_cuda_tensor(initial_parameters).requires_grad_(True)
+    training_points, sample_weights = (
+        as_cuda_tensor(training_points),
+        as_cuda_tensor(sample_weights),
+    )
+    positive_mask = torch.as_tensor(positive_mask, device="cuda", dtype=torch.bool)
+    lower_bounds, upper_bounds = as_cuda_tensor(lower_bounds), as_cuda_tensor(upper_bounds)
+    optimizer = torch.optim.Adam([sphere_parameters], lr=NORMALIZED_LEARNING_RATE)
 
     def objective():
-        delta = parameter[None, :, :3] - target[:, None, :]
-        distances = torch.linalg.vector_norm(delta, dim=2).clamp_min(1e-12)
-        gap = (distances - parameter[None, :, 3]).min(dim=1).values
-        error = torch.where(mask, (gap + margin).clamp_min(0), gap.clamp_max(0))
-        return (weight * error.square()).sum() + 0.002 * parameter[:, 3].pow(3).mean()
+        return _torch_loss(
+            torch,
+            sphere_parameters,
+            training_points,
+            positive_mask,
+            sample_weights,
+            coverage_margin,
+        )
 
-    initial = objective().detach()
-    best_loss = initial.clone()
-    best = parameter.detach().clone()
+    initial_loss = objective().detach()
+    best_loss = initial_loss.clone()
+    best_parameters = sphere_parameters.detach().clone()
     for _ in range(iterations):
         optimizer.zero_grad(set_to_none=True)
-        loss = objective()
+        current_loss = objective()
         # Device-side selection avoids a CPU synchronization at every iteration.
-        improved = loss.detach() < best_loss
-        best = torch.where(improved, parameter.detach(), best)
-        best_loss = torch.minimum(best_loss, loss.detach())
-        loss.backward()
+        improved = current_loss.detach() < best_loss
+        best_parameters = torch.where(improved, sphere_parameters.detach(), best_parameters)
+        best_loss = torch.minimum(best_loss, current_loss.detach())
+        current_loss.backward()
         optimizer.step()
         with torch.no_grad():
-            parameter.clamp_(min=lo, max=hi)
-    final = objective().detach()
-    best = torch.where(final < best_loss, parameter.detach(), best)
-    best_loss = torch.minimum(best_loss, final)
+            sphere_parameters.clamp_(min=lower_bounds, max=upper_bounds)
+    final_loss = objective().detach()
+    best_parameters = torch.where(
+        final_loss < best_loss, sphere_parameters.detach(), best_parameters
+    )
+    best_loss = torch.minimum(best_loss, final_loss)
     torch.cuda.synchronize()
-    return best.cpu().numpy(), float(initial.cpu()), float(best_loss.cpu())
+    return best_parameters.cpu().numpy(), float(initial_loss.cpu()), float(best_loss.cpu())
 
 
 def refine_spheres(
@@ -190,44 +320,62 @@ def refine_spheres(
     pitch: float,
     cfg: FitConfig,
 ) -> tuple[list[Sphere], dict[str, Any]]:
-    points, positive, weights, counts = _training_data(mesh, occupied, pitch, cfg)
-    if len(points) * len(initial) > 4_000_000:
+    """Refine existing link-local spheres; add user padding only after optimization."""
+    # Preserve the existing keyword interface at this public module boundary.
+    configuration, voxel_size_m = cfg, pitch
+    training_points, positive_mask, sample_weights, training_counts = _prepare_training_samples(
+        mesh, occupied, voxel_size_m, configuration
+    )
+    if len(training_points) * len(initial) > MAXIMUM_TRAINING_PAIRS:
         raise ValueError(
             "Refinement exceeds the 4M point-ball pair budget; reduce refine_samples/count"
         )
-    origin = mesh.bounds.mean(axis=0)
-    scale = float(mesh.extents.max())
-    points = (points - origin) / scale
-    parameters = np.column_stack(
+    normalization_origin = mesh.bounds.mean(axis=0)
+    normalization_scale = float(mesh.extents.max())
+    training_points = (training_points - normalization_origin) / normalization_scale
+    sphere_parameters = np.column_stack(
         (
-            (np.array([s.center for s in initial]) - origin) / scale,
-            np.array([s.radius for s in initial]) / scale,
+            (np.array([sphere.center for sphere in initial]) - normalization_origin)
+            / normalization_scale,
+            np.array([sphere.radius for sphere in initial]) / normalization_scale,
         )
     )
-    low, high = (mesh.bounds - origin) / scale
-    lower = np.r_[low, pitch * 0.25 / scale]
-    upper = np.r_[high, np.linalg.norm(mesh.extents) / scale]
-    margin = pitch * 0.15 / scale
-    optimize = _numpy_adam if cfg.device == "cpu" else _cuda_adam
-    optimized, initial_loss, final_loss = optimize(
-        parameters, points, positive, weights, margin, lower, upper, cfg.iterations
+    lower_center_bounds, upper_center_bounds = (
+        mesh.bounds - normalization_origin
+    ) / normalization_scale
+    lower_bounds = np.r_[lower_center_bounds, voxel_size_m * 0.25 / normalization_scale]
+    upper_bounds = np.r_[upper_center_bounds, np.linalg.norm(mesh.extents) / normalization_scale]
+    coverage_margin = voxel_size_m * 0.15 / normalization_scale
+    optimizer = _numpy_adam if configuration.device == "cpu" else _cuda_adam
+    optimized_parameters, initial_loss, final_loss = optimizer(
+        sphere_parameters,
+        training_points,
+        positive_mask,
+        sample_weights,
+        coverage_margin,
+        lower_bounds,
+        upper_bounds,
+        configuration.iterations,
     )
-    spheres = [
-        Sphere(tuple(center * scale + origin), float(radius * scale + cfg.padding))
-        for center, radius in zip(optimized[:, :3], optimized[:, 3])
+    refined_spheres = [
+        Sphere(
+            tuple(center * normalization_scale + normalization_origin),
+            float(radius * normalization_scale + configuration.padding),
+        )
+        for center, radius in zip(optimized_parameters[:, :3], optimized_parameters[:, 3])
     ]
-    return spheres, {
+    return refined_spheres, {
         "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
-        "optimization_device": cfg.device,
-        "optimization_iterations": cfg.iterations,
-        "optimization_training_counts": counts,
+        "optimization_device": configuration.device,
+        "optimization_iterations": configuration.iterations,
+        "optimization_training_counts": training_counts,
         "optimization_initial_loss": initial_loss,
         "optimization_final_loss": final_loss,
-        "optimization_outside_weight": cfg.outside_weight,
+        "optimization_outside_weight": configuration.outside_weight,
         "optimization_reference": (
             "original mesh.contains labels; one closed surface, assuming no self-intersection"
-            if cfg.refine_reference == "mesh"
+            if configuration.refine_reference == "mesh"
             else "filled voxel grid, not exact mesh SDF"
         ),
-        "optimization_positive_margin_m": pitch * 0.15,
+        "optimization_positive_margin_m": voxel_size_m * 0.15,
     }

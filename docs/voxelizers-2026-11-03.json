@@ -1,0 +1,3891 @@
+{
+  "python": "3.10.0",
+  "platform": "Linux-6.8.0-106-generic-x86_64-with-glibc2.35",
+  "timing_scope": "full fit_mesh on preloaded mesh; includes grid/BVH and reports, no export",
+  "cold_note": "First call includes runtime preparation; fresh-process timing is separate",
+  "evaluation_seed": 99103,
+  "shared_surface_samples": 6000,
+  "shared_volume_samples": 20000,
+  "configurations": {
+    "voxel/subdivide-cpu": {
+      "method": "voxel",
+      "count": 24,
+      "resolution": 48,
+      "voxel_size": null,
+      "padding": 0.003,
+      "surface_radius": 0.01,
+      "samples": 3000,
+      "seed": 0,
+      "max_grid_cells": 2000000,
+      "max_candidates": 768,
+      "non_watertight": "error",
+      "device": "cpu",
+      "iterations": 120,
+      "refine_samples": 1024,
+      "outside_weight": 10.0,
+      "refine_reference": "voxel",
+      "voxelizer": "subdivide",
+      "voxel_solid_policy": "single"
+    },
+    "voxel/subdivide-cuda": {
+      "method": "voxel",
+      "count": 24,
+      "resolution": 48,
+      "voxel_size": null,
+      "padding": 0.003,
+      "surface_radius": 0.01,
+      "samples": 3000,
+      "seed": 0,
+      "max_grid_cells": 2000000,
+      "max_candidates": 768,
+      "non_watertight": "error",
+      "device": "cuda",
+      "iterations": 120,
+      "refine_samples": 1024,
+      "outside_weight": 10.0,
+      "refine_reference": "voxel",
+      "voxelizer": "subdivide",
+      "voxel_solid_policy": "single"
+    },
+    "voxel/open3d-cpu": {
+      "method": "voxel",
+      "count": 24,
+      "resolution": 48,
+      "voxel_size": null,
+      "padding": 0.003,
+      "surface_radius": 0.01,
+      "samples": 3000,
+      "seed": 0,
+      "max_grid_cells": 2000000,
+      "max_candidates": 768,
+      "non_watertight": "error",
+      "device": "cpu",
+      "iterations": 120,
+      "refine_samples": 1024,
+      "outside_weight": 10.0,
+      "refine_reference": "voxel",
+      "voxelizer": "open3d",
+      "voxel_solid_policy": "single"
+    },
+    "voxel/warp-cpu": {
+      "method": "voxel",
+      "count": 24,
+      "resolution": 48,
+      "voxel_size": null,
+      "padding": 0.003,
+      "surface_radius": 0.01,
+      "samples": 3000,
+      "seed": 0,
+      "max_grid_cells": 2000000,
+      "max_candidates": 768,
+      "non_watertight": "error",
+      "device": "cpu",
+      "iterations": 120,
+      "refine_samples": 1024,
+      "outside_weight": 10.0,
+      "refine_reference": "voxel",
+      "voxelizer": "warp",
+      "voxel_solid_policy": "single"
+    },
+    "voxel/warp-cuda": {
+      "method": "voxel",
+      "count": 24,
+      "resolution": 48,
+      "voxel_size": null,
+      "padding": 0.003,
+      "surface_radius": 0.01,
+      "samples": 3000,
+      "seed": 0,
+      "max_grid_cells": 2000000,
+      "max_candidates": 768,
+      "non_watertight": "error",
+      "device": "cuda",
+      "iterations": 120,
+      "refine_samples": 1024,
+      "outside_weight": 10.0,
+      "refine_reference": "voxel",
+      "voxelizer": "warp",
+      "voxel_solid_policy": "single"
+    },
+    "refined/subdivide-cpu": {
+      "method": "refined",
+      "count": 24,
+      "resolution": 48,
+      "voxel_size": null,
+      "padding": 0.003,
+      "surface_radius": 0.01,
+      "samples": 3000,
+      "seed": 0,
+      "max_grid_cells": 2000000,
+      "max_candidates": 768,
+      "non_watertight": "error",
+      "device": "cpu",
+      "iterations": 120,
+      "refine_samples": 1024,
+      "outside_weight": 10.0,
+      "refine_reference": "voxel",
+      "voxelizer": "subdivide",
+      "voxel_solid_policy": "single"
+    },
+    "refined/subdivide-cuda": {
+      "method": "refined",
+      "count": 24,
+      "resolution": 48,
+      "voxel_size": null,
+      "padding": 0.003,
+      "surface_radius": 0.01,
+      "samples": 3000,
+      "seed": 0,
+      "max_grid_cells": 2000000,
+      "max_candidates": 768,
+      "non_watertight": "error",
+      "device": "cuda",
+      "iterations": 120,
+      "refine_samples": 1024,
+      "outside_weight": 10.0,
+      "refine_reference": "voxel",
+      "voxelizer": "subdivide",
+      "voxel_solid_policy": "single"
+    },
+    "refined/open3d-cpu": {
+      "method": "refined",
+      "count": 24,
+      "resolution": 48,
+      "voxel_size": null,
+      "padding": 0.003,
+      "surface_radius": 0.01,
+      "samples": 3000,
+      "seed": 0,
+      "max_grid_cells": 2000000,
+      "max_candidates": 768,
+      "non_watertight": "error",
+      "device": "cpu",
+      "iterations": 120,
+      "refine_samples": 1024,
+      "outside_weight": 10.0,
+      "refine_reference": "voxel",
+      "voxelizer": "open3d",
+      "voxel_solid_policy": "single"
+    },
+    "refined/warp-cpu": {
+      "method": "refined",
+      "count": 24,
+      "resolution": 48,
+      "voxel_size": null,
+      "padding": 0.003,
+      "surface_radius": 0.01,
+      "samples": 3000,
+      "seed": 0,
+      "max_grid_cells": 2000000,
+      "max_candidates": 768,
+      "non_watertight": "error",
+      "device": "cpu",
+      "iterations": 120,
+      "refine_samples": 1024,
+      "outside_weight": 10.0,
+      "refine_reference": "voxel",
+      "voxelizer": "warp",
+      "voxel_solid_policy": "single"
+    },
+    "refined/warp-cuda": {
+      "method": "refined",
+      "count": 24,
+      "resolution": 48,
+      "voxel_size": null,
+      "padding": 0.003,
+      "surface_radius": 0.01,
+      "samples": 3000,
+      "seed": 0,
+      "max_grid_cells": 2000000,
+      "max_candidates": 768,
+      "non_watertight": "error",
+      "device": "cuda",
+      "iterations": 120,
+      "refine_samples": 1024,
+      "outside_weight": 10.0,
+      "refine_reference": "voxel",
+      "voxelizer": "warp",
+      "voxel_solid_policy": "single"
+    }
+  },
+  "cases": {
+    "box": {
+      "timings": {
+        "voxel/subdivide-cpu": {
+          "first_call_s": 0.059137166012078524,
+          "warm_times_s": [
+            0.05178557394538075,
+            0.050556835019961,
+            0.051805571012664586
+          ],
+          "warm_median_s": 0.05178557394538075
+        },
+        "voxel/subdivide-cuda": {
+          "first_call_s": 0.8190623719710857,
+          "warm_times_s": [
+            0.04126765002729371,
+            0.03883960796520114,
+            0.0407997039728798
+          ],
+          "warm_median_s": 0.0407997039728798
+        },
+        "voxel/open3d-cpu": {
+          "first_call_s": 0.9269913290045224,
+          "warm_times_s": [
+            0.053233799000736326,
+            0.06895802897633985,
+            0.06796305300667882
+          ],
+          "warm_median_s": 0.06796305300667882
+        },
+        "voxel/warp-cpu": {
+          "first_call_s": 0.1334962910041213,
+          "warm_times_s": [
+            0.030456279986537993,
+            0.029907922027632594,
+            0.02988627995364368
+          ],
+          "warm_median_s": 0.029907922027632594
+        },
+        "voxel/warp-cuda": {
+          "first_call_s": 0.015141265990678221,
+          "warm_times_s": [
+            0.00873765000142157,
+            0.009303672006353736,
+            0.007152083970140666
+          ],
+          "warm_median_s": 0.00873765000142157
+        },
+        "refined/subdivide-cpu": {
+          "first_call_s": 0.24211212003137916,
+          "warm_times_s": [
+            0.22093286097515374,
+            0.22038249799516052,
+            0.22169535601278767
+          ],
+          "warm_median_s": 0.22093286097515374
+        },
+        "refined/subdivide-cuda": {
+          "first_call_s": 0.6491544040036388,
+          "warm_times_s": [
+            0.10507404600502923,
+            0.10084270598599687,
+            0.1105207490036264
+          ],
+          "warm_median_s": 0.10507404600502923
+        },
+        "refined/open3d-cpu": {
+          "first_call_s": 0.2490545769687742,
+          "warm_times_s": [
+            0.22708339797100052,
+            0.23845099098980427,
+            0.22940182097954676
+          ],
+          "warm_median_s": 0.22940182097954676
+        },
+        "refined/warp-cpu": {
+          "first_call_s": 0.21711864200187847,
+          "warm_times_s": [
+            0.2076229159720242,
+            0.21040014899335802,
+            0.21001602098112926
+          ],
+          "warm_median_s": 0.21001602098112926
+        },
+        "refined/warp-cuda": {
+          "first_call_s": 0.09011053701397032,
+          "warm_times_s": [
+            0.098886649007909,
+            0.10392194299492985,
+            0.10659412603126839
+          ],
+          "warm_median_s": 0.10392194299492985
+        }
+      },
+      "quality": {
+        "voxel/subdivide-cpu": {
+          "surface_coverage": 0.5023333333333333,
+          "surface_gap_p95_m": 0.013709438437850741,
+          "sphere_volume_sum_m3": 0.012759362790772017,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.17868017053235696,
+              -0.11177215598991823,
+              -0.08035821717609354
+            ],
+            [
+              0.17943607830100597,
+              0.11365188977639804,
+              0.07937463397554263
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9047750103206275,
+          "outside_volume_over_mesh": 0.07692307692307693,
+          "sphere_precision": 0.9216428371180263,
+          "volume_iou": 0.8401482238691541,
+          "validation_interior_points": 7267,
+          "validation_true_positive": 6575,
+          "validation_false_negative": 692,
+          "validation_false_positive": 559,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "voxel/subdivide-cuda": {
+          "surface_coverage": 0.5023333333333333,
+          "surface_gap_p95_m": 0.013709438437850741,
+          "sphere_volume_sum_m3": 0.012759362790772017,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.17868017053235696,
+              -0.11177215598991823,
+              -0.08035821717609354
+            ],
+            [
+              0.17943607830100597,
+              0.11365188977639804,
+              0.07937463397554263
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9047750103206275,
+          "outside_volume_over_mesh": 0.07692307692307693,
+          "sphere_precision": 0.9216428371180263,
+          "volume_iou": 0.8401482238691541,
+          "validation_interior_points": 7267,
+          "validation_true_positive": 6575,
+          "validation_false_negative": 692,
+          "validation_false_positive": 559,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "voxel/open3d-cpu": {
+          "surface_coverage": 0.16916666666666666,
+          "surface_gap_p95_m": 0.019069836514007885,
+          "sphere_volume_sum_m3": 0.010127988674894572,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.17868017053235696,
+              -0.11177215598991823,
+              -0.08035821717609354
+            ],
+            [
+              0.17943607830100597,
+              0.11365188977639804,
+              0.07937463397554263
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.7956515756157975,
+          "outside_volume_over_mesh": 0.009494977294619513,
+          "sphere_precision": 0.9882071440779354,
+          "volume_iou": 0.7881679389312977,
+          "validation_interior_points": 7267,
+          "validation_true_positive": 5782,
+          "validation_false_negative": 1485,
+          "validation_false_positive": 69,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "voxel/warp-cpu": {
+          "surface_coverage": 0.1635,
+          "surface_gap_p95_m": 0.02095486494375679,
+          "sphere_volume_sum_m3": 0.009576360392450387,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.17868017053235696,
+              -0.11177215598991823,
+              -0.08035821717609354
+            ],
+            [
+              0.17943607830100597,
+              0.11365188977639804,
+              0.07937463397554263
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.7935874501169671,
+          "outside_volume_over_mesh": 0.01073345259391771,
+          "sphere_precision": 0.9866552609067579,
+          "volume_iou": 0.7851599727705922,
+          "validation_interior_points": 7267,
+          "validation_true_positive": 5767,
+          "validation_false_negative": 1500,
+          "validation_false_positive": 78,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "voxel/warp-cuda": {
+          "surface_coverage": 0.16716666666666666,
+          "surface_gap_p95_m": 0.019256993418262383,
+          "sphere_volume_sum_m3": 0.009852064007698643,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.17868017053235696,
+              -0.11177215598991823,
+              -0.08035821717609354
+            ],
+            [
+              0.17943607830100597,
+              0.11365188977639804,
+              0.07937463397554263
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.7996422182468694,
+          "outside_volume_over_mesh": 0.01073345259391771,
+          "sphere_precision": 0.9867549668874173,
+          "volume_iou": 0.7911504424778761,
+          "validation_interior_points": 7267,
+          "validation_true_positive": 5811,
+          "validation_false_negative": 1456,
+          "validation_false_positive": 78,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/subdivide-cpu": {
+          "surface_coverage": 0.9795,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.018289147020332824,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.17868017053235696,
+              -0.11177215598991823,
+              -0.08035821717609354
+            ],
+            [
+              0.17943607830100597,
+              0.11365188977639804,
+              0.07937463397554263
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9994495665336453,
+          "outside_volume_over_mesh": 0.5431402229255539,
+          "sphere_precision": 0.6479036574487065,
+          "volume_iou": 0.6476725521669342,
+          "validation_interior_points": 7267,
+          "validation_true_positive": 7263,
+          "validation_false_negative": 4,
+          "validation_false_positive": 3947,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/subdivide-cuda": {
+          "surface_coverage": 0.9795,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.018289147020332824,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.17868017053235696,
+              -0.11177215598991823,
+              -0.08035821717609354
+            ],
+            [
+              0.17943607830100597,
+              0.11365188977639804,
+              0.07937463397554263
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9994495665336453,
+          "outside_volume_over_mesh": 0.5431402229255539,
+          "sphere_precision": 0.6479036574487065,
+          "volume_iou": 0.6476725521669342,
+          "validation_interior_points": 7267,
+          "validation_true_positive": 7263,
+          "validation_false_negative": 4,
+          "validation_false_positive": 3947,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/open3d-cpu": {
+          "surface_coverage": 0.9505,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.016668225776923295,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.17868017053235696,
+              -0.11177215598991823,
+              -0.08035821717609354
+            ],
+            [
+              0.17943607830100597,
+              0.11365188977639804,
+              0.07937463397554263
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9964221824686941,
+          "outside_volume_over_mesh": 0.4535571762763176,
+          "sphere_precision": 0.6871974945430388,
+          "volume_iou": 0.6855060115497491,
+          "validation_interior_points": 7267,
+          "validation_true_positive": 7241,
+          "validation_false_negative": 26,
+          "validation_false_positive": 3296,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/warp-cpu": {
+          "surface_coverage": 0.9498333333333333,
+          "surface_gap_p95_m": 2.1893098886775897e-06,
+          "sphere_volume_sum_m3": 0.016258110028044313,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.17868017053235696,
+              -0.11177215598991823,
+              -0.08035821717609354
+            ],
+            [
+              0.17943607830100597,
+              0.11365188977639804,
+              0.07937463397554263
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9962845741021054,
+          "outside_volume_over_mesh": 0.4491537085454796,
+          "sphere_precision": 0.6892612338156893,
+          "volume_iou": 0.6874940651410123,
+          "validation_interior_points": 7267,
+          "validation_true_positive": 7240,
+          "validation_false_negative": 27,
+          "validation_false_positive": 3264,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/warp-cuda": {
+          "surface_coverage": 0.9586666666666667,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.01619565838659059,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.17868017053235696,
+              -0.11177215598991823,
+              -0.08035821717609354
+            ],
+            [
+              0.17943607830100597,
+              0.11365188977639804,
+              0.07937463397554263
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9966973992018715,
+          "outside_volume_over_mesh": 0.4589239025732765,
+          "sphere_precision": 0.6847230100207978,
+          "volume_iou": 0.6831729862290133,
+          "validation_interior_points": 7267,
+          "validation_true_positive": 7243,
+          "validation_false_negative": 24,
+          "validation_false_positive": 3335,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        }
+      },
+      "fit_reports": {
+        "voxel/subdivide-cpu": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 12,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.49366666666666664,
+          "surface_gap_mean_m": 0.003426667935354031,
+          "surface_gap_p95_m": 0.01349667902058114,
+          "surface_gap_max_m": 0.028515719761262277,
+          "sphere_volume_sum_m3": 0.012759362790772017,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 22491,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "voxel_center_coverage": 0.8374905517762661
+        },
+        "voxel/subdivide-cuda": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 12,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.49366666666666664,
+          "surface_gap_mean_m": 0.003426667935354031,
+          "surface_gap_p95_m": 0.01349667902058114,
+          "surface_gap_max_m": 0.028515719761262277,
+          "sphere_volume_sum_m3": 0.012759362790772017,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 22491,
+          "candidate_count": 768,
+          "greedy_device": "cuda",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "voxel_center_coverage": 0.8374905517762661
+        },
+        "voxel/open3d-cpu": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 12,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.177,
+          "surface_gap_mean_m": 0.00700827425631234,
+          "surface_gap_p95_m": 0.019592152837578737,
+          "surface_gap_max_m": 0.030804781050211137,
+          "sphere_volume_sum_m3": 0.010127988674894572,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 19968,
+          "candidate_count": 769,
+          "greedy_device": "cpu",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "open3d",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cpu",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 2.2888183595672963e-06,
+          "world_coordinate_ulp_m": 2.7755575615628914e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            19968
+          ],
+          "component_representative_grid_indices": [
+            [
+              8,
+              8,
+              8
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.103125,
+              -0.03312500000000001,
+              -0.0031250000000000097
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_center_coverage": 0.7828024839743589
+        },
+        "voxel/warp-cpu": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 12,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.174,
+          "surface_gap_mean_m": 0.00736041882267791,
+          "surface_gap_p95_m": 0.020703394567528784,
+          "surface_gap_max_m": 0.03531251763138855,
+          "sphere_volume_sum_m3": 0.009576360392450387,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 19968,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "warp",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cpu",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 2.2888183595672963e-06,
+          "world_coordinate_ulp_m": 2.7755575615628914e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            19968
+          ],
+          "component_representative_grid_indices": [
+            [
+              8,
+              12,
+              8
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.103125,
+              -0.008125000000000007,
+              -0.0031250000000000097
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_center_coverage": 0.7786458333333334
+        },
+        "voxel/warp-cuda": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 12,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.169,
+          "surface_gap_mean_m": 0.006925194672084721,
+          "surface_gap_p95_m": 0.0196939492082266,
+          "surface_gap_max_m": 0.030804781050211137,
+          "sphere_volume_sum_m3": 0.009852064007698643,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 19968,
+          "candidate_count": 768,
+          "greedy_device": "cuda",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "warp",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cuda",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 2.2888183595672963e-06,
+          "world_coordinate_ulp_m": 2.7755575615628914e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            19968
+          ],
+          "component_representative_grid_indices": [
+            [
+              12,
+              12,
+              8
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.07812499999999999,
+              -0.008125000000000007,
+              -0.0031250000000000097
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_center_coverage": 0.7862079326923077
+        },
+        "refined/subdivide-cpu": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 12,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.981,
+          "surface_gap_mean_m": 2.614299846429844e-05,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.006704795871434757,
+          "sphere_volume_sum_m3": 0.018289147020332824,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 22491,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cpu",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 0.007575883859845118,
+          "optimization_final_loss": 8.494342130012204e-05,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.0009374999999999999,
+          "voxel_center_coverage": 0.9928415810768751
+        },
+        "refined/subdivide-cuda": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 12,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.981,
+          "surface_gap_mean_m": 2.614299846429836e-05,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.006704795871434743,
+          "sphere_volume_sum_m3": 0.018289147020332824,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 22491,
+          "candidate_count": 768,
+          "greedy_device": "cuda",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cuda",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 0.007575883859845118,
+          "optimization_final_loss": 8.494342130012204e-05,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.0009374999999999999,
+          "voxel_center_coverage": 0.9928415810768751
+        },
+        "refined/open3d-cpu": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 12,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.951,
+          "surface_gap_mean_m": 0.00011598659340436609,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.011252112411372,
+          "sphere_volume_sum_m3": 0.016668225776923295,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 19968,
+          "candidate_count": 769,
+          "greedy_device": "cpu",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "open3d",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cpu",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 2.2888183595672963e-06,
+          "world_coordinate_ulp_m": 2.7755575615628914e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            19968
+          ],
+          "component_representative_grid_indices": [
+            [
+              8,
+              8,
+              8
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.103125,
+              -0.03312500000000001,
+              -0.0031250000000000097
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cpu",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 0.015711813508147904,
+          "optimization_final_loss": 0.00021694487581385466,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.0009374999999999999,
+          "voxel_center_coverage": 0.9971454326923077
+        },
+        "refined/warp-cpu": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 12,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.9533333333333334,
+          "surface_gap_mean_m": 0.00011267454083044591,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.012430931310073237,
+          "sphere_volume_sum_m3": 0.016258110028044313,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 19968,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "warp",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cpu",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 2.2888183595672963e-06,
+          "world_coordinate_ulp_m": 2.7755575615628914e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            19968
+          ],
+          "component_representative_grid_indices": [
+            [
+              8,
+              12,
+              8
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.103125,
+              -0.008125000000000007,
+              -0.0031250000000000097
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cpu",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 0.015776534262725562,
+          "optimization_final_loss": 0.00021177426358098223,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.0009374999999999999,
+          "voxel_center_coverage": 0.9959435096153846
+        },
+        "refined/warp-cuda": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 12,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.9596666666666667,
+          "surface_gap_mean_m": 8.70226264725021e-05,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.01079776735840026,
+          "sphere_volume_sum_m3": 0.01619565838659059,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 19968,
+          "candidate_count": 768,
+          "greedy_device": "cuda",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "warp",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cuda",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 2.2888183595672963e-06,
+          "world_coordinate_ulp_m": 2.7755575615628914e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            19968
+          ],
+          "component_representative_grid_indices": [
+            [
+              12,
+              12,
+              8
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.07812499999999999,
+              -0.008125000000000007,
+              -0.0031250000000000097
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cuda",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 0.015085022919497272,
+          "optimization_final_loss": 0.00019843672433082608,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.0009374999999999999,
+          "voxel_center_coverage": 0.9976462339743589
+        }
+      },
+      "triangle_count": 12
+    },
+    "cylinder": {
+      "timings": {
+        "voxel/subdivide-cpu": {
+          "first_call_s": 0.43641674501122907,
+          "warm_times_s": [
+            0.4328556259861216,
+            0.4610427560401149,
+            0.4876950769685209
+          ],
+          "warm_median_s": 0.4610427560401149
+        },
+        "voxel/subdivide-cuda": {
+          "first_call_s": 0.43030120502226055,
+          "warm_times_s": [
+            0.4247358769644052,
+            0.41625425399979576,
+            0.4096179060288705
+          ],
+          "warm_median_s": 0.41625425399979576
+        },
+        "voxel/open3d-cpu": {
+          "first_call_s": 0.05236268800217658,
+          "warm_times_s": [
+            0.04895498004043475,
+            0.06429726601345465,
+            0.053080758021678776
+          ],
+          "warm_median_s": 0.053080758021678776
+        },
+        "voxel/warp-cpu": {
+          "first_call_s": 0.03568822599481791,
+          "warm_times_s": [
+            0.03211029601516202,
+            0.03141597000649199,
+            0.030346772982738912
+          ],
+          "warm_median_s": 0.03141597000649199
+        },
+        "voxel/warp-cuda": {
+          "first_call_s": 0.008812531013973057,
+          "warm_times_s": [
+            0.0066364569938741624,
+            0.006677846016827971,
+            0.007059329014737159
+          ],
+          "warm_median_s": 0.006677846016827971
+        },
+        "refined/subdivide-cpu": {
+          "first_call_s": 0.6175778909819201,
+          "warm_times_s": [
+            0.5854106879560277,
+            0.5991500769741833,
+            0.5893353559658863
+          ],
+          "warm_median_s": 0.5893353559658863
+        },
+        "refined/subdivide-cuda": {
+          "first_call_s": 0.4890806739567779,
+          "warm_times_s": [
+            0.4738701570313424,
+            0.48045590898254886,
+            0.48371624801075086
+          ],
+          "warm_median_s": 0.48045590898254886
+        },
+        "refined/open3d-cpu": {
+          "first_call_s": 0.22541429399279878,
+          "warm_times_s": [
+            0.2310947100049816,
+            0.23618806299054995,
+            0.2205025349976495
+          ],
+          "warm_median_s": 0.2310947100049816
+        },
+        "refined/warp-cpu": {
+          "first_call_s": 0.2067200660239905,
+          "warm_times_s": [
+            0.21010827604914084,
+            0.20898667100118473,
+            0.21704703697469085
+          ],
+          "warm_median_s": 0.21010827604914084
+        },
+        "refined/warp-cuda": {
+          "first_call_s": 0.10774370603030547,
+          "warm_times_s": [
+            0.12587918597273529,
+            0.11714019300416112,
+            0.10986356297507882
+          ],
+          "warm_median_s": 0.11714019300416112
+        }
+      },
+      "quality": {
+        "voxel/subdivide-cpu": {
+          "surface_coverage": 0.8918333333333334,
+          "surface_gap_p95_m": 0.0024501678665674984,
+          "sphere_volume_sum_m3": 0.007473306657334299,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.07342885626499981,
+              -0.07512441750403896,
+              -0.1761825723729656
+            ],
+            [
+              0.07416912879719303,
+              0.073522526240331,
+              0.17484802504545333
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9861179970252851,
+          "outside_volume_over_mesh": 0.20872583044124937,
+          "sphere_precision": 0.825311203319502,
+          "volume_iou": 0.8158326497128794,
+          "validation_interior_points": 6051,
+          "validation_true_positive": 5967,
+          "validation_false_negative": 84,
+          "validation_false_positive": 1263,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "voxel/subdivide-cuda": {
+          "surface_coverage": 0.8918333333333334,
+          "surface_gap_p95_m": 0.0024501678665674984,
+          "sphere_volume_sum_m3": 0.007473306657334299,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.07342885626499981,
+              -0.07512441750403896,
+              -0.1761825723729656
+            ],
+            [
+              0.07416912879719303,
+              0.073522526240331,
+              0.17484802504545333
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9861179970252851,
+          "outside_volume_over_mesh": 0.20872583044124937,
+          "sphere_precision": 0.825311203319502,
+          "volume_iou": 0.8158326497128794,
+          "validation_interior_points": 6051,
+          "validation_true_positive": 5967,
+          "validation_false_negative": 84,
+          "validation_false_positive": 1263,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "voxel/open3d-cpu": {
+          "surface_coverage": 0.5006666666666667,
+          "surface_gap_p95_m": 0.009177435327155406,
+          "sphere_volume_sum_m3": 0.008407495301916442,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.07342885626499981,
+              -0.07512441750403896,
+              -0.1761825723729656
+            ],
+            [
+              0.07416912879719303,
+              0.073522526240331,
+              0.17484802504545333
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9383572963146587,
+          "outside_volume_over_mesh": 0.03801024624029086,
+          "sphere_precision": 0.9610697359512526,
+          "volume_iou": 0.9039961789523961,
+          "validation_interior_points": 6051,
+          "validation_true_positive": 5678,
+          "validation_false_negative": 373,
+          "validation_false_positive": 230,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "voxel/warp-cpu": {
+          "surface_coverage": 0.5238333333333334,
+          "surface_gap_p95_m": 0.01102500851720558,
+          "sphere_volume_sum_m3": 0.009077892923302956,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.07342885626499981,
+              -0.07512441750403896,
+              -0.1761825723729656
+            ],
+            [
+              0.07416912879719303,
+              0.073522526240331,
+              0.17484802504545333
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9300941993058999,
+          "outside_volume_over_mesh": 0.039332341761692285,
+          "sphere_precision": 0.9594272076372315,
+          "volume_iou": 0.894895849896645,
+          "validation_interior_points": 6051,
+          "validation_true_positive": 5628,
+          "validation_false_negative": 423,
+          "validation_false_positive": 238,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "voxel/warp-cuda": {
+          "surface_coverage": 0.48433333333333334,
+          "surface_gap_p95_m": 0.009634642060213774,
+          "sphere_volume_sum_m3": 0.007996561146969191,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.07342885626499981,
+              -0.07512441750403896,
+              -0.1761825723729656
+            ],
+            [
+              0.07416912879719303,
+              0.073522526240331,
+              0.17484802504545333
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9317468187076516,
+          "outside_volume_over_mesh": 0.03536605519748802,
+          "sphere_precision": 0.9634313055365687,
+          "volume_iou": 0.8999201915403032,
+          "validation_interior_points": 6051,
+          "validation_true_positive": 5638,
+          "validation_false_negative": 413,
+          "validation_false_positive": 214,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/subdivide-cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.007729963051816205,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.07342885626499981,
+              -0.07512441750403896,
+              -0.1761825723729656
+            ],
+            [
+              0.07416912879719303,
+              0.073522526240331,
+              0.17484802504545333
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.5204098496116344,
+          "sphere_precision": 0.6577173913043478,
+          "volume_iou": 0.6577173913043478,
+          "validation_interior_points": 6051,
+          "validation_true_positive": 6051,
+          "validation_false_negative": 0,
+          "validation_false_positive": 3149,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/subdivide-cuda": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.007729963053853753,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.07342885626499981,
+              -0.07512441750403896,
+              -0.1761825723729656
+            ],
+            [
+              0.07416912879719303,
+              0.073522526240331,
+              0.17484802504545333
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.5204098496116344,
+          "sphere_precision": 0.6577173913043478,
+          "volume_iou": 0.6577173913043478,
+          "validation_interior_points": 6051,
+          "validation_true_positive": 6051,
+          "validation_false_negative": 0,
+          "validation_false_positive": 3149,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/open3d-cpu": {
+          "surface_coverage": 0.9958333333333333,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.012569852535123247,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.07342885626499981,
+              -0.07512441750403896,
+              -0.1761825723729656
+            ],
+            [
+              0.07416912879719303,
+              0.073522526240331,
+              0.17484802504545333
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.4690133862171542,
+          "sphere_precision": 0.6807289908876138,
+          "volume_iou": 0.6807289908876138,
+          "validation_interior_points": 6051,
+          "validation_true_positive": 6051,
+          "validation_false_negative": 0,
+          "validation_false_positive": 2838,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/warp-cpu": {
+          "surface_coverage": 0.9961666666666666,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.012792158291638493,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.07342885626499981,
+              -0.07512441750403896,
+              -0.1761825723729656
+            ],
+            [
+              0.07416912879719303,
+              0.073522526240331,
+              0.17484802504545333
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.5010742026111387,
+          "sphere_precision": 0.6661895849388968,
+          "volume_iou": 0.6661895849388968,
+          "validation_interior_points": 6051,
+          "validation_true_positive": 6051,
+          "validation_false_negative": 0,
+          "validation_false_positive": 3032,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/warp-cuda": {
+          "surface_coverage": 0.9911666666666666,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.011849479679482711,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.07342885626499981,
+              -0.07512441750403896,
+              -0.1761825723729656
+            ],
+            [
+              0.07416912879719303,
+              0.073522526240331,
+              0.17484802504545333
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9998347380598248,
+          "outside_volume_over_mesh": 0.47083126755908117,
+          "sphere_precision": 0.6798516687268232,
+          "volume_iou": 0.6797752808988764,
+          "validation_interior_points": 6051,
+          "validation_true_positive": 6050,
+          "validation_false_negative": 1,
+          "validation_false_positive": 2849,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        }
+      },
+      "fit_reports": {
+        "voxel/subdivide-cpu": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 192,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.89,
+          "surface_gap_mean_m": 0.0002966201377989574,
+          "surface_gap_p95_m": 0.0026118200077075355,
+          "surface_gap_max_m": 0.0114157131177112,
+          "sphere_volume_sum_m3": 0.007473306657334299,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 11809,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "voxel_center_coverage": 0.9524091794394106
+        },
+        "voxel/subdivide-cuda": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 192,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.89,
+          "surface_gap_mean_m": 0.00029662013779895735,
+          "surface_gap_p95_m": 0.0026118200077075355,
+          "surface_gap_max_m": 0.0114157131177112,
+          "sphere_volume_sum_m3": 0.007473306657334299,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 11809,
+          "candidate_count": 768,
+          "greedy_device": "cuda",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "voxel_center_coverage": 0.9524091794394106
+        },
+        "voxel/open3d-cpu": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 192,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.4836666666666667,
+          "surface_gap_mean_m": 0.00177476328956416,
+          "surface_gap_p95_m": 0.009266471793770336,
+          "surface_gap_max_m": 0.018115301780800605,
+          "sphere_volume_sum_m3": 0.008407495301916442,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 9984,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "open3d",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cpu",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 2.2888183595672963e-06,
+          "world_coordinate_ulp_m": 2.7755575615628914e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            9984
+          ],
+          "component_representative_grid_indices": [
+            [
+              8,
+              8,
+              8
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.0031250000000000097,
+              -0.0031250000000000097,
+              -0.103125
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_center_coverage": 0.9176682692307693
+        },
+        "voxel/warp-cpu": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 192,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.5136666666666667,
+          "surface_gap_mean_m": 0.002080555391506302,
+          "surface_gap_p95_m": 0.011406634664338736,
+          "surface_gap_max_m": 0.01944696542664079,
+          "sphere_volume_sum_m3": 0.009077892923302956,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 9984,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "warp",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cpu",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 2.2888183595672963e-06,
+          "world_coordinate_ulp_m": 2.7755575615628914e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            9984
+          ],
+          "component_representative_grid_indices": [
+            [
+              8,
+              8,
+              15
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.0031250000000000097,
+              -0.0031250000000000097,
+              -0.059375
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_center_coverage": 0.9143629807692307
+        },
+        "voxel/warp-cuda": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 192,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.473,
+          "surface_gap_mean_m": 0.0019000604041714097,
+          "surface_gap_p95_m": 0.01001630258303577,
+          "surface_gap_max_m": 0.01944696542664079,
+          "sphere_volume_sum_m3": 0.007996561146969191,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 9984,
+          "candidate_count": 768,
+          "greedy_device": "cuda",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "warp",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cuda",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 2.2888183595672963e-06,
+          "world_coordinate_ulp_m": 2.7755575615628914e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            9984
+          ],
+          "component_representative_grid_indices": [
+            [
+              8,
+              8,
+              40
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.0031250000000000097,
+              -0.0031250000000000097,
+              0.09687499999999999
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_center_coverage": 0.9122596153846154
+        },
+        "refined/subdivide-cpu": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 192,
+          "surface_sample_count": 3000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.007729963051816205,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 11809,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cpu",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 0.0008583029074320268,
+          "optimization_final_loss": 4.932283375618573e-06,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.0009374999999999999,
+          "voxel_center_coverage": 0.9988991447201288
+        },
+        "refined/subdivide-cuda": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 192,
+          "surface_sample_count": 3000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.007729963053853753,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 11809,
+          "candidate_count": 768,
+          "greedy_device": "cuda",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cuda",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 0.0008583029074320267,
+          "optimization_final_loss": 4.932283376511353e-06,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.0009374999999999999,
+          "voxel_center_coverage": 0.9988991447201288
+        },
+        "refined/open3d-cpu": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 192,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.996,
+          "surface_gap_mean_m": 4.344131949864117e-06,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0023290381023971587,
+          "sphere_volume_sum_m3": 0.012569852535123247,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 9984,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "open3d",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cpu",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 2.2888183595672963e-06,
+          "world_coordinate_ulp_m": 2.7755575615628914e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            9984
+          ],
+          "component_representative_grid_indices": [
+            [
+              8,
+              8,
+              8
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.0031250000000000097,
+              -0.0031250000000000097,
+              -0.103125
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cpu",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 0.004188792126432635,
+          "optimization_final_loss": 2.1625249841276096e-05,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.0009374999999999999,
+          "voxel_center_coverage": 0.9998998397435898
+        },
+        "refined/warp-cpu": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 192,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.9953333333333333,
+          "surface_gap_mean_m": 3.302491722824741e-06,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.001737117189412954,
+          "sphere_volume_sum_m3": 0.012792158291638493,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 9984,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "warp",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cpu",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 2.2888183595672963e-06,
+          "world_coordinate_ulp_m": 2.7755575615628914e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            9984
+          ],
+          "component_representative_grid_indices": [
+            [
+              8,
+              8,
+              15
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.0031250000000000097,
+              -0.0031250000000000097,
+              -0.059375
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cpu",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 0.004523163691291984,
+          "optimization_final_loss": 2.234068380210353e-05,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.0009374999999999999,
+          "voxel_center_coverage": 1.0
+        },
+        "refined/warp-cuda": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 192,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.9936666666666667,
+          "surface_gap_mean_m": 6.783776197094473e-06,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0046350067164845216,
+          "sphere_volume_sum_m3": 0.011849479679482711,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 9984,
+          "candidate_count": 768,
+          "greedy_device": "cuda",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "warp",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cuda",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 2.2888183595672963e-06,
+          "world_coordinate_ulp_m": 2.7755575615628914e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            9984
+          ],
+          "component_representative_grid_indices": [
+            [
+              8,
+              8,
+              40
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.0031250000000000097,
+              -0.0031250000000000097,
+              0.09687499999999999
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cuda",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 0.003880493541337087,
+          "optimization_final_loss": 1.8694914787898383e-05,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.0009374999999999999,
+          "voxel_center_coverage": 0.9997996794871795
+        }
+      },
+      "triangle_count": 192
+    },
+    "sphere": {
+      "timings": {
+        "voxel/subdivide-cpu": {
+          "first_call_s": 0.038526244985405356,
+          "warm_times_s": [
+            0.03766421100590378,
+            0.038151415006723255,
+            0.040332849021069705
+          ],
+          "warm_median_s": 0.038151415006723255
+        },
+        "voxel/subdivide-cuda": {
+          "first_call_s": 0.03138481097994372,
+          "warm_times_s": [
+            0.03095117799239233,
+            0.03341208299389109,
+            0.03022724704351276
+          ],
+          "warm_median_s": 0.03095117799239233
+        },
+        "voxel/open3d-cpu": {
+          "first_call_s": 0.3421601009904407,
+          "warm_times_s": [
+            0.30172881501493976,
+            0.3047608019551262,
+            0.3242200409877114
+          ],
+          "warm_median_s": 0.3047608019551262
+        },
+        "voxel/warp-cpu": {
+          "first_call_s": 0.24849359499057755,
+          "warm_times_s": [
+            0.2476657850202173,
+            0.25361941900337115,
+            0.25127556698862463
+          ],
+          "warm_median_s": 0.25127556698862463
+        },
+        "voxel/warp-cuda": {
+          "first_call_s": 0.01647290901746601,
+          "warm_times_s": [
+            0.01877277798485011,
+            0.015602840983774513,
+            0.01823683298425749
+          ],
+          "warm_median_s": 0.01823683298425749
+        },
+        "refined/subdivide-cpu": {
+          "first_call_s": 0.23646603000815958,
+          "warm_times_s": [
+            0.22152628598269075,
+            0.2292101180064492,
+            0.21613714302657172
+          ],
+          "warm_median_s": 0.22152628598269075
+        },
+        "refined/subdivide-cuda": {
+          "first_call_s": 0.11879516998305917,
+          "warm_times_s": [
+            0.11754360899794847,
+            0.09988666500430554,
+            0.09700221801176667
+          ],
+          "warm_median_s": 0.09988666500430554
+        },
+        "refined/open3d-cpu": {
+          "first_call_s": 0.5023903990513645,
+          "warm_times_s": [
+            0.4657093220157549,
+            0.48643849696964025,
+            0.5028608809807338
+          ],
+          "warm_median_s": 0.48643849696964025
+        },
+        "refined/warp-cpu": {
+          "first_call_s": 0.42854767298558727,
+          "warm_times_s": [
+            0.4259267059969716,
+            0.44096379401162267,
+            0.4356035449891351
+          ],
+          "warm_median_s": 0.4356035449891351
+        },
+        "refined/warp-cuda": {
+          "first_call_s": 0.11753570399014279,
+          "warm_times_s": [
+            0.10727114998735487,
+            0.10441577900201082,
+            0.11648110504029319
+          ],
+          "warm_median_s": 0.10727114998735487
+        }
+      },
+      "quality": {
+        "voxel/subdivide-cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.004617469252592173,
+          "sphere_count": 2,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.11100457975670022,
+              -0.11078890095083443,
+              -0.11252149398249814
+            ],
+            [
+              0.11168445496206893,
+              0.1119001337679347,
+              0.110167540736271
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.09936971972643154,
+          "sphere_precision": 0.9096121005123201,
+          "volume_iou": 0.9096121005123201,
+          "validation_interior_points": 7457,
+          "validation_true_positive": 7457,
+          "validation_false_negative": 0,
+          "validation_false_positive": 741,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "voxel/subdivide-cuda": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.004617469252592173,
+          "sphere_count": 2,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.11100457975670022,
+              -0.11078890095083443,
+              -0.11252149398249814
+            ],
+            [
+              0.11168445496206893,
+              0.1119001337679347,
+              0.110167540736271
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.09936971972643154,
+          "sphere_precision": 0.9096121005123201,
+          "volume_iou": 0.9096121005123201,
+          "validation_interior_points": 7457,
+          "validation_true_positive": 7457,
+          "validation_false_negative": 0,
+          "validation_false_positive": 741,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "voxel/open3d-cpu": {
+          "surface_coverage": 0.9451666666666667,
+          "surface_gap_p95_m": 5.20126658567116e-05,
+          "sphere_volume_sum_m3": 0.016226599009685226,
+          "sphere_count": 4,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.11100457975670022,
+              -0.11078890095083443,
+              -0.11252149398249814
+            ],
+            [
+              0.11168445496206893,
+              0.1119001337679347,
+              0.110167540736271
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9995976934424031,
+          "outside_volume_over_mesh": 0.05377497653211747,
+          "sphere_precision": 0.9489497135582432,
+          "volume_iou": 0.9485874268261644,
+          "validation_interior_points": 7457,
+          "validation_true_positive": 7454,
+          "validation_false_negative": 3,
+          "validation_false_positive": 401,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "voxel/warp-cpu": {
+          "surface_coverage": 0.8715,
+          "surface_gap_p95_m": 0.000619700686169513,
+          "sphere_volume_sum_m3": 0.018515478783516334,
+          "sphere_count": 9,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.11100457975670022,
+              -0.11078890095083443,
+              -0.11252149398249814
+            ],
+            [
+              0.11168445496206893,
+              0.1119001337679347,
+              0.110167540736271
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9967815475392249,
+          "outside_volume_over_mesh": 0.04157167761834518,
+          "sphere_precision": 0.9599638383055663,
+          "volume_iou": 0.9569975537530578,
+          "validation_interior_points": 7457,
+          "validation_true_positive": 7433,
+          "validation_false_negative": 24,
+          "validation_false_positive": 310,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "voxel/warp-cuda": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.016226599009685226,
+          "sphere_count": 4,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.11100457975670022,
+              -0.11078890095083443,
+              -0.11252149398249814
+            ],
+            [
+              0.11168445496206893,
+              0.1119001337679347,
+              0.110167540736271
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.058736757409145766,
+          "sphere_precision": 0.9445218492716909,
+          "volume_iou": 0.9445218492716909,
+          "validation_interior_points": 7457,
+          "validation_true_positive": 7457,
+          "validation_false_negative": 0,
+          "validation_false_positive": 438,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/subdivide-cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.0055401723839589075,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.11100457975670022,
+              -0.11078890095083443,
+              -0.11252149398249814
+            ],
+            [
+              0.11168445496206893,
+              0.1119001337679347,
+              0.110167540736271
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.23682446023870188,
+          "sphere_precision": 0.8085221728287976,
+          "volume_iou": 0.8085221728287976,
+          "validation_interior_points": 7457,
+          "validation_true_positive": 7457,
+          "validation_false_negative": 0,
+          "validation_false_positive": 1766,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/subdivide-cuda": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.005540172383958903,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.11100457975670022,
+              -0.11078890095083443,
+              -0.11252149398249814
+            ],
+            [
+              0.11168445496206893,
+              0.1119001337679347,
+              0.110167540736271
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.23682446023870188,
+          "sphere_precision": 0.8085221728287976,
+          "volume_iou": 0.8085221728287976,
+          "validation_interior_points": 7457,
+          "validation_true_positive": 7457,
+          "validation_false_negative": 0,
+          "validation_false_positive": 1766,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/open3d-cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.0387246012457241,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.11100457975670022,
+              -0.11078890095083443,
+              -0.11252149398249814
+            ],
+            [
+              0.11168445496206893,
+              0.1119001337679347,
+              0.110167540736271
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.16749363014617139,
+          "sphere_precision": 0.8565357224902366,
+          "volume_iou": 0.8565357224902366,
+          "validation_interior_points": 7457,
+          "validation_true_positive": 7457,
+          "validation_false_negative": 0,
+          "validation_false_positive": 1249,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/warp-cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.037400110240580285,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.11100457975670022,
+              -0.11078890095083443,
+              -0.11252149398249814
+            ],
+            [
+              0.11168445496206893,
+              0.1119001337679347,
+              0.110167540736271
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.18827946895534398,
+          "sphere_precision": 0.8415528721363277,
+          "volume_iou": 0.8415528721363277,
+          "validation_interior_points": 7457,
+          "validation_true_positive": 7457,
+          "validation_false_negative": 0,
+          "validation_false_positive": 1404,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/warp-cuda": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.029584007059999622,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.11100457975670022,
+              -0.11078890095083443,
+              -0.11252149398249814
+            ],
+            [
+              0.11168445496206893,
+              0.1119001337679347,
+              0.110167540736271
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.15703365964865226,
+          "sphere_precision": 0.8642790913305517,
+          "volume_iou": 0.8642790913305517,
+          "validation_interior_points": 7457,
+          "validation_true_positive": 7457,
+          "validation_false_negative": 0,
+          "validation_false_positive": 1171,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        }
+      },
+      "fit_reports": {
+        "voxel/subdivide-cpu": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 2,
+          "watertight": true,
+          "triangle_count": 1280,
+          "surface_sample_count": 3000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.004617469252592173,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.004166666666666667,
+          "voxel_count": 62129,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "voxel_center_coverage": 0.9996298025076856
+        },
+        "voxel/subdivide-cuda": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 2,
+          "watertight": true,
+          "triangle_count": 1280,
+          "surface_sample_count": 3000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.004617469252592173,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.004166666666666667,
+          "voxel_count": 62129,
+          "candidate_count": 768,
+          "greedy_device": "cuda",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "voxel_center_coverage": 0.9996298025076856
+        },
+        "voxel/open3d-cpu": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 4,
+          "watertight": true,
+          "triangle_count": 1280,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.941,
+          "surface_gap_mean_m": 2.3646675417625746e-05,
+          "surface_gap_p95_m": 0.0001309868555942481,
+          "surface_gap_max_m": 0.0009174139425554007,
+          "sphere_volume_sum_m3": 0.016226599009685226,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.004166666666666667,
+          "voxel_count": 57280,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "open3d",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cpu",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 1.5258789063461483e-06,
+          "world_coordinate_ulp_m": 1.3877787807814457e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            57280
+          ],
+          "component_representative_grid_indices": [
+            [
+              24,
+              24,
+              24
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.00208333333333334,
+              -0.00208333333333334,
+              -0.00208333333333334
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_center_coverage": 0.9996333798882682
+        },
+        "voxel/warp-cpu": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 9,
+          "watertight": true,
+          "triangle_count": 1280,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.8693333333333333,
+          "surface_gap_mean_m": 7.936305094764344e-05,
+          "surface_gap_p95_m": 0.0006066357456380021,
+          "surface_gap_max_m": 0.0025239241159428633,
+          "sphere_volume_sum_m3": 0.018515478783516334,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.004166666666666667,
+          "voxel_count": 57280,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "warp",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cpu",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 1.5258789063461483e-06,
+          "world_coordinate_ulp_m": 1.3877787807814457e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            57280
+          ],
+          "component_representative_grid_indices": [
+            [
+              24,
+              25,
+              25
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.00208333333333334,
+              0.002083333333333326,
+              0.002083333333333326
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_center_coverage": 0.9982192737430168
+        },
+        "voxel/warp-cuda": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 4,
+          "watertight": true,
+          "triangle_count": 1280,
+          "surface_sample_count": 3000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.016226599009685226,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.004166666666666667,
+          "voxel_count": 57280,
+          "candidate_count": 768,
+          "greedy_device": "cuda",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "warp",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cuda",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 1.5258789063461483e-06,
+          "world_coordinate_ulp_m": 1.3877787807814457e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            57280
+          ],
+          "component_representative_grid_indices": [
+            [
+              24,
+              24,
+              24
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.00208333333333334,
+              -0.00208333333333334,
+              -0.00208333333333334
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_center_coverage": 1.0
+        },
+        "refined/subdivide-cpu": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 1280,
+          "surface_sample_count": 3000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.0055401723839589075,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.004166666666666667,
+          "voxel_count": 62129,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cpu",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 6.27824909333178e-05,
+          "optimization_final_loss": 1.2453866836739425e-05,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.000625,
+          "voxel_center_coverage": 1.0
+        },
+        "refined/subdivide-cuda": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 1280,
+          "surface_sample_count": 3000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.005540172383958903,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.004166666666666667,
+          "voxel_count": 62129,
+          "candidate_count": 768,
+          "greedy_device": "cuda",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cuda",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 6.27824909333178e-05,
+          "optimization_final_loss": 1.2453866836739413e-05,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.000625,
+          "voxel_center_coverage": 1.0
+        },
+        "refined/open3d-cpu": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 1280,
+          "surface_sample_count": 3000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.0387246012457241,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.004166666666666667,
+          "voxel_count": 57280,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "open3d",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cpu",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 1.5258789063461483e-06,
+          "world_coordinate_ulp_m": 1.3877787807814457e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            57280
+          ],
+          "component_representative_grid_indices": [
+            [
+              24,
+              24,
+              24
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.00208333333333334,
+              -0.00208333333333334,
+              -0.00208333333333334
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cpu",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 0.00043680358669744636,
+          "optimization_final_loss": 8.679508601921413e-05,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.000625,
+          "voxel_center_coverage": 1.0
+        },
+        "refined/warp-cpu": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 1280,
+          "surface_sample_count": 3000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.037400110240580285,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.004166666666666667,
+          "voxel_count": 57280,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "warp",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cpu",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 1.5258789063461483e-06,
+          "world_coordinate_ulp_m": 1.3877787807814457e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            57280
+          ],
+          "component_representative_grid_indices": [
+            [
+              24,
+              25,
+              25
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.00208333333333334,
+              0.002083333333333326,
+              0.002083333333333326
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cpu",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 0.0009415043557116146,
+          "optimization_final_loss": 8.263449305635412e-05,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.000625,
+          "voxel_center_coverage": 1.0
+        },
+        "refined/warp-cuda": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 1280,
+          "surface_sample_count": 3000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.029584007059999622,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.004166666666666667,
+          "voxel_count": 57280,
+          "candidate_count": 768,
+          "greedy_device": "cuda",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "warp",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cuda",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 1.5258789063461483e-06,
+          "world_coordinate_ulp_m": 1.3877787807814457e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            57280
+          ],
+          "component_representative_grid_indices": [
+            [
+              24,
+              24,
+              24
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.00208333333333334,
+              -0.00208333333333334,
+              -0.00208333333333334
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cuda",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 0.000603561260733602,
+          "optimization_final_loss": 6.57722394907206e-05,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.000625,
+          "voxel_center_coverage": 1.0
+        }
+      },
+      "triangle_count": 1280
+    },
+    "torus": {
+      "timings": {
+        "voxel/subdivide-cpu": {
+          "first_call_s": 0.08131553902057931,
+          "warm_times_s": [
+            0.08220229001017287,
+            0.08406422799453139,
+            0.09067378495819867
+          ],
+          "warm_median_s": 0.08406422799453139
+        },
+        "voxel/subdivide-cuda": {
+          "first_call_s": 0.08565990201896057,
+          "warm_times_s": [
+            0.07773856999119744,
+            0.07794887898489833,
+            0.07573369995225221
+          ],
+          "warm_median_s": 0.07773856999119744
+        },
+        "voxel/open3d-cpu": {
+          "first_call_s": 0.10409712500404567,
+          "warm_times_s": [
+            0.10180347796995193,
+            0.08295087900478393,
+            0.08056435501202941
+          ],
+          "warm_median_s": 0.08295087900478393
+        },
+        "voxel/warp-cpu": {
+          "first_call_s": 0.06942578603047878,
+          "warm_times_s": [
+            0.06697431002976373,
+            0.0668787489994429,
+            0.06685560499317944
+          ],
+          "warm_median_s": 0.0668787489994429
+        },
+        "voxel/warp-cuda": {
+          "first_call_s": 0.00973534001968801,
+          "warm_times_s": [
+            0.029747235996183008,
+            0.05126178200589493,
+            0.032690445019397885
+          ],
+          "warm_median_s": 0.032690445019397885
+        },
+        "refined/subdivide-cpu": {
+          "first_call_s": 0.2830432429909706,
+          "warm_times_s": [
+            0.26136838499223813,
+            0.2501835679868236,
+            0.2502094469964504
+          ],
+          "warm_median_s": 0.2502094469964504
+        },
+        "refined/subdivide-cuda": {
+          "first_call_s": 0.1395277029951103,
+          "warm_times_s": [
+            0.14137708797352389,
+            0.13656683202134445,
+            0.14653720799833536
+          ],
+          "warm_median_s": 0.14137708797352389
+        },
+        "refined/open3d-cpu": {
+          "first_call_s": 0.25585235096514225,
+          "warm_times_s": [
+            0.2589651399757713,
+            0.2546621650108136,
+            0.2870860259863548
+          ],
+          "warm_median_s": 0.2589651399757713
+        },
+        "refined/warp-cpu": {
+          "first_call_s": 0.2347901239991188,
+          "warm_times_s": [
+            0.23610014701262116,
+            0.23550639202585444,
+            0.23412323999218643
+          ],
+          "warm_median_s": 0.23550639202585444
+        },
+        "refined/warp-cuda": {
+          "first_call_s": 0.08510271698469296,
+          "warm_times_s": [
+            0.0890254009864293,
+            0.11559088801732287,
+            0.10092815902316943
+          ],
+          "warm_median_s": 0.10092815902316943
+        }
+      },
+      "quality": {
+        "voxel/subdivide-cpu": {
+          "surface_coverage": 0.964,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.0023636315140959847,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.1326505364537255,
+              -0.12990657426788121,
+              -0.04133272745580205
+            ],
+            [
+              0.1280627668592555,
+              0.1283401856468316,
+              0.04151277164685708
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9966416946525446,
+          "outside_volume_over_mesh": 0.24696460862826145,
+          "sphere_precision": 0.8014125467386789,
+          "volume_iou": 0.7992541951522685,
+          "validation_interior_points": 3871,
+          "validation_true_positive": 3858,
+          "validation_false_negative": 13,
+          "validation_false_positive": 956,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "voxel/subdivide-cuda": {
+          "surface_coverage": 0.964,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.0023636315140959847,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.1326505364537255,
+              -0.12990657426788121,
+              -0.04133272745580205
+            ],
+            [
+              0.1280627668592555,
+              0.1283401856468316,
+              0.04151277164685708
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9966416946525446,
+          "outside_volume_over_mesh": 0.24696460862826145,
+          "sphere_precision": 0.8014125467386789,
+          "volume_iou": 0.7992541951522685,
+          "validation_interior_points": 3871,
+          "validation_true_positive": 3858,
+          "validation_false_negative": 13,
+          "validation_false_positive": 956,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "voxel/open3d-cpu": {
+          "surface_coverage": 0.6561666666666667,
+          "surface_gap_p95_m": 0.002403364809851035,
+          "sphere_volume_sum_m3": 0.0018628983331415538,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.1326505364537255,
+              -0.12990657426788121,
+              -0.04133272745580205
+            ],
+            [
+              0.1280627668592555,
+              0.1283401856468316,
+              0.04151277164685708
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9604753293722552,
+          "outside_volume_over_mesh": 0.07698269181090157,
+          "sphere_precision": 0.9257968127490039,
+          "volume_iou": 0.8918205804749341,
+          "validation_interior_points": 3871,
+          "validation_true_positive": 3718,
+          "validation_false_negative": 153,
+          "validation_false_positive": 298,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "voxel/warp-cpu": {
+          "surface_coverage": 0.6561666666666667,
+          "surface_gap_p95_m": 0.002403363096217498,
+          "sphere_volume_sum_m3": 0.001862898334879632,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.1326505364537255,
+              -0.12990657426788121,
+              -0.04133272745580205
+            ],
+            [
+              0.1280627668592555,
+              0.1283401856468316,
+              0.04151277164685708
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9604753293722552,
+          "outside_volume_over_mesh": 0.07698269181090157,
+          "sphere_precision": 0.9257968127490039,
+          "volume_iou": 0.8918205804749341,
+          "validation_interior_points": 3871,
+          "validation_true_positive": 3718,
+          "validation_false_negative": 153,
+          "validation_false_positive": 298,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "voxel/warp-cuda": {
+          "surface_coverage": 0.6561666666666667,
+          "surface_gap_p95_m": 0.002403363096217498,
+          "sphere_volume_sum_m3": 0.0018628984240081205,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.1326505364537255,
+              -0.12990657426788121,
+              -0.04133272745580205
+            ],
+            [
+              0.1280627668592555,
+              0.1283401856468316,
+              0.04151277164685708
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9604753293722552,
+          "outside_volume_over_mesh": 0.07698269181090157,
+          "sphere_precision": 0.9257968127490039,
+          "volume_iou": 0.8918205804749341,
+          "validation_interior_points": 3871,
+          "validation_true_positive": 3718,
+          "validation_false_negative": 153,
+          "validation_false_positive": 298,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/subdivide-cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.003813891248734211,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.1326505364537255,
+              -0.12990657426788121,
+              -0.04133272745580205
+            ],
+            [
+              0.1280627668592555,
+              0.1283401856468316,
+              0.04151277164685708
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.7773185223456471,
+          "sphere_precision": 0.5626453488372093,
+          "volume_iou": 0.5626453488372093,
+          "validation_interior_points": 3871,
+          "validation_true_positive": 3871,
+          "validation_false_negative": 0,
+          "validation_false_positive": 3009,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/subdivide-cuda": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.00381389124873421,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.1326505364537255,
+              -0.12990657426788121,
+              -0.04133272745580205
+            ],
+            [
+              0.1280627668592555,
+              0.1283401856468316,
+              0.04151277164685708
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.7773185223456471,
+          "sphere_precision": 0.5626453488372093,
+          "volume_iou": 0.5626453488372093,
+          "validation_interior_points": 3871,
+          "validation_true_positive": 3871,
+          "validation_false_negative": 0,
+          "validation_false_positive": 3009,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/open3d-cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.003679859331982174,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.1326505364537255,
+              -0.12990657426788121,
+              -0.04133272745580205
+            ],
+            [
+              0.1280627668592555,
+              0.1283401856468316,
+              0.04151277164685708
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.6974941875484371,
+          "sphere_precision": 0.58910363719373,
+          "volume_iou": 0.58910363719373,
+          "validation_interior_points": 3871,
+          "validation_true_positive": 3871,
+          "validation_false_negative": 0,
+          "validation_false_positive": 2700,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/warp-cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.0036798594243701373,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.1326505364537255,
+              -0.12990657426788121,
+              -0.04133272745580205
+            ],
+            [
+              0.1280627668592555,
+              0.1283401856468316,
+              0.04151277164685708
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.6974941875484371,
+          "sphere_precision": 0.58910363719373,
+          "volume_iou": 0.58910363719373,
+          "validation_interior_points": 3871,
+          "validation_true_positive": 3871,
+          "validation_false_negative": 0,
+          "validation_false_positive": 2700,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/warp-cuda": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.003680098697137878,
+          "sphere_count": 24,
+          "evaluation_seed": 99103,
+          "evaluation_domain_m": [
+            [
+              -0.1326505364537255,
+              -0.12990657426788121,
+              -0.04133272745580205
+            ],
+            [
+              0.1280627668592555,
+              0.1283401856468316,
+              0.04151277164685708
+            ]
+          ],
+          "evaluation_surface_samples": 6000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.6980108499095841,
+          "sphere_precision": 0.5889243876464324,
+          "volume_iou": 0.5889243876464324,
+          "validation_interior_points": 3871,
+          "validation_true_positive": 3871,
+          "validation_false_negative": 0,
+          "validation_false_positive": 2702,
+          "evaluation_volume_samples": 20000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        }
+      },
+      "fit_reports": {
+        "voxel/subdivide-cpu": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 2048,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.9643333333333334,
+          "surface_gap_mean_m": 3.3787500727804896e-05,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0028109325667042447,
+          "sphere_volume_sum_m3": 0.0023636315140959847,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.004791666666666666,
+          "voxel_count": 12596,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "voxel_center_coverage": 0.9682438869482375
+        },
+        "voxel/subdivide-cuda": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 2048,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.9643333333333334,
+          "surface_gap_mean_m": 3.3787500727804896e-05,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0028109325667042447,
+          "sphere_volume_sum_m3": 0.0023636315140959847,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.004791666666666666,
+          "voxel_count": 12596,
+          "candidate_count": 768,
+          "greedy_device": "cuda",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "voxel_center_coverage": 0.9682438869482375
+        },
+        "voxel/open3d-cpu": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 2048,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.654,
+          "surface_gap_mean_m": 0.00040842394120640523,
+          "surface_gap_p95_m": 0.002250272782038213,
+          "surface_gap_max_m": 0.005439033285889482,
+          "sphere_volume_sum_m3": 0.0018628983331415538,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.004791666666666666,
+          "voxel_count": 9876,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "open3d",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cpu",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 1.754760742283648e-06,
+          "world_coordinate_ulp_m": 1.3877787807814457e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            9876
+          ],
+          "component_representative_grid_indices": [
+            [
+              6,
+              22,
+              6
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.08864583333333333,
+              -0.011979166666666666,
+              0.0013541666666666632
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_center_coverage": 0.9770149858242203
+        },
+        "voxel/warp-cpu": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 2048,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.654,
+          "surface_gap_mean_m": 0.00040842393263823773,
+          "surface_gap_p95_m": 0.002250271154086353,
+          "surface_gap_max_m": 0.005439033285889482,
+          "sphere_volume_sum_m3": 0.001862898334879632,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.004791666666666666,
+          "voxel_count": 9876,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "warp",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cpu",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 1.754760742283648e-06,
+          "world_coordinate_ulp_m": 1.3877787807814457e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            9876
+          ],
+          "component_representative_grid_indices": [
+            [
+              6,
+              22,
+              6
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.08864583333333333,
+              -0.011979166666666666,
+              0.0013541666666666632
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_center_coverage": 0.9770149858242203
+        },
+        "voxel/warp-cuda": {
+          "requested_method": "voxel",
+          "effective_method": "voxel",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 2048,
+          "surface_sample_count": 3000,
+          "surface_coverage": 0.654,
+          "surface_gap_mean_m": 0.00040842379554755463,
+          "surface_gap_p95_m": 0.002250271154086353,
+          "surface_gap_max_m": 0.005439033285889482,
+          "sphere_volume_sum_m3": 0.0018628984240081205,
+          "warnings": [
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.004791666666666666,
+          "voxel_count": 9876,
+          "candidate_count": 768,
+          "greedy_device": "cuda",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "warp",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cuda",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 1.754760742283648e-06,
+          "world_coordinate_ulp_m": 1.3877787807814457e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            9876
+          ],
+          "component_representative_grid_indices": [
+            [
+              6,
+              22,
+              6
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.08864583333333333,
+              -0.011979166666666666,
+              0.0013541666666666632
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_center_coverage": 0.9770149858242203
+        },
+        "refined/subdivide-cpu": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 2048,
+          "surface_sample_count": 3000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.003813891248734211,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.004791666666666666,
+          "voxel_count": 12596,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cpu",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 0.00034819739347891266,
+          "optimization_final_loss": 5.107957567419439e-06,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.0007187499999999999,
+          "voxel_center_coverage": 1.0
+        },
+        "refined/subdivide-cuda": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 2048,
+          "surface_sample_count": 3000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.00381389124873421,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.004791666666666666,
+          "voxel_count": 12596,
+          "candidate_count": 768,
+          "greedy_device": "cuda",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cuda",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 0.0003481973934789127,
+          "optimization_final_loss": 5.10795756741944e-06,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.0007187499999999999,
+          "voxel_center_coverage": 1.0
+        },
+        "refined/open3d-cpu": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 2048,
+          "surface_sample_count": 3000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.003679859331982174,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.004791666666666666,
+          "voxel_count": 9876,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "open3d",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cpu",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 1.754760742283648e-06,
+          "world_coordinate_ulp_m": 1.3877787807814457e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            9876
+          ],
+          "component_representative_grid_indices": [
+            [
+              6,
+              22,
+              6
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.08864583333333333,
+              -0.011979166666666666,
+              0.0013541666666666632
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cpu",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 0.0019985327947092332,
+          "optimization_final_loss": 4.52972250477811e-06,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.0007187499999999999,
+          "voxel_center_coverage": 1.0
+        },
+        "refined/warp-cpu": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 2048,
+          "surface_sample_count": 3000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.0036798594243701373,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.004791666666666666,
+          "voxel_count": 9876,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "warp",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cpu",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 1.754760742283648e-06,
+          "world_coordinate_ulp_m": 1.3877787807814457e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            9876
+          ],
+          "component_representative_grid_indices": [
+            [
+              6,
+              22,
+              6
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.08864583333333333,
+              -0.011979166666666666,
+              0.0013541666666666632
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cpu",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 0.0019985329701897874,
+          "optimization_final_loss": 4.529722623304934e-06,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.0007187499999999999,
+          "voxel_center_coverage": 1.0
+        },
+        "refined/warp-cuda": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 2048,
+          "surface_sample_count": 3000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.003680098697137878,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage",
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "voxel_size_m": 0.004791666666666666,
+          "voxel_count": 9876,
+          "candidate_count": 768,
+          "greedy_device": "cuda",
+          "radius_model": "original mesh distance minus numerical allowance; union lower bound",
+          "voxelizer": "warp",
+          "voxel_solid_policy": "single",
+          "geometry_query_device": "cuda",
+          "voxel_sampling": "strict interior cell centers; no surface-shell filling",
+          "query_geometry_precision": "float32, centered and normalized",
+          "query_sign_samples": 3,
+          "radius_numerical_allowance_m": 1.754760742283648e-06,
+          "world_coordinate_ulp_m": 1.3877787807814457e-17,
+          "closed_component_count": 1,
+          "component_interior_sample_counts": [
+            9876
+          ],
+          "component_representative_grid_indices": [
+            [
+              6,
+              22,
+              6
+            ]
+          ],
+          "component_representative_centers_m": [
+            [
+              -0.08864583333333333,
+              -0.011979166666666666,
+              0.0013541666666666632
+            ]
+          ],
+          "self_intersection_checked": false,
+          "voxelizer_warnings": [
+            "Center occupancy can miss sub-voxel features; empty component sampling is rejected",
+            "Closed, non-self-intersecting surfaces are assumed; this is not a certified exact SDF"
+          ],
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cuda",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 1024,
+            "interior": 1024,
+            "exterior": 1024
+          },
+          "optimization_initial_loss": 0.0019985321804941248,
+          "optimization_final_loss": 4.53000590730702e-06,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.0007187499999999999,
+          "voxel_center_coverage": 1.0
+        }
+      },
+      "triangle_count": 2048
+    }
+  },
+  "cold_cylinder_process_s": {
+    "subdivide-cpu": 0.7597560649737716,
+    "subdivide-cuda": 1.9152126680128276,
+    "open3d-cpu": 1.3541101510054432,
+    "warp-cpu": 0.6657161010080017,
+    "warp-cuda": 1.8265727369580418
+  },
+  "source_version": "0.3.0",
+  "date": "2026-11-03",
+  "interpretation": "Legacy shell filling and strict-center SDF sampling differ; speed and quality must be read together. Non-exclusive workstation, cached Warp binaries."
+}

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "assetspheres"
-version = "0.2.0"
+version = "0.3.0"
 description = "Turn URDF and mesh assets into link-local collision spheres"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -17,6 +17,8 @@ viewer = ["viser>=1.1"]
 plots = ["matplotlib>=3.7"]
 quality = ["rtree>=1.2"]
 cuda = ["torch>=2.8"]
+open3d = ["open3d>=0.19,<0.20"]
+warp = ["warp-lang>=1.19,<1.20"]
 dev = ["pytest>=7", "ruff>=0.9", "build>=1"]
 
 [project.scripts]
