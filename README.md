@@ -34,13 +34,16 @@ assetspheres view outputs/demo/spheres.json
 - 预览使用所有 joint 位置为零时的装配变换；不求解 mimic offset，不提供运动仿真。拟合本身不受 joint 姿态影响。
 - Xacro 请先展开为 URDF；当前不直接读取 USD、MJCF 或 STEP。
 
-## 四种拟合方法
+## 拟合方法
 
 | 方法 | 实现与用途 | 需要闭合 mesh | 覆盖含义 |
 | --- | --- | --- | --- |
 | `voxel`（默认） | 体素填充、距离场候选球、贪心选择；适合实体 link | 是 | 近似体积覆盖，会留下缝隙 |
 | `surface` | 面积加权采样、最远点选择、固定球半径；适合薄片和附着物 | 否 | 表面采样，不保证整体包络 |
 | `cover` | 三角形分组后构造包络球；适合希望覆盖完整三角表面的情况 | 否 | 包含整个三角形表面；不证明覆盖实体内部 |
+| `cover-tight` | 固定原三角形分组，用小支持集数值优化包围球中心 | 否 | 保留三角表面包络，逐簇半径不增加（数值舍入除外） |
+| `slab` | 按主轴完整裁剪三角形，每个平行切片用一个球包络 | 否 | 完整表面包络；曲面为有界实体边界时，构造也覆盖内部 |
+| `refined`（实验） | 从体素球初始化，联合优化中心与半径，权衡覆盖和外扩 | 是 | 有限样本优化，无连续覆盖保证；CPU/CUDA 同目标 |
 | `lula` | 调用当前解释器中的原生 Lula `CollisionSphereGenerator` | 是 | 与安装版本及 mesh 拓扑有关 |
 
 `voxel` 是本项目独立实现的体积球化算法，`surface` 参考 IsaacLab/cuRobo 的表面球化用途。它们不宣称复现 Lula 未公开的内部实现。只有 `--method lula` 会调用原生 Lula。
@@ -52,6 +55,35 @@ assetspheres fit robot.urdf --non-watertight cover -o outputs/robot
 ```
 
 体素化会填充封闭壳的内部；完全封闭的内部空腔可能被填实。细小孔洞和薄壁会受体素分辨率影响。当前不自动取凸包，也不自动删除小部件。
+
+`slab` 对细长 link 更有优势，对横截面包含多个分支或孔洞的形状可能外扩明显。它的实体包络结论有明确几何前提和浮点裕量，不是区间算术形式证明。URDF 的 sphere/cylinder 会先三角化，所有几何保证针对参与拟合的三角 mesh。
+
+## CPU 并行与 CUDA
+
+```bash
+# CPU：按 link 并行，默认仍串行；线程通常比短任务的新进程更划算
+assetspheres fit robot.urdf --method cover-tight \
+  --workers 4 --executor thread -o outputs/threaded
+
+# 细长 link 的保守包络
+assetspheres fit robot.urdf --method slab --count 24 -o outputs/slab
+
+# 已有兼容 CUDA 的 PyTorch 环境时，GPU 做候选覆盖与距离评价
+assetspheres fit robot.urdf --method voxel --device cuda -o outputs/cuda
+
+# GPU 联合优化（实验性；不等同于原生 MorphIt）
+assetspheres fit robot.urdf --method refined --device cuda \
+  --iterations 120 --refine-samples 2048 --outside-weight 10 -o outputs/refined
+
+# 单一闭合曲面的原始 mesh 内外监督，需要 quality extra 中的 rtree
+assetspheres fit part.stl --method refined --refine-reference mesh -o outputs/refined-mesh
+```
+
+PyTorch 是可选依赖，使用 CUDA 前需按机器安装兼容构建；也可通过 `pip install -e '.[cuda]'` 安装，但 CUDA 可用性仍取决于具体 PyTorch 构建和驱动。`--device cuda` 只用于 `voxel` / `refined`，明确请求后不静默回退。CUDA 模式保持一个 GPU 执行者，不能同时开启多个 link worker。
+
+**当前不是全流程 GPU 球化**：URDF/mesh 读取、体素化与 EDT 仍在 CPU；候选球选择、距离评价和 `refined` 优化可以在 CUDA 执行。小任务冷启动可能更慢。线程/进程并行、冷热 CUDA 和质量对比见 [性能与算法实验](docs/performance.md)，论文与后续路线见 [算法调研](docs/research-algorithms.md)。
+
+`refined` 默认使用体素内外标签，速度较快但受边界栅格偏差影响；`--refine-reference mesh` 使用原三角表面的内外查询，通常能降低外扩但增加准备时间，仅支持单个闭合表面体，并假设没有自交。`--outside-weight` 越大越偏向限制外扩，不能保证覆盖率同时提升。优化还有一个 `0.15 × voxel_size` 的正样本目标裕量，它与最后添加的用户 padding 分别记录。
 
 ## 常用命令
 
@@ -112,6 +144,8 @@ result = fit_asset(
     asset,
     FitConfig(method="voxel", count=24, resolution=48, padding=0.003),
     link_counts={"wrist": 12},
+    workers=4,
+    executor="thread",
 )
 for link_name, spheres in result.links.items():
     print(link_name, [(s.center, s.radius) for s in spheres])
@@ -128,6 +162,8 @@ write_outputs(asset, result, "outputs/robot")
 - `sphere_volume_sum_m3`：各球体积之和，**包含重复计算的重叠部分**，不是球并集的体积。
 
 表面采样得到 100% 不代表连续表面或实体内部都被覆盖。`cover` 另行提供三角形表面覆盖的构造保证，其代价是球可能明显突出原 mesh。碰撞检测使用前应根据任务检查球预算、padding、间隙和外扩量。
+
+`assetspheres.quality.compare_sphere_models` 可对多种结果使用相同的独立样本，报告实体覆盖率、外扩体积/原 mesh 体积、球并集 precision 和 IoU；需要 `pip install -e '.[quality]'`。评价域包含原 mesh 及所有被比较的球，避免漏掉包围盒外的外扩。多闭合壳默认跳过实体评价，调用方必须明确选择奇偶壳语义或逐组件并集语义；后者会填掉嵌套空腔。自交检测尚未实现。
 
 ## 使用原生 Lula
 

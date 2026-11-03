@@ -61,13 +61,36 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Fit link-local collision spheres to URDF/mesh assets"
     )
-    parser.add_argument("--version", action="version", version="AssetSpheres 0.1.0")
+    from . import __version__
+
+    parser.add_argument("--version", action="version", version=f"AssetSpheres {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
     fit = commands.add_parser("fit", help="Fit a URDF or standalone triangle mesh")
     fit.add_argument("input", type=Path)
     _output_arguments(fit)
     _package_argument(fit)
-    fit.add_argument("--method", choices=["voxel", "surface", "cover", "lula"], default="voxel")
+    fit.add_argument(
+        "--method",
+        choices=["voxel", "surface", "cover", "cover-tight", "slab", "refined", "lula"],
+        default="voxel",
+    )
+    fit.add_argument("--device", choices=["cpu", "cuda"], default="cpu")
+    fit.add_argument("--workers", type=int, default=1, help="CPU link workers (default: serial)")
+    fit.add_argument("--executor", choices=["thread", "process"], default="thread")
+    fit.add_argument("--iterations", type=int, default=120, help="Refined optimizer iterations")
+    fit.add_argument("--refine-samples", type=int, default=2048, help="Training points per group")
+    fit.add_argument(
+        "--refine-reference",
+        choices=["voxel", "mesh"],
+        default="voxel",
+        help="Refined training labels; mesh requires rtree and a single closed body",
+    )
+    fit.add_argument(
+        "--outside-weight",
+        type=float,
+        default=10.0,
+        help="Refined exterior penalty; higher values discourage protrusion",
+    )
     fit.add_argument("--count", type=int, default=32, help="Maximum spheres PER LINK (default: 32)")
     fit.add_argument(
         "--link-count",
@@ -132,6 +155,11 @@ def main(argv: list[str] | None = None) -> int:
                 samples=args.samples,
                 seed=args.seed,
                 non_watertight=args.non_watertight,
+                device=args.device,
+                iterations=args.iterations,
+                refine_samples=args.refine_samples,
+                refine_reference=args.refine_reference,
+                outside_weight=args.outside_weight,
             )
             asset = load_asset(
                 args.input,
@@ -141,7 +169,13 @@ def main(argv: list[str] | None = None) -> int:
                 scale=args.scale,
             )
             print(f"Fitting {len(asset.links)} link(s) with {args.method}...", flush=True)
-            result = fit_asset(asset, cfg, link_counts=_mapping(args.link_count, integer=True))
+            result = fit_asset(
+                asset,
+                cfg,
+                link_counts=_mapping(args.link_count, integer=True),
+                workers=args.workers,
+                executor=args.executor,
+            )
             paths = write_outputs(
                 asset, result, args.output, force=args.force, include_glb=not args.no_glb
             )

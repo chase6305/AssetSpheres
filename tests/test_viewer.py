@@ -63,9 +63,10 @@ class OfflineScene:
         return add
 
 
-def test_viewer_frames_manual_edit_and_save(monkeypatch, tmp_path):
+@pytest.mark.parametrize("method", ["cover", "slab"])
+def test_viewer_frames_manual_edit_and_save(monkeypatch, tmp_path, method):
     asset = load_asset(Path(__file__).resolve().parents[1] / "examples" / "two_link.urdf")
-    result = fit_asset(asset, FitConfig(method="cover", count=4, samples=128))
+    result = fit_asset(asset, FitConfig(method=method, count=4, samples=128))
     server = SimpleNamespace(gui=OfflineGui(), scene=OfflineScene(), atomic=nullcontext)
     monkeypatch.setattr(viser, "ViserServer", lambda **kwargs: server)
     save_path = tmp_path / "edited.json"
@@ -84,6 +85,7 @@ def test_viewer_frames_manual_edit_and_save(monkeypatch, tmp_path):
     assert result.links["arm"][0].center == (0.01, 0.02, 0.03)
     assert result.reports["arm"]["quality_metrics_stale"] is True
     assert "triangle_surface_coverage_certified" not in result.reports["arm"]
+    assert "bounded_solid_coverage_conditional" not in result.reports["arm"]
     assert "quality_metrics_stale" not in result.reports["base"]
     widgets["Radius (m)"].value = 0.045
     widgets["Radius (m)"].emit()

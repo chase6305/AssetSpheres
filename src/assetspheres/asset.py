@@ -16,6 +16,7 @@ class LinkGeometry:
     name: str
     mesh: trimesh.Trimesh
     geometry_source: str = "mesh"
+    geometry_types: tuple[str, ...] = ()
 
 
 @dataclass
@@ -227,7 +228,8 @@ def load_asset(
             meshes = [_geometry(e, path.parent, packages) for e in geometries]
         except (ValueError, FileNotFoundError) as exc:
             raise ValueError(f"Link {name!r} ({selected}): {exc}") from exc
-        links[name] = LinkGeometry(name, trimesh.util.concatenate(meshes), selected)
+        geometry_types = tuple(e.find("geometry")[0].tag for e in geometries)
+        links[name] = LinkGeometry(name, trimesh.util.concatenate(meshes), selected, geometry_types)
     if not links:
         raise ValueError(f"No {geometry} geometry found in {path}")
     return Asset(path, links, transforms, tree, packages, geometry)

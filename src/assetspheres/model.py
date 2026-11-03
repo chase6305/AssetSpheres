@@ -36,16 +36,47 @@ class FitConfig:
     max_grid_cells: int = 2_000_000
     max_candidates: int = 768
     non_watertight: str = "error"
+    device: str = "cpu"
+    iterations: int = 120
+    refine_samples: int = 2048
+    outside_weight: float = 10.0
+    refine_reference: str = "voxel"
 
     def __post_init__(self) -> None:
-        if self.method not in {"voxel", "surface", "cover", "lula"}:
+        if self.method not in {
+            "voxel",
+            "surface",
+            "cover",
+            "cover-tight",
+            "slab",
+            "refined",
+            "lula",
+        }:
             raise ValueError(f"Unknown fitting method: {self.method}")
-        for name in ("count", "resolution", "samples", "max_grid_cells", "max_candidates"):
+        for name in (
+            "count",
+            "resolution",
+            "samples",
+            "max_grid_cells",
+            "max_candidates",
+            "iterations",
+            "refine_samples",
+        ):
             value = getattr(self, name)
             if not isinstance(value, int) or isinstance(value, bool) or value < 1:
                 raise ValueError(f"{name} must be a positive integer")
         if self.resolution < 4 or self.samples < 32:
             raise ValueError("resolution must be >= 4 and samples must be >= 32")
+        if self.refine_samples < 32:
+            raise ValueError("refine_samples must be >= 32")
+        if self.refine_reference not in {"voxel", "mesh"}:
+            raise ValueError("refine_reference must be voxel or mesh")
+        if self.device not in {"cpu", "cuda"}:
+            raise ValueError("device must be cpu or cuda")
+        if self.device == "cuda" and self.method not in {"voxel", "refined"}:
+            raise ValueError("CUDA execution currently supports only voxel and refined methods")
+        if not np.isfinite(self.outside_weight) or self.outside_weight <= 0:
+            raise ValueError("outside_weight must be finite and positive")
         if not isinstance(self.seed, int) or self.seed < 0:
             raise ValueError("seed must be a nonnegative integer")
         if not np.isfinite(self.padding) or self.padding < 0:

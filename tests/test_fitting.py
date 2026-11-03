@@ -110,6 +110,11 @@ def test_lula_adapter_uses_documented_api_and_array_types(monkeypatch):
         {"samples": 1},
         {"seed": -1},
         {"resolution": 3},
+        {"iterations": 0},
+        {"refine_samples": 1},
+        {"outside_weight": float("nan")},
+        {"refine_reference": "unknown"},
+        {"device": "cuda", "method": "surface"},
     ],
 )
 def test_invalid_config(kwargs):

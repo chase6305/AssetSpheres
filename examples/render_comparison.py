@@ -19,17 +19,21 @@ root = Path(__file__).resolve().parents[1]
 asset = load_asset(root / "examples" / "two_link.urdf")
 voxel = fit_asset(asset, FitConfig(method="voxel", count=24, padding=0.003))
 cover = fit_asset(asset, FitConfig(method="cover", count=24, padding=0.003))
-fig = plt.figure(figsize=(12, 5), facecolor="#f5f7fa")
+slab = fit_asset(asset, FitConfig(method="slab", count=24, padding=0.003))
+refined = fit_asset(asset, FitConfig(method="refined", count=24, padding=0.003))
+fig = plt.figure(figsize=(16, 5), facecolor="#f5f7fa")
 colors = ["#2995b8", "#ee9c36"]
 
 for column, (label, result) in enumerate(
     [
         ("Source geometry", None),
-        ("Volume spheres · 24 per link", voxel),
-        ("Triangle cover · 24 per link", cover),
+        ("Voxel", voxel),
+        ("Triangle cover", cover),
+        ("Parallel slabs", slab),
+        ("Refined", refined),
     ]
 ):
-    ax = fig.add_subplot(1, 3, column + 1, projection="3d", facecolor="#f5f7fa")
+    ax = fig.add_subplot(1, 5, column + 1, projection="3d", facecolor="#f5f7fa")
     for i, (name, link) in enumerate(asset.links.items()):
         transform = asset.zero_pose_transforms[name]
         vertices = trimesh.transform_points(link.mesh.vertices, transform)
@@ -58,15 +62,15 @@ for column, (label, result) in enumerate(
     ax.set_box_aspect((1, 1, 1))
     ax.view_init(elev=17, azim=-66)
     ax.set_axis_off()
-    fig.text((column + 0.5) / 3, 0.76, label, ha="center", fontsize=12, color="#263b4d")
+    fig.text((column + 0.5) / 5, 0.76, label, ha="center", fontsize=12, color="#263b4d")
 
 fig.suptitle("AssetSpheres", fontsize=24, fontweight="bold", color="#163449", y=0.96)
-fig.text(0.5, 0.86, "URDF / mesh → link-local collision spheres", ha="center", color="#526779")
+fig.text(0.5, 0.86, "Up to 24 spheres per link · 3 mm padding", ha="center", color="#526779")
 fig.text(
     0.5,
     0.07,
-    "Volume fitting reports gaps. Triangle cover encloses the surface; "
-    "solid interior is not certified.",
+    "Slab enclosure assumes a bounded solid boundary. "
+    "Refinement trades coverage against excess volume.",
     ha="center",
     color="#526779",
     fontsize=9,

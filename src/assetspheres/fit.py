@@ -109,6 +109,10 @@ def _cover(mesh: trimesh.Trimesh, cfg: FitConfig) -> list[Sphere]:
         if not len(assigned):
             continue
         radius = np.linalg.norm(assigned - center, axis=2).max()
+        if cfg.method == "cover-tight":
+            from .enclosing import tighten_ball
+
+            center, radius, _ = tighten_ball(assigned.reshape(-1, 3), center)
         # Round outward so a zero-padding export still encloses boundary vertices.
         radius = np.nextafter(radius, np.inf) + cfg.padding
         output.extend(_spheres(center[None], np.array([radius])))
@@ -151,22 +155,29 @@ def _voxel(mesh: trimesh.Trimesh, cfg: FitConfig) -> tuple[list[Sphere], dict, n
     target = points
     if len(target) > cfg.samples:
         target = target[rng.choice(len(target), cfg.samples, replace=False)]
-    tree = cKDTree(target)
-    neighbors = [np.asarray(tree.query_ball_point(c, r), dtype=int) for c, r in zip(centers, radii)]
-    covered = np.zeros(len(target), dtype=bool)
-    heap = [(-len(ids), i) for i, ids in enumerate(neighbors)]
-    heapq.heapify(heap)
-    chosen = []
-    while heap and len(chosen) < cfg.count:
-        previous, i = heapq.heappop(heap)
-        score = int(np.count_nonzero(~covered[neighbors[i]]))
-        if score == 0:
-            continue
-        if heap and score < -heap[0][0]:
-            heapq.heappush(heap, (-score, i))
-            continue
-        chosen.append(i)
-        covered[neighbors[i]] = True
+    if cfg.device == "cuda":
+        from .tensor_backend import greedy_cover
+
+        chosen = greedy_cover(target, centers, radii, count=cfg.count, device="cuda").tolist()
+    else:
+        tree = cKDTree(target)
+        neighbors = [
+            np.asarray(tree.query_ball_point(c, r), dtype=int) for c, r in zip(centers, radii)
+        ]
+        covered = np.zeros(len(target), dtype=bool)
+        heap = [(-len(ids), i) for i, ids in enumerate(neighbors)]
+        heapq.heapify(heap)
+        chosen = []
+        while heap and len(chosen) < cfg.count:
+            previous, i = heapq.heappop(heap)
+            score = int(np.count_nonzero(~covered[neighbors[i]]))
+            if score == 0:
+                continue
+            if heap and (-score, i) > heap[0]:
+                heapq.heappush(heap, (-score, i))
+                continue
+            chosen.append(i)
+            covered[neighbors[i]] = True
     if not chosen:
         raise ValueError("No voxel sphere candidates cover the sampled volume")
     spheres = _spheres(centers[chosen], radii[chosen])
@@ -174,6 +185,7 @@ def _voxel(mesh: trimesh.Trimesh, cfg: FitConfig) -> tuple[list[Sphere], dict, n
         "voxel_size_m": pitch,
         "voxel_count": len(points),
         "candidate_count": len(candidate_ids),
+        "greedy_device": cfg.device,
         "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
     }
     return spheres, details, points
@@ -217,31 +229,72 @@ def fit_mesh(
         raise ValueError("Mesh has no nondegenerate triangles")
     warnings = []
     effective = cfg
-    if cfg.method in {"voxel", "lula"} and not mesh.is_watertight:
+    if cfg.method in {"voxel", "refined", "lula"} and not mesh.is_watertight:
         if cfg.non_watertight == "error":
             raise ValueError(
                 "Volume fitting requires a watertight mesh. Repair it, use --method surface/cover, "
                 "or explicitly pass --non-watertight surface/cover."
             )
-        effective = replace(cfg, method=cfg.non_watertight)
+        effective = replace(cfg, method=cfg.non_watertight, device="cpu")
         warnings.append(f"Non-watertight mesh: explicitly selected fallback {effective.method}")
     details: dict[str, Any] = {}
     voxels = None
-    if effective.method == "voxel":
-        spheres, details, voxels = _voxel(mesh, effective)
+    if effective.method in {"voxel", "refined"}:
+        # Refinement trains on unpadded balls; its padding is added exactly once
+        # after optimization. Keep the original greedy baseline for voxel fits.
+        initial_cfg = replace(effective, padding=0) if effective.method == "refined" else effective
+        spheres, details, voxels = _voxel(mesh, initial_cfg)
+        if effective.method == "refined":
+            from .refine import refine_spheres
+
+            spheres, refinement = refine_spheres(
+                mesh, spheres, voxels, details["voxel_size_m"], effective
+            )
+            details.update(refinement)
+            warnings.append(
+                "Sampled refinement trades coverage against exterior volume; no certificate"
+            )
         warnings.append("Voxel spheres approximate volume and can leave gaps; inspect coverage")
     elif effective.method == "surface":
         spheres = _surface(mesh, effective)
         warnings.append("Fixed-radius surface spheres do not guarantee solid-volume coverage")
-    elif effective.method == "cover":
+    elif effective.method in {"cover", "cover-tight"}:
         spheres = _cover(mesh, effective)
         details["triangle_surface_coverage_certified"] = True
         warnings.append("Triangle boundary is enclosed; solid interior coverage is not certified")
+    elif effective.method == "slab":
+        from .slab import slab_spheres
+
+        spheres, details = slab_spheres(mesh, effective)
+        details["triangle_surface_coverage_certified"] = True
+        details["bounded_solid_coverage_conditional"] = bool(mesh.is_watertight)
+        details["solid_coverage_assumption"] = (
+            "Input triangle surface is the complete boundary of a bounded solid; "
+            "floating-point clipping and outward radius margin, not interval arithmetic."
+        )
+        details["self_intersection_checked"] = False
+        warnings.append(
+            "Parallel-slab balls enclose the surface and, assuming a complete bounded-solid "
+            "boundary, its interior; transverse branches/holes may be over-enclosed"
+        )
     else:
         spheres = _lula(mesh, effective)
         warnings.append("Lula backend quality depends on its installed version and mesh topology")
     samples = sample_surface(mesh, cfg.samples, cfg.seed + 1)
-    gaps = sphere_gaps(samples, spheres)
+
+    def evaluate_gaps(points):
+        if effective.device == "cuda":
+            from .tensor_backend import point_sphere_gaps
+
+            return point_sphere_gaps(
+                points,
+                np.array([s.center for s in spheres]),
+                np.array([s.radius for s in spheres]),
+                device="cuda",
+            )
+        return sphere_gaps(points, spheres)
+
+    gaps = evaluate_gaps(samples)
     positive_gaps = np.maximum(gaps, 0)
     report = {
         "requested_method": cfg.method,
@@ -260,7 +313,7 @@ def fit_mesh(
         **details,
     }
     if voxels is not None:
-        report["voxel_center_coverage"] = float(np.mean(sphere_gaps(voxels, spheres) <= 0))
+        report["voxel_center_coverage"] = float(np.mean(evaluate_gaps(voxels) <= 0))
     return spheres, report
 
 
@@ -269,20 +322,33 @@ def fit_asset(
     config: FitConfig | None = None,
     *,
     link_counts: dict[str, int] | None = None,
+    workers: int = 1,
+    executor: str = "thread",
 ) -> FitResult:
     cfg = config or FitConfig()
     overrides = link_counts or {}
     unknown = set(overrides) - asset.links.keys()
     if unknown:
         raise ValueError(f"Sphere count overrides refer to unloaded links: {sorted(unknown)}")
-    links, reports = {}, {}
+    if cfg.device == "cuda" and isinstance(workers, int) and workers > 1 and len(asset.links) > 1:
+        raise ValueError("CUDA fitting uses one GPU owner; use workers=1")
+    from .parallel import fit_links
+
+    tasks = []
     for name, link in asset.links.items():
         local_config = replace(cfg, count=overrides.get(name, cfg.count))
-        try:
-            links[name], reports[name] = fit_mesh(link.mesh, local_config)
-        except ValueError as exc:
-            raise ValueError(f"Link {name!r}: {exc}") from exc
-        reports[name]["geometry_source"] = link.geometry_source
+        tasks.append((name, link.mesh, local_config))
+    links, reports = {}, {}
+    for name, spheres, report in fit_links(tasks, workers=workers, executor=executor):
+        links[name], reports[name] = spheres, report
+        report["geometry_source"] = asset.links[name].geometry_source
+        types = asset.links[name].geometry_types
+        if types:
+            report["input_geometry_types"] = list(types)
+        if {"sphere", "cylinder"} & set(types):
+            report["warnings"].append(
+                "URDF analytic shapes are tessellated; guarantees concern the triangle mesh"
+            )
     return FitResult(
         str(asset.path),
         cfg,
