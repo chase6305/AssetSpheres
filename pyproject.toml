@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "assetspheres"
+version = "0.1.0"
+description = "Turn URDF and mesh assets into link-local collision spheres"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+authors = [{name = "AssetSpheres contributors"}]
+dependencies = ["numpy>=1.24", "scipy>=1.10", "trimesh>=4.12", "PyYAML>=6", "defusedxml>=0.7"]
+
+[project.optional-dependencies]
+viewer = ["viser>=1.1"]
+plots = ["matplotlib>=3.7"]
+dev = ["pytest>=7", "ruff>=0.9", "build>=1"]
+
+[project.scripts]
+assetspheres = "assetspheres.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<robot name="two_link_demo">
+  <link name="base">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="0.01" iyy="0.01" izz="0.01" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.06"/>
+      <geometry><box size="0.20 0.18 0.12"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.06"/>
+      <geometry><box size="0.20 0.18 0.12"/></geometry>
+    </collision>
+  </link>
+  <joint name="shoulder" type="revolute">
+    <parent link="base"/>
+    <child link="arm"/>
+    <origin xyz="0 0 0.12" rpy="0 0.55 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.5" upper="1.5" effort="10" velocity="1"/>
+  </joint>
+  <link name="arm">
+    <visual>
+      <origin xyz="0 0 0.18"/>
+      <geometry><cylinder radius="0.045" length="0.36"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.18"/>
+      <geometry><cylinder radius="0.045" length="0.36"/></geometry>
+    </collision>
+    <collision>
+      <origin xyz="0.055 0 0.32"/>
+      <geometry><sphere radius="0.035"/></geometry>
+    </collision>
+  </link>
+</robot>

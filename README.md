@@ -1,0 +1,158 @@
+# AssetSpheres
+
+把 **URDF 机器人资产或独立 mesh 资产转成碰撞球模型**。球心始终保存在所属 link 的局部坐标系，长度单位统一为米。默认后端只使用 CPU，不依赖 ROS、CUDA、Isaac Sim 或 cuRobo。
+
+提供 Python API、命令行、Viser 查看与手动调整，以及 JSON / cuRobo / Lula 球配置片段 / 球碰撞 URDF / GLB 导出。
+
+![自带 URDF 的原始几何、体积球化与三角表面包络对比](docs/comparison.png)
+
+## 安装与运行
+
+需要 Python 3.10+。在本仓库中执行：
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e '.[viewer]'
+
+# 自带的双连杆示例，无需下载机器人 mesh
+assetspheres fit examples/two_link.urdf \
+  --method voxel --count 24 --padding 0.003 -o outputs/demo
+
+# 打开 http://127.0.0.1:8890
+assetspheres view outputs/demo/spheres.json
+```
+
+`--count` 是**每个 link 的球数上限**，不是整台机器人的总数；候选球覆盖不再增加时可能提前结束。默认使用 collision，缺少 collision 的 link 才使用 visual。具体使用来源写入每个 link 的报告。
+
+## 支持范围
+
+- URDF：mesh、box、cylinder、sphere；一个 link 内的多份几何合并拟合。
+- Mesh：STL、OBJ、PLY、GLB/GLTF 等 trimesh 能读取的三角 mesh。场景节点变换和重复实例会被展开；部分格式可能需要 trimesh 的可选解析依赖。
+- 正确处理 URDF mesh 的非均匀 `scale`、geometry 的 `origin xyz/rpy`，并保留原始 link/joint 结构。
+- 相对路径、绝对路径、`file://` 和显式映射的 `package://`；也支持 `ROS_PACKAGE_PATH`。
+- 预览使用所有 joint 位置为零时的装配变换；不求解 mimic offset，不提供运动仿真。拟合本身不受 joint 姿态影响。
+- Xacro 请先展开为 URDF；当前不直接读取 USD、MJCF 或 STEP。
+
+## 四种拟合方法
+
+| 方法 | 实现与用途 | 需要闭合 mesh | 覆盖含义 |
+| --- | --- | --- | --- |
+| `voxel`（默认） | 体素填充、距离场候选球、贪心选择；适合实体 link | 是 | 近似体积覆盖，会留下缝隙 |
+| `surface` | 面积加权采样、最远点选择、固定球半径；适合薄片和附着物 | 否 | 表面采样，不保证整体包络 |
+| `cover` | 三角形分组后构造包络球；适合希望覆盖完整三角表面的情况 | 否 | 包含整个三角形表面；不证明覆盖实体内部 |
+| `lula` | 调用当前解释器中的原生 Lula `CollisionSphereGenerator` | 是 | 与安装版本及 mesh 拓扑有关 |
+
+`voxel` 是本项目独立实现的体积球化算法，`surface` 参考 IsaacLab/cuRobo 的表面球化用途。它们不宣称复现 Lula 未公开的内部实现。只有 `--method lula` 会调用原生 Lula。
+
+开口 mesh 在体积后端中默认报错。可修复资产，或显式允许回退：
+
+```bash
+assetspheres fit robot.urdf --non-watertight cover -o outputs/robot
+```
+
+体素化会填充封闭壳的内部；完全封闭的内部空腔可能被填实。细小孔洞和薄壁会受体素分辨率影响。当前不自动取凸包，也不自动删除小部件。
+
+## 常用命令
+
+```bash
+# URDF：指定 ROS package 根目录、几何来源与 link 球数
+assetspheres fit /path/to/robot.urdf \
+  --package-root robot_description=/path/to/robot_description \
+  --geometry collision --count 24 \
+  --link-count wrist=12 --link-count gripper=40 \
+  --voxel-size 0.004 --padding 0.002 -o outputs/robot
+
+# 只处理指定 link（可重复 --link）
+assetspheres fit /path/to/robot.urdf \
+  --link forearm --method cover --count 16 -o outputs/forearm
+
+# 独立 STL：输入以毫米建模时，显式转换为米
+assetspheres fit /path/to/part.stl \
+  --scale 0.001 --method cover --count 32 -o outputs/part
+
+# 固定半径表面球
+assetspheres fit /path/to/object.obj \
+  --method surface --surface-radius 0.012 --count 100 -o outputs/object
+
+# 查看报告或导出修改后的结果
+assetspheres report outputs/robot/spheres.json --json
+assetspheres export outputs/robot/spheres.edited.json -o outputs/robot-edited
+```
+
+重复导出到已有目录需加 `--force`；原始输入资产不会被改写。`--resolution` 默认是最长轴 48 格，`--voxel-size` 可覆盖它；网格大小在体素化前检查，默认限制 200 万格。
+
+Viser 中可以切换 link、单独显示选中的 link、切换 mesh / 球 / 线框、调整球透明度、球心和半径，并保存为新的 JSON。手动调整后，原有覆盖率会标记为失效；再次执行 `export` 更新各类导出文件。
+
+## 输出文件
+
+| 文件 | 含义 |
+| --- | --- |
+| `spheres.json` | 版本化结果、link 局部球参数、拟合配置、报告、预览用零位变换 |
+| `curobo_spheres.yml` | cuRobo 外部球文件结构：`collision_spheres: {link: [...]}` |
+| `lula_spheres.yml` | Lula 描述中的球片段：`collision_spheres: [{link: [...]}]` |
+| `spheres.urdf` | 用球替换已处理 link 的 collision；保留 visual、inertial、joint 和未处理 link |
+| `preview.glb` | 零位姿下 mesh 与球的静态叠加，可用 `--no-glb` 关闭 |
+
+两份 YAML 都是**球配置片段**，还需与目标系统的机器人运动学、关节和规划配置组合。导出的 URDF 会将保留的 mesh 路径改写成相对输出文件的路径；mesh 和纹理不复制，移动资产时需一并维护路径。独立 GLB 等格式是否能被目标 URDF 消费者读取，取决于其 mesh 格式支持。
+
+`spheres.json` 记录本地源文件位置和 package 映射，供后续预览使用。移动输入文件后，可通过 `view` / `export` 的 `--asset` 与 `--package-root` 覆盖位置。静态 GLB 可独立分享。
+
+## Python API
+
+```python
+from assetspheres import FitConfig, fit_asset, load_asset
+from assetspheres.export import write_outputs
+
+asset = load_asset(
+    "robot.urdf",
+    package_roots={"robot_description": "/path/to/robot_description"},
+)
+result = fit_asset(
+    asset,
+    FitConfig(method="voxel", count=24, resolution=48, padding=0.003),
+    link_counts={"wrist": 12},
+)
+for link_name, spheres in result.links.items():
+    print(link_name, [(s.center, s.radius) for s in spheres])
+write_outputs(asset, result, "outputs/robot")
+```
+
+单个 trimesh 对象可用 `fit_mesh(mesh, config)`，返回 `(list[Sphere], report)`。
+
+## 质量报告
+
+- `surface_coverage`：独立面积加权表面样本被球并集包含的比例。
+- `surface_gap_mean_m / p95_m / max_m`：未覆盖表面到球并集的正距离，已覆盖样本按零计。
+- `voxel_center_coverage`：`voxel` 方法对所有填充体素中心的覆盖比例，不是连续实体的覆盖证明。
+- `sphere_volume_sum_m3`：各球体积之和，**包含重复计算的重叠部分**，不是球并集的体积。
+
+表面采样得到 100% 不代表连续表面或实体内部都被覆盖。`cover` 另行提供三角形表面覆盖的构造保证，其代价是球可能明显突出原 mesh。碰撞检测使用前应根据任务检查球预算、padding、间隙和外扩量。
+
+## 使用原生 Lula
+
+在已安装并启用 Lula 扩展、可 `import lula` 的 Isaac Sim Python 环境中安装本仓库，然后运行：
+
+```bash
+python -m assetspheres fit robot.urdf --method lula --count 24 --padding 0.002 -o outputs/lula
+```
+
+AssetSpheres 不启动 SimulationApp，也不尝试通过 pip 安装同名的其他 `lula` 包。原生后端需要由调用方准备好对应的 Isaac Sim 运行时。当前环境的原生 Lula 未安装；适配器已做接口契约测试，实际运行仍需在相应版本中验证。
+
+## 开发与参考
+
+```bash
+python -m pip install -e '.[dev,viewer]'
+pytest -q
+ruff check .
+ruff format --check .
+python -m build
+```
+
+若机器上的 ROS 全局 pytest 插件与 pytest 版本冲突，可用 `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest -q` 运行本项目的独立测试。
+
+静态对比图可通过 `pip install -e '.[plots]'` 后执行 `python examples/render_comparison.py` 重现。当前本地验证记录见 [docs/validation.md](docs/validation.md)。
+
+算法、坐标规则和参考边界见 [docs/algorithm.md](docs/algorithm.md)。参考的主要实现为 [IsaacLab cuRobo planner](https://github.com/isaac-sim/IsaacLab/blob/main/source/isaaclab_mimic/isaaclab_mimic/motion_planners/curobo/curobo_planner.py)、[Lula 编辑器](https://docs.isaacsim.omniverse.nvidia.com/latest/manipulators/manipulators_robot_description_editor.html) 与 [Lula API](https://docs.isaacsim.omniverse.nvidia.com/6.1.0/py/source/deprecated/isaacsim.robot_motion.lula/docs/index.html)。用户提供的[知乎回答](https://www.zhihu.com/question/2096010351653435323/answer/2097772625942655119)目前无法读取，尚未据此实现或声称复现其方法。
+
+许可证：[Apache-2.0](LICENSE)。不附带第三方机器人资产；示例由本项目生成。
