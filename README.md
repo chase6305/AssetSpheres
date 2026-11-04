@@ -6,10 +6,8 @@
 提供命令行、Python API、Viser 交互编辑，以及 JSON、cuRobo / Lula 球配置片段、URDF 和 GLB 导出。
 默认使用 CPU，无需 ROS、CUDA 或 Isaac Sim。
 
-[快速开始](#快速开始) · [方法选择](#方法选择) · [自己的资产](#处理自己的资产) ·
+[快速开始](#快速开始) · [方法选择](#方法选择) · [效果预览](#效果预览) · [自己的资产](#处理自己的资产) ·
 [Python API](#python-api) · [结果与编辑](#查看和使用结果) · [文档](#文档与开发)
-
-![自带双连杆资产的原始几何与 voxel、cover、slab、refined 拟合结果](docs/comparison.png)
 
 ## 快速开始
 
@@ -58,6 +56,24 @@ URDF 的球和圆柱会先三角化，几何保证针对实际参与拟合的三
 各方法的构造、浮点假设与限制见[算法说明](docs/algorithm.md)。
 
 可用 `assetspheres methods` 比较方法，或用 `assetspheres fit --help` 查看参数。
+
+## 效果预览
+
+下图由自带双连杆资产的**实际 CPU 拟合结果**生成：每个 link 最多 24 球、padding 3 mm、种子 0，
+其余参数使用默认值。各面板使用相同尺度与视角；青色是 base 球，橙色是 arm 球，灰色是源网格。
+
+![同一视角与球数预算下的原网格、voxel、cover、cover-tight、slab 和 refined 实际拟合结果](docs/comparison.png)
+
+图中覆盖率来自每个 link 独立生成的 10,000 个表面验证点，显示两个 link 覆盖比例的算术平均值。
+`cover` / `cover-tight` 包络三角表面，`slab` 在该示例的底座上外扩较明显；`refined` 在本例中提高了
+表面样本覆盖比例，但没有连续覆盖保证。图中 100% 仅表示验证样本全部被覆盖，不能作为连续实体覆盖证明。
+
+在相同依赖版本下，可用以下命令重新生成图和[参数、球模型及验证数据](docs/visual-examples.json)：
+
+```bash
+python -m pip install -e '.[plots]'
+python examples/render_comparison.py
+```
 
 ## 处理自己的资产
 
@@ -137,8 +153,15 @@ write_outputs(asset, result, "outputs/api-demo")
 
 ### 手动调整
 
-在查看器中编辑后，点击 **Save edited JSON**，默认保存为同目录的 `spheres.edited.json`。
-旧质量指标会标记为失效；保存编辑后，重新导出其他格式：
+真实查看器页面如下，使用快速开始中相同的 `cover` 结果。可调整透明度查看源网格与球的重叠关系。
+
+![Viser 实际界面：双连杆球模型、link 和球索引选择、球心及半径输入框与保存按钮](docs/viewer.png)
+
+1. 在 **Link** 和 **Sphere index** 中选择要修改的球。
+2. 修改 **Center in link (m)** 或 **Radius (m)**，场景会同步更新；输入仍以米为单位。
+3. 点击 **Save edited JSON**，默认保存为同目录的 `spheres.edited.json`。
+
+手动编辑会使旧质量指标失效；`report` 读取保存的指标，不会重新测量。保存后重新导出其他格式：
 
 ```bash
 assetspheres export outputs/demo/spheres.edited.json -o outputs/demo-edited
@@ -212,6 +235,7 @@ ruff format --check .
 python -m build
 ```
 
-静态对比图可在安装 `.[plots]` 后，用 `python examples/render_comparison.py` 重现。
+方法对比图与数据的复现命令见[效果预览](#效果预览)。查看器截图使用同一示例的实际浏览器页面，
+图示与记录不包含第三方机器人资产。
 
 许可证：[Apache-2.0](LICENSE)。不附带第三方机器人资产；自带示例由本项目生成。
