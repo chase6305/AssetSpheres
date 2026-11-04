@@ -24,6 +24,8 @@ for output_path in output_paths:
 
 默认输出 JSON、cuRobo 球片段、Lula 球片段、球碰撞 URDF 和 GLB。再次写入同一目录时，已有同名文件会触发 `ValueError`；确认需要替换后，可显式调用 `write_outputs(..., force=True)`。
 
+`force=True` 也不能覆盖源资产及其 URDF mesh/纹理引用。长任务可先调用 `assetspheres.export.check_output_paths(asset, directory, force=False, include_glb=True)` 预检，返回目标路径列表；它不创建目录或文件，`write_outputs` 写入前仍会再次检查。
+
 ## 读取资产与选择几何
 
 `load_asset` 返回 `Asset`，其中 `asset.links` 是 `dict[str, LinkGeometry]`，每份 `LinkGeometry.mesh` 都已经转换到所属 link 的局部坐标系。
@@ -51,6 +53,8 @@ for link_name, link_geometry in asset.links.items():
 
 URDF 采用米和弧度，并应用各 mesh 的 `scale`、各 geometry 的 `origin xyz/rpy`。球和圆柱等解析几何先三角化，因此后续几何保证针对参与拟合的三角 mesh。
 
+同一次加载中，相同 `filename` 的重复 mesh 引用只解析一次，各实例仍独立应用缩放和位姿。缓存不跨 `load_asset` 调用保留，也不为只引用一次的 mesh 留下额外副本。
+
 ## 查看球与报告
 
 沿用第一段的 `result`：
@@ -70,6 +74,8 @@ print("p95 正间隙，米:", arm_report["surface_gap_p95_m"])
 ```
 
 每个球是有字段名的 `Sphere`，不用记忆一个裸数组的哪一列是半径。球心不包含 joint origin；`result.transforms[link_name]` 是该 link 在 root 坐标系中的零位齐次位姿矩阵，可将局部球心转换到 root 坐标，不应再次烘焙进导出的局部球心。
+
+`Sphere` 会复制球心并保存为不可变的原生浮点数。配置的长度与权重、资产缩放及 `FitResult.from_dict` 已验证的浮点字段也会规范化，支持 NumPy 实数标量；球数、采样数等整数字段仍要求 Python `int`。自定义报告字段需调用方提供可 JSON 序列化的值。
 
 `FitResult` 的常用字段如下：
 
@@ -227,7 +233,9 @@ print(saved_result.links.keys())
 
 `result.to_dict()` 返回可序列化的 schema version 1 数据；`FitResult.from_dict(data)` 可还原对象。已有公共入口、参数名及旧结果读取接口保持兼容；旧配置未包含新增可选字段时使用其默认值。
 
-导出的 URDF 会按新目录重写保留的 mesh 相对路径，**不复制 mesh 或纹理**。移动结果时需维护原资产位置；原资产已移动可通过 `load_result_asset(saved_result, path="新位置")` 和 `package_roots=...` 覆盖来源。两份规划器 YAML 是球配置片段，仍需与目标规划器的运动学和关节配置组合。
+读取会检查球列表、数值、刚性零位变换、报告与资产选项；无效结构和非有限 JSON 数字会触发 `ValueError`。`Sphere` 拥有不可变的球心 tuple，不保留调用方可修改的列表或 NumPy 数组。
+
+导出的 URDF 会按新目录重写保留的 mesh 和 URDF material 纹理相对路径，**不复制 mesh 或纹理**。移动结果时需维护原资产位置；原资产已移动可通过 `load_result_asset(saved_result, path="新位置")` 和 `package_roots=...` 覆盖来源。两份规划器 YAML 是球配置片段，仍需与目标规划器的运动学和关节配置组合。
 
 入口脚本可以按需捕获 `ValueError`、`OSError` 和 `ImportError`，保留原错误信息。常见处理方式如下：
 

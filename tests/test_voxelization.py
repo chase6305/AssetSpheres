@@ -141,6 +141,10 @@ def test_small_sampled_component_survives_final_candidate_selection(backend, dev
     from assetspheres.fit import sphere_gaps
 
     available_backend(backend, device)
+    if device == "cuda":
+        torch = pytest.importorskip("torch")
+        if not torch.cuda.is_available():
+            pytest.skip("Candidate selection also requires a PyTorch CUDA device")
     large_component = trimesh.creation.box(extents=(0.2, 0.2, 0.2))
     small_component = trimesh.creation.box(extents=(0.003, 0.003, 0.003))
     small_component.apply_translation((0.3, 0.0, 0.0))

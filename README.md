@@ -28,6 +28,8 @@ assetspheres view outputs/two_link/spheres.json
 
 `fit` 可省略 `-o`，默认输出到 `outputs/<输入文件名>`；已有结果仍需显式 `--force`。完成后会显示可复制的 `report` / `view` 命令。`methods --json`、`inspect INPUT --json`、`report RESULT --json` 可供脚本读取。完整参数分组与错误约定见 [CLI 文档](docs/cli.md)，Python 用法见 [API 文档](docs/api.md)。
 
+v0.3.1 优化了默认体素细分、CPU 距离评价和优化器内存、多组件距离查询及 GLB 实例共享，并修复 CUDA 栅格边界判定差异。实测范围、内存口径和性能取舍见 [本轮优化记录](docs/optimization.md)。
+
 ## 支持范围
 
 - URDF：mesh、box、cylinder、sphere；一个 link 内的多份几何合并拟合。
@@ -135,9 +137,9 @@ assetspheres report outputs/robot/spheres.json --json
 assetspheres export outputs/robot/spheres.edited.json -o outputs/robot-edited
 ```
 
-重复导出到已有目录需加 `--force`；原始输入资产不会被改写。`--resolution` 默认是最长轴 48 格，`--voxel-size` 可覆盖它；网格大小在体素化前检查，默认限制 200 万格。
+重复导出到已有目录需加 `--force`；即使指定 `--force`，输出也不能覆盖源资产及 URDF 引用的 mesh/纹理。已有输出在拟合前检查。`--resolution` 默认是最长轴 48 格，`--voxel-size` 可覆盖它；网格大小在体素化前检查，默认限制 200 万格。
 
-Viser 中可以切换 link、单独显示选中的 link、切换 mesh / 球 / 线框、调整球透明度、球心和半径，并保存为新的 JSON。手动调整后，原有覆盖率会标记为失效；再次执行 `export` 更新各类导出文件。
+Viser 会自动取景，可用 `Frame model` 重新对准当前模型或单独显示的 link。可以切换 link、切换 mesh / 球 / 线框、调整球透明度、球心和半径，并保存为新的 JSON。编辑时复用已有几何对象。手动调整后，原有覆盖率会标记为失效；再次执行 `export` 更新各类导出文件。
 
 ## 输出文件
 

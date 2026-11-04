@@ -66,6 +66,15 @@ def test_ties_choose_lowest_index_and_stop_without_gain(device):
 
 
 @pytest.mark.parametrize("device", DEVICES)
+@pytest.mark.parametrize("radius", [1e-200, 1e200])
+def test_extreme_radii_do_not_underflow_or_overflow_membership(device, radius):
+    points = np.array([[radius * 2, 0.0, 0.0]])
+    assert greedy_cover(points, [[0.0, 0.0, 0.0]], [radius], count=1, device=device).size == 0
+    points[0, 0] = radius / 2
+    assert greedy_cover(points, [[0.0, 0.0, 0.0]], [radius], count=1, device=device).tolist() == [0]
+
+
+@pytest.mark.parametrize("device", DEVICES)
 def test_empty_inputs(device):
     assert point_sphere_gaps(np.empty((0, 3)), np.zeros((1, 3)), [1], device=device).size == 0
     assert np.isinf(point_sphere_gaps(np.zeros((2, 3)), np.empty((0, 3)), [], device=device)).all()
@@ -135,6 +144,32 @@ def test_complete_voxel_fit_has_same_cpu_cuda_spheres():
     cuda, cuda_report = fit_mesh(
         mesh, FitConfig(count=8, resolution=16, samples=512, padding=0.002, device="cuda")
     )
+    assert cpu == cuda
+    assert cpu_report["surface_coverage"] == cuda_report["surface_coverage"]
+    assert cpu_report["voxel_center_coverage"] == cuda_report["voxel_center_coverage"]
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is unavailable")
+@pytest.mark.parametrize("kind", ["box", "sphere"])
+def test_half_voxel_padding_has_same_cpu_cuda_spheres_and_coverage(kind):
+    import trimesh
+
+    from assetspheres import FitConfig, fit_mesh
+
+    mesh = (
+        trimesh.creation.box(extents=(0.2, 0.16, 0.1))
+        if kind == "box"
+        else trimesh.creation.icosphere(radius=0.1, subdivisions=2)
+    )
+    resolution = 16 if kind == "box" else 24
+    parameters = dict(
+        count=24,
+        resolution=resolution,
+        samples=2048,
+        padding=float(mesh.extents.max()) / resolution / 2,
+    )
+    cpu, cpu_report = fit_mesh(mesh, FitConfig(**parameters))
+    cuda, cuda_report = fit_mesh(mesh, FitConfig(**parameters, device="cuda"))
     assert cpu == cuda
     assert cpu_report["surface_coverage"] == cuda_report["surface_coverage"]
     assert cpu_report["voxel_center_coverage"] == cuda_report["voxel_center_coverage"]

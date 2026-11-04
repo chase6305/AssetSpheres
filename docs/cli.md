@@ -20,6 +20,8 @@ assetspheres view outputs/two_link/spheres.json
 
 拟合或重新导出成功后，会打印结果目录和已正确处理路径空格的 `report` / `view` 命令。已有输出需要显式 `--force`，默认不会覆盖。
 
+`fit` 在拟合前预检已有输出。`--force` 仍不能覆盖源文件及 URDF 引用的 mesh/纹理。查看器自动取景，`Frame model` 可重新对准模型；勾选 `Only selected link` 时只对准该 link。
+
 ## 命令概览
 
 | 命令 | 输入 | 用途 |

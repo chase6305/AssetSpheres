@@ -1,0 +1,72 @@
+{
+  "recorded_at_utc": "2026-11-03T16:07:32.963026+00:00",
+  "scope": "Local export names and coordinate-transform comment; accurate process exception-cause documentation. No numerical or algorithm changes.",
+  "source_modules_sha256": "3df2c3f478625aa568a014482632d2d36278343ca2ec7126b5c30a9251abac69",
+  "cause_runtime_review": {
+    "serial": {
+      "exception_type": "ValueError",
+      "message": "Link 'broken': Expected a nonempty triangle mesh",
+      "cause_type": "ValueError",
+      "cause_contains_original_error": true
+    },
+    "thread": {
+      "exception_type": "ValueError",
+      "message": "Link 'broken': Expected a nonempty triangle mesh",
+      "cause_type": "ValueError",
+      "cause_contains_original_error": true
+    },
+    "process": {
+      "exception_type": "ValueError",
+      "message": "Link 'broken': Expected a nonempty triangle mesh",
+      "cause_type": "_RemoteTraceback",
+      "cause_contains_original_error": true
+    }
+  },
+  "verification": {
+    "targeted_tests": "tests/test_parallel.py tests/test_assets_and_exports.py tests/test_output_safety.py tests/test_cli.py",
+    "passed": 63,
+    "elapsed_s": 5.92,
+    "ruff_check": true,
+    "ruff_format_check": true,
+    "git_diff_check": true
+  },
+  "full_suite_scope": "The preceding round5 full suites remain historical evidence for their frozen source; this naming/docstring-only change uses targeted tests plus AST alpha-renaming and byte-equality checks.",
+  "preparation_evidence": {
+    "files": {
+      "src/assetspheres/parallel.py": {
+        "before_sha256": "957a2337520d5653f0366ae3717444e429e2c946a63d681a323f8c882be3b0ad",
+        "candidate_path": "/tmp/assetspheres-readability-patch/parallel.py",
+        "candidate_sha256": "6df9a8e856e4e097145e8c688048640e1d2c486005d4497670efb13673f9b884"
+      },
+      "src/assetspheres/export.py": {
+        "before_sha256": "6a5e5f9a5ba736c7ec1580dba11c685b0fa593b1a4361cdc4472319b37e4b2b3",
+        "candidate_path": "/tmp/assetspheres-readability-patch/export.py",
+        "candidate_sha256": "88c1e595c22a5bd2eda3e8364092c15a236995d02da6242d461f4551e7dadf8f"
+      }
+    },
+    "functions": [
+      "_urdf",
+      "make_scene",
+      "fit_links"
+    ],
+    "node_path_literals_intended_unchanged": true,
+    "repository_modified": false,
+    "patch_path": "/tmp/assetspheres-parallel-export-readability.patch",
+    "alpha_renaming_and_docstring_only_ast_verified": true,
+    "dynamic_smoke_checks": {
+      "urdf": {
+        "urdf_bytes_equal": true,
+        "scene_node_names_and_transforms_equal": true,
+        "shared_geometry_names_vertices_faces_and_colors_equal": true,
+        "glb_bytes_equal": true
+      },
+      "standalone": {
+        "urdf_bytes_equal": true,
+        "scene_node_names_and_transforms_equal": true,
+        "shared_geometry_names_vertices_faces_and_colors_equal": true,
+        "glb_bytes_equal": true
+      }
+    }
+  },
+  "applied_source_matches_prepared_candidate": true
+}

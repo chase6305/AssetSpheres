@@ -57,12 +57,14 @@ def test_open_mesh_requires_explicit_fallback():
 
 
 def test_memory_limit_checked_before_voxelizing(monkeypatch):
+    import assetspheres.voxel_fit as module
+
     mesh = trimesh.creation.box()
 
     def forbidden(*args, **kwargs):
         pytest.fail("Voxelization should not run after a grid-budget failure")
 
-    monkeypatch.setattr(mesh, "voxelized", forbidden)
+    monkeypatch.setattr(module, "subdivide_surface_grid", forbidden)
     with pytest.raises(ValueError, match="limit"):
         fit_mesh(mesh, FitConfig(voxel_size=1e-6))
 

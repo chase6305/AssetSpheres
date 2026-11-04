@@ -1,0 +1,4517 @@
+{
+  "recorded_at_utc": "2026-11-03T16:00:24.573112+00:00",
+  "scope": "Round 5: one early array release in slab; accurate quality reference descriptions and non-intersecting parity test input; rejected union filtering prototype",
+  "source_modules_sha256": "f1d5cf02145886af7020c2d727f96cfae14503a17360dd86ff0cb677f2ad45fc",
+  "source_modules": {
+    "__init__.py": "572c1060d5d623d8a84c2caae9eecbf4da3eed1c278c163ab6ae0b0cb673ac33",
+    "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "asset.py": "8f39e59f179171fcb8ddd0b594d5210f676af2e13dddeef4dceb8b251fe19941",
+    "cli.py": "96d2d47edf3110f0b11a7f5dcd2f1ce29bdc99875dc7f23417a835ec63800943",
+    "enclosing.py": "4c9d17a3813ad6a078923fe3c44a9a338a6d3df94168f7e78d40360f31c019e5",
+    "export.py": "6a5e5f9a5ba736c7ec1580dba11c685b0fa593b1a4361cdc4472319b37e4b2b3",
+    "fit.py": "84af6fc60fa8f2b611f464aa74e0233b30e9e9c28d4dd2b9547173807cf3b2c6",
+    "geometry.py": "6791746f448360f2cb2e474f10bde0f6dfa20ef5ee6631202600489f9507443c",
+    "model.py": "1e4b5d6dc619beaa4fc8f815686cd1c4f468803abe111c3599032e6532aa5b2b",
+    "parallel.py": "957a2337520d5653f0366ae3717444e429e2c946a63d681a323f8c882be3b0ad",
+    "quality.py": "8e173ced80b6c36e54e910a5b711565b3e6ca912e97f12b5e1635976270badd6",
+    "refine.py": "e219b4f1aa760e266f4a6f2f44d87b3db1af9647ea3c439ab0c2ae4c2d971309",
+    "slab.py": "af93fbb2e8cd5bad527af281082b8bc609fae72399b71c1eb76ef39ea307a550",
+    "surface_fit.py": "ec92cae332eb0c37c37ce4ac7c71e91208435c89ccca24adde37bbcd6c4e1400",
+    "surface_grid.py": "408c2626ca0a3ce663b7c4b3124bbc75f80777e7451664bb970128f1f995e141",
+    "tensor_backend.py": "532acd3985e3491a7a16db7089ab4a69ee84e6576e05704a9efde7d07f4b5374",
+    "viewer.py": "cecc39904ba3d5233983ae15d273c3e4944e6f9befcd674d5b4cb8a244809ba8",
+    "voxel_fit.py": "5e5c36be64c36732409ee0f114da33a1b24b95d42bf913d62b019cd0c755d3ee",
+    "voxelization.py": "97e82ec8436b8c78c59ac2781ea8b32808effb766bd4fc7c677fa5da084d0f59",
+    "warp_queries.py": "38665fcfae9b6e2d8ce3582a8cf9f22cea7a1bc0b0cd1c73663128b2a48fd887"
+  },
+  "changed_modules_from_round4": [
+    "quality.py",
+    "slab.py"
+  ],
+  "refine_module_unchanged_from_round4": true,
+  "slab": {
+    "implementation": "del relative, triangles, cross after the nondegenerate-triangle check and before PCA; no new helper or changed arithmetic",
+    "before_sha256": "32ca74dabf4d9ae443b2296d1b3c6d3096f54de74d1d9dfe63804117d8f3f358",
+    "after_sha256": "af93fbb2e8cd5bad527af281082b8bc609fae72399b71c1eb76ef39ea307a550",
+    "evidence": {
+      "recommendation": "Use one early release of relative, triangles, cross after the degeneracy check; no new helper or long release list",
+      "candidate_line": "del relative, triangles, cross",
+      "location": "Immediately after the nondegenerate-triangle check, before centered = normalized - normalized.mean(axis=0)",
+      "numerical_changes": false,
+      "all_measured_outputs_json_exact": true,
+      "three_common_shapes_plus_real_link_checked": true,
+      "extra_scale_translation_checks": [
+        {
+          "scale": 1.0,
+          "translation": 0.0,
+          "all_variants_exact": true
+        },
+        {
+          "scale": 1e-09,
+          "translation": 0.0,
+          "all_variants_exact": true
+        },
+        {
+          "scale": 1.0,
+          "translation": 1000000000000.0,
+          "all_variants_exact": true
+        }
+      ],
+      "all_arrays_scope_probe": {
+        "box": {
+          "median_s": {
+            "reference": 0.01903502905042842,
+            "release_group": 0.02204928797436878,
+            "preparation_scope": 0.021840491041075438
+          },
+          "traced_peak_bytes": {
+            "reference": 74961,
+            "release_group": 72557,
+            "preparation_scope": 70351
+          }
+        },
+        "cylinder": {
+          "median_s": {
+            "reference": 0.03311893797945231,
+            "release_group": 0.03261299600126222,
+            "preparation_scope": 0.03248181601520628
+          },
+          "traced_peak_bytes": {
+            "reference": 264148,
+            "release_group": 232400,
+            "preparation_scope": 231823
+          }
+        },
+        "torus": {
+          "median_s": {
+            "reference": 0.04373562498949468,
+            "release_group": 0.04360558796906844,
+            "preparation_scope": 0.044601139961741865
+          },
+          "traced_peak_bytes": {
+            "reference": 919002,
+            "release_group": 590033,
+            "preparation_scope": 589183
+          }
+        },
+        "G1/left_rubber_hand/16": {
+          "median_s": {
+            "reference": 0.2290584470028989,
+            "release_group": 0.2162693600403145,
+            "preparation_scope": 0.21213454200187698
+          },
+          "traced_peak_bytes": {
+            "reference": 16947446,
+            "release_group": 11261404,
+            "preparation_scope": 11261404
+          }
+        },
+        "G1/left_rubber_hand/48": {
+          "median_s": {
+            "reference": 0.42867249599657953,
+            "release_group": 0.40175400202861056,
+            "preparation_scope": 0.40033509297063574
+          },
+          "traced_peak_bytes": {
+            "reference": 15085734,
+            "release_group": 11261404,
+            "preparation_scope": 11261404
+          }
+        }
+      },
+      "minimal_candidate": {
+        "torus": {
+          "vertices": 1024,
+          "faces": 2048,
+          "count": 24,
+          "reference_median_s": 0.0392050719819963,
+          "candidate_median_s": 0.03866106900386512,
+          "speedup": 1.014071079567841,
+          "reference_traced_peak_bytes": 920133,
+          "candidate_traced_peak_bytes": 671654,
+          "peak_reduction_fraction": 0.27004683018650566
+        },
+        "G1/left_rubber_hand/16": {
+          "vertices": 24200,
+          "faces": 45748,
+          "count": 16,
+          "reference_median_s": 0.23526528297225013,
+          "candidate_median_s": 0.221043016994372,
+          "speedup": 1.0643416207906728,
+          "reference_traced_peak_bytes": 16953167,
+          "candidate_traced_peak_bytes": 11393704,
+          "peak_reduction_fraction": 0.3279306456427876
+        },
+        "G1/left_rubber_hand/48": {
+          "vertices": 24200,
+          "faces": 45748,
+          "count": 48,
+          "reference_median_s": 0.3951086869928986,
+          "candidate_median_s": 0.40037168195704,
+          "speedup": 0.9868547272414083,
+          "reference_traced_peak_bytes": 15092901,
+          "candidate_traced_peak_bytes": 11261404,
+          "peak_reduction_fraction": 0.25386087141232827
+        }
+      },
+      "timing_note": "Main benefit is peak allocation; full-call timing is close/noisy and no universal speedup is claimed",
+      "repository_modified": false,
+      "minimal_candidate_extra_checks": [
+        {
+          "scale": 1.0,
+          "offset": 0.0,
+          "spheres_and_details_json_exact": true
+        },
+        {
+          "scale": 1e-09,
+          "offset": 0.0,
+          "spheres_and_details_json_exact": true
+        },
+        {
+          "scale": 1.0,
+          "offset": 1000000000000.0,
+          "spheres_and_details_json_exact": true
+        }
+      ],
+      "dead_array_reference_check": {
+        "pca_relative_line": 33,
+        "names": {
+          "relative": {
+            "last_load_relative_line": 27,
+            "loads_at_or_after_pca": []
+          },
+          "triangles": {
+            "last_load_relative_line": 29,
+            "loads_at_or_after_pca": []
+          },
+          "cross": {
+            "last_load_relative_line": 30,
+            "loads_at_or_after_pca": []
+          }
+        }
+      },
+      "implemented_source_sha256": "af93fbb2e8cd5bad527af281082b8bc609fae72399b71c1eb76ef39ea307a550",
+      "implementation_equivalence": {
+        "implemented_source_path": "/home/ubuntu/workspace/chase/AssetSpheres/src/assetspheres/slab.py",
+        "implemented_source_sha256": "af93fbb2e8cd5bad527af281082b8bc609fae72399b71c1eb76ef39ea307a550",
+        "measured_prechange_source_sha256": "32ca74dabf4d9ae443b2296d1b3c6d3096f54de74d1d9dfe63804117d8f3f358",
+        "reconstructed_prechange_source_sha256": "32ca74dabf4d9ae443b2296d1b3c6d3096f54de74d1d9dfe63804117d8f3f358",
+        "exact_prechange_module_bytes_reconstructed": true,
+        "production_ast_equals_measured_minimal_prototype": true,
+        "production_without_release_ast_equals_original": true,
+        "release_statement_count": 1,
+        "released_names": [
+          "relative",
+          "triangles",
+          "cross"
+        ],
+        "post_release_loads": {
+          "relative": [],
+          "triangles": [],
+          "cross": []
+        },
+        "performance_measurement_repeated": false
+      }
+    },
+    "paired_minimal_candidate_raw": {
+      "scope": "Paired warm full slab_spheres calls, no mesh loading; existing arithmetic order unchanged",
+      "source_sha256": "32ca74dabf4d9ae443b2296d1b3c6d3096f54de74d1d9dfe63804117d8f3f358",
+      "memory_scope": "tracemalloc peak allocations, not RSS; meshes loaded before measurement",
+      "variants": {
+        "release_triangles": "one early release statement",
+        "release_relative_and_triangles": "one early release statement"
+      },
+      "cases": {
+        "torus": {
+          "vertices": 1024,
+          "faces": 2048,
+          "slab_count": 24,
+          "sphere_and_details_json_exact": true,
+          "times_s": {
+            "reference": [
+              0.04584805999184027,
+              0.03709873202024028,
+              0.038401275989599526,
+              0.037608689977787435,
+              0.07038242800626904,
+              0.039951630984432995,
+              0.037039189017377794,
+              0.0392050719819963,
+              0.051808680000249296
+            ],
+            "release_triangles": [
+              0.04741311201360077,
+              0.03883743396727368,
+              0.03633491101209074,
+              0.03789536497788504,
+              0.037392490019556135,
+              0.039494913013186306,
+              0.036202660005073994,
+              0.03803917800541967,
+              0.05332728399662301
+            ],
+            "release_relative_and_triangles": [
+              0.03866106900386512,
+              0.03837978502269834,
+              0.04318649502238259,
+              0.03685147198848426,
+              0.043430227029602975,
+              0.03943865600740537,
+              0.0379008449963294,
+              0.042963010026142,
+              0.036649297981057316
+            ]
+          },
+          "median_s": {
+            "reference": 0.0392050719819963,
+            "release_triangles": 0.03803917800541967,
+            "release_relative_and_triangles": 0.03866106900386512
+          },
+          "traced_peak_bytes": {
+            "reference": 920133,
+            "release_triangles": 721607,
+            "release_relative_and_triangles": 671654
+          },
+          "speedups": {
+            "reference": 1.0,
+            "release_triangles": 1.0306498204669543,
+            "release_relative_and_triangles": 1.014071079567841
+          }
+        },
+        "G1/left_rubber_hand/16": {
+          "vertices": 24200,
+          "faces": 45748,
+          "slab_count": 16,
+          "sphere_and_details_json_exact": true,
+          "times_s": {
+            "reference": [
+              0.20119477598927915,
+              0.2508654640405439,
+              0.2059817969566211,
+              0.23526528297225013,
+              0.24033898703055456,
+              0.2524598370073363,
+              0.21868228301173076,
+              0.21531087899347767,
+              0.2763182049966417
+            ],
+            "release_triangles": [
+              0.20051316200988367,
+              0.19791359396185726,
+              0.20196986600058153,
+              0.22260950598865747,
+              0.215543694968801,
+              0.21259543497581035,
+              0.24332526698708534,
+              0.22091845801332965,
+              0.27909170201746747
+            ],
+            "release_relative_and_triangles": [
+              0.20622482005273923,
+              0.1989659730461426,
+              0.202621835982427,
+              0.2291593260015361,
+              0.2708644330268726,
+              0.26483153301524,
+              0.221043016994372,
+              0.21214025700464845,
+              0.24495149299036711
+            ]
+          },
+          "median_s": {
+            "reference": 0.23526528297225013,
+            "release_triangles": 0.215543694968801,
+            "release_relative_and_triangles": 0.221043016994372
+          },
+          "traced_peak_bytes": {
+            "reference": 16953167,
+            "release_triangles": 12554959,
+            "release_relative_and_triangles": 11393704
+          },
+          "speedups": {
+            "reference": 1.0,
+            "release_triangles": 1.091496937575946,
+            "release_relative_and_triangles": 1.0643416207906728
+          }
+        },
+        "G1/left_rubber_hand/48": {
+          "vertices": 24200,
+          "faces": 45748,
+          "slab_count": 48,
+          "sphere_and_details_json_exact": true,
+          "times_s": {
+            "reference": [
+              0.4212238140171394,
+              0.35104089800734073,
+              0.319639355991967,
+              0.42625707801198587,
+              0.3951086869928986,
+              0.3651416830252856,
+              0.3901886999956332,
+              0.4308598359930329,
+              0.40184634004253894
+            ],
+            "release_triangles": [
+              0.41353966802125797,
+              0.49006064201239496,
+              0.3141752179944888,
+              0.36040181800490245,
+              0.39003867097198963,
+              0.3795973079977557,
+              0.36840385396499187,
+              0.4278046619729139,
+              0.40275443298742175
+            ],
+            "release_relative_and_triangles": [
+              0.38259583903709427,
+              0.3776799290208146,
+              0.416946811019443,
+              0.359532869013492,
+              0.4428474440355785,
+              0.3787113029975444,
+              0.401716981024947,
+              0.40037168195704,
+              0.420567054010462
+            ]
+          },
+          "median_s": {
+            "reference": 0.3951086869928986,
+            "release_triangles": 0.39003867097198963,
+            "release_relative_and_triangles": 0.40037168195704
+          },
+          "traced_peak_bytes": {
+            "reference": 15092901,
+            "release_triangles": 11261404,
+            "release_relative_and_triangles": 11261404
+          },
+          "speedups": {
+            "reference": 1.0,
+            "release_triangles": 1.0129987521705843,
+            "release_relative_and_triangles": 0.9868547272414083
+          }
+        }
+      },
+      "extra_exact_output_checks": [
+        {
+          "shape": "box",
+          "all_variants_exact": true
+        },
+        {
+          "shape": "cylinder",
+          "all_variants_exact": true
+        }
+      ]
+    },
+    "memory_scope": "tracemalloc-visible peak allocations, not RSS or all native memory",
+    "timing_scope": "Shared host; warm paired complete slab calls. Main measured gain is peak allocation, not a universal wall speedup."
+  },
+  "quality": {
+    "implementation": "Only reference wording and its per-component surface precondition were corrected. Production point classification and sampling code remain unchanged.",
+    "before_sha256": "2fc5f18e40f87d74c47df15b0345b0c18581a6fad362353a5009c06e3870cd45",
+    "after_sha256": "8e173ced80b6c36e54e910a5b711565b3e6ca912e97f12b5e1635976270badd6",
+    "union_reference": "component-wise mesh.contains union, common domain; Monte Carlo estimate",
+    "single_parity_reference": "original mesh.contains, common domain; Monte Carlo estimate",
+    "rejected_union_filtering": {
+      "decision": "Keep the current classification loop: filtering helps nested/intersecting cases but increases CPU and allocation peak for disjoint small shells; no new adaptive threshold was introduced.",
+      "evidence": {
+        "source_sha256": "2fc5f18e40f87d74c47df15b0345b0c18581a6fad362353a5009c06e3870cd45",
+        "prototype_sha256": "f2ec0eadadaf2c4b10ceb9a798d00849df44e6b12fc38996487702cc7b82bdda",
+        "python": "3.11.15",
+        "versions": {
+          "numpy": "2.4.6",
+          "scipy": "1.17.1",
+          "trimesh": "5.2.0",
+          "PyYAML": "6.0.3",
+          "defusedxml": "0.7.1",
+          "rtree": "1.4.1"
+        },
+        "configuration": {
+          "surface_samples": 6000,
+          "volume_samples": 20000,
+          "models": 3,
+          "seed": 73001,
+          "paired_timing_rounds": 7,
+          "separate_memory_rounds": 3,
+          "timing": "7 alternating original/prototype full-function pairs; perf_counter and process_time; tracemalloc disabled",
+          "memory": "3 alternating full-function pairs under tracemalloc; Python allocation peaks only; contains native memory is not tracked",
+          "single_parity": "original contains branch retained; no remaining_indices/fancy-indexing branch is executed"
+        },
+        "contains_risks": [
+          "Trimesh documents behavior for surface points as undefined.",
+          "Conflicting non-free-space forward/backward ray parity invokes one random-direction recursive retry; filtering can change batches and RNG fallback consumption.",
+          "Exact output equivalence is established for these regular watertight box scenarios, not arbitrary degenerate inputs or boundary samples."
+        ],
+        "cases": {
+          "nested_2": {
+            "component_sizes": [
+              1.0,
+              0.2
+            ],
+            "component_centers": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "exact_reports_equal_except_reference": true,
+            "original_volume_sample_sequence_equal": true,
+            "interior_points": 17885,
+            "original_queries": {
+              "contains_calls": 20,
+              "queried_points": 40000,
+              "queried_points_by_component": [
+                20000,
+                20000
+              ],
+              "max_batch_size": 2048,
+              "sample_order_preserved": true,
+              "fallback_calls": 0
+            },
+            "prototype_queries": {
+              "contains_calls": 12,
+              "queried_points": 22115,
+              "queried_points_by_component": [
+                20000,
+                2115
+              ],
+              "max_batch_size": 2048,
+              "sample_order_preserved": true,
+              "fallback_calls": 0
+            },
+            "timings": {
+              "original": [
+                {
+                  "round": 0,
+                  "order": 0,
+                  "wall_s": 0.5111911009880714,
+                  "cpu_s": 0.3522260369999999,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 1,
+                  "order": 1,
+                  "wall_s": 0.5158191829686984,
+                  "cpu_s": 0.3693778160000001,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 2,
+                  "order": 0,
+                  "wall_s": 0.49355639598798007,
+                  "cpu_s": 0.36312089300000006,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 3,
+                  "order": 1,
+                  "wall_s": 0.5248604479711503,
+                  "cpu_s": 0.3756796590000002,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 4,
+                  "order": 0,
+                  "wall_s": 0.5630082070128992,
+                  "cpu_s": 0.37599840999999934,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 5,
+                  "order": 1,
+                  "wall_s": 0.6005866780178621,
+                  "cpu_s": 0.3700795459999995,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 6,
+                  "order": 0,
+                  "wall_s": 0.45937454397790134,
+                  "cpu_s": 0.3631953450000003,
+                  "fallback_calls": 0
+                }
+              ],
+              "prototype": [
+                {
+                  "round": 0,
+                  "order": 1,
+                  "wall_s": 0.465414359990973,
+                  "cpu_s": 0.35574724999999985,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 1,
+                  "order": 0,
+                  "wall_s": 0.4409309690236114,
+                  "cpu_s": 0.3534193489999997,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 2,
+                  "order": 1,
+                  "wall_s": 0.4631157069816254,
+                  "cpu_s": 0.3502989829999996,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 3,
+                  "order": 0,
+                  "wall_s": 0.4244181680260226,
+                  "cpu_s": 0.3536007200000002,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 4,
+                  "order": 1,
+                  "wall_s": 0.5688569699996151,
+                  "cpu_s": 0.36416236900000065,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 5,
+                  "order": 0,
+                  "wall_s": 0.4646138639654964,
+                  "cpu_s": 0.35233929099999983,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 6,
+                  "order": 1,
+                  "wall_s": 0.5498408289859071,
+                  "cpu_s": 0.37188196399999995,
+                  "fallback_calls": 0
+                }
+              ]
+            },
+            "memory_peaks_bytes": {
+              "original": [
+                6779070,
+                6778899,
+                6779013
+              ],
+              "prototype": [
+                6990100,
+                6990157,
+                6989986
+              ]
+            },
+            "original_median_wall_s": 0.5158191829686984,
+            "original_median_cpu_s": 0.3693778160000001,
+            "original_median_tracemalloc_peak_bytes": 6779013,
+            "prototype_median_wall_s": 0.4646138639654964,
+            "prototype_median_cpu_s": 0.3536007200000002,
+            "prototype_median_tracemalloc_peak_bytes": 6990100,
+            "wall_speedup": 1.1102104843927014,
+            "cpu_speedup": 1.0446183933109634,
+            "wall_change_percent": -9.926990056573626,
+            "pairwise_wall_changes_percent": [
+              -8.95491742884753,
+              -14.518307270792508,
+              -6.167621218932807,
+              -19.136949704133286,
+              1.0388415148949726,
+              -22.63999835979075,
+              19.69336050374566
+            ],
+            "pairwise_cpu_changes_percent": [
+              0.9997026426527222,
+              -4.3203642202487735,
+              -3.531030642183519,
+              -5.8770653324086375,
+              -3.1478965562643513,
+              -4.793632934255621,
+              2.3917209071056877
+            ],
+            "cpu_change_percent": -4.271262462605463,
+            "timed_fallback_calls": {
+              "original": 0,
+              "prototype": 0
+            }
+          },
+          "nested_5": {
+            "component_sizes": [
+              1.0,
+              0.8,
+              0.6,
+              0.3999999999999999,
+              0.2
+            ],
+            "component_centers": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "exact_reports_equal_except_reference": true,
+            "original_volume_sample_sequence_equal": true,
+            "interior_points": 17885,
+            "original_queries": {
+              "contains_calls": 50,
+              "queried_points": 100000,
+              "queried_points_by_component": [
+                20000,
+                20000,
+                20000,
+                20000,
+                20000
+              ],
+              "max_batch_size": 2048,
+              "sample_order_preserved": true,
+              "fallback_calls": 0
+            },
+            "prototype_queries": {
+              "contains_calls": 18,
+              "queried_points": 28460,
+              "queried_points_by_component": [
+                20000,
+                2115,
+                2115,
+                2115,
+                2115
+              ],
+              "max_batch_size": 2048,
+              "sample_order_preserved": true,
+              "fallback_calls": 0
+            },
+            "timings": {
+              "original": [
+                {
+                  "round": 0,
+                  "order": 0,
+                  "wall_s": 0.9284243599977344,
+                  "cpu_s": 0.6712006060000029,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 1,
+                  "order": 1,
+                  "wall_s": 1.1475625039893202,
+                  "cpu_s": 0.6898853809999999,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 2,
+                  "order": 0,
+                  "wall_s": 0.9350834359647706,
+                  "cpu_s": 0.6834704550000019,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 3,
+                  "order": 1,
+                  "wall_s": 0.9990294229937717,
+                  "cpu_s": 0.6833896579999994,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 4,
+                  "order": 0,
+                  "wall_s": 0.9190320579800755,
+                  "cpu_s": 0.673554867,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 5,
+                  "order": 1,
+                  "wall_s": 0.9057547320262529,
+                  "cpu_s": 0.6738133439999991,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 6,
+                  "order": 0,
+                  "wall_s": 1.0264535789610818,
+                  "cpu_s": 0.6900285460000006,
+                  "fallback_calls": 0
+                }
+              ],
+              "prototype": [
+                {
+                  "round": 0,
+                  "order": 1,
+                  "wall_s": 0.4254610399948433,
+                  "cpu_s": 0.3622200099999979,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 1,
+                  "order": 0,
+                  "wall_s": 0.6259425159660168,
+                  "cpu_s": 0.3771811519999986,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 2,
+                  "order": 1,
+                  "wall_s": 0.4980815990129486,
+                  "cpu_s": 0.3778048809999994,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 3,
+                  "order": 0,
+                  "wall_s": 0.4150742649799213,
+                  "cpu_s": 0.3668641679999993,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 4,
+                  "order": 1,
+                  "wall_s": 0.5708679610397667,
+                  "cpu_s": 0.3771171500000001,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 5,
+                  "order": 0,
+                  "wall_s": 0.6180649510351941,
+                  "cpu_s": 0.3853112299999992,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 6,
+                  "order": 1,
+                  "wall_s": 0.6277341160457581,
+                  "cpu_s": 0.3715300660000018,
+                  "fallback_calls": 0
+                }
+              ]
+            },
+            "memory_peaks_bytes": {
+              "original": [
+                6824941,
+                6824884,
+                6824775
+              ],
+              "prototype": [
+                7033504,
+                7033497,
+                7033157
+              ]
+            },
+            "original_median_wall_s": 0.9350834359647706,
+            "original_median_cpu_s": 0.6833896579999994,
+            "original_median_tracemalloc_peak_bytes": 6824884,
+            "prototype_median_wall_s": 0.5708679610397667,
+            "prototype_median_cpu_s": 0.3771171500000001,
+            "prototype_median_tracemalloc_peak_bytes": 7033497,
+            "wall_speedup": 1.6380030055665231,
+            "cpu_speedup": 1.8121415533608036,
+            "wall_change_percent": -38.95005097050247,
+            "pairwise_wall_changes_percent": [
+              -54.173860755238955,
+              -45.45460366733609,
+              -46.73399400995123,
+              -58.45224820945949,
+              -37.883781519605805,
+              -31.762437536204914,
+              -38.844373587638025
+            ],
+            "pairwise_cpu_changes_percent": [
+              -46.03401624461638,
+              -45.32698294704136,
+              -44.72257312132118,
+              -46.3169856749574,
+              -44.01092346349268,
+              -42.81632540658029,
+              -46.15729042606862
+            ],
+            "cpu_change_percent": -44.81667295000234,
+            "timed_fallback_calls": {
+              "original": 0,
+              "prototype": 0
+            }
+          },
+          "intersecting_2": {
+            "component_sizes": [
+              1.0,
+              1.0
+            ],
+            "component_centers": [
+              [
+                -0.1,
+                0.0,
+                0.0
+              ],
+              [
+                0.1,
+                0.0,
+                0.0
+              ]
+            ],
+            "exact_reports_equal_except_reference": true,
+            "original_volume_sample_sequence_equal": true,
+            "interior_points": 17631,
+            "original_queries": {
+              "contains_calls": 20,
+              "queried_points": 40000,
+              "queried_points_by_component": [
+                20000,
+                20000
+              ],
+              "max_batch_size": 2048,
+              "sample_order_preserved": true,
+              "fallback_calls": 0
+            },
+            "prototype_queries": {
+              "contains_calls": 13,
+              "queried_points": 25249,
+              "queried_points_by_component": [
+                20000,
+                5249
+              ],
+              "max_batch_size": 2048,
+              "sample_order_preserved": true,
+              "fallback_calls": 0
+            },
+            "timings": {
+              "original": [
+                {
+                  "round": 0,
+                  "order": 0,
+                  "wall_s": 0.9896640549995936,
+                  "cpu_s": 0.6170883769999946,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 1,
+                  "order": 1,
+                  "wall_s": 0.8972349159885198,
+                  "cpu_s": 0.6688797060000056,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 2,
+                  "order": 0,
+                  "wall_s": 1.0987869360251352,
+                  "cpu_s": 0.6789225780000052,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 3,
+                  "order": 1,
+                  "wall_s": 1.041126037016511,
+                  "cpu_s": 0.6628030629999984,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 4,
+                  "order": 0,
+                  "wall_s": 1.0922732549952343,
+                  "cpu_s": 0.6880834019999966,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 5,
+                  "order": 1,
+                  "wall_s": 0.9260232039960101,
+                  "cpu_s": 0.6642506739999945,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 6,
+                  "order": 0,
+                  "wall_s": 0.9415511199622415,
+                  "cpu_s": 0.669933860999997,
+                  "fallback_calls": 0
+                }
+              ],
+              "prototype": [
+                {
+                  "round": 0,
+                  "order": 1,
+                  "wall_s": 0.4084585980162956,
+                  "cpu_s": 0.371474881999994,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 1,
+                  "order": 0,
+                  "wall_s": 0.4711096729733981,
+                  "cpu_s": 0.3781075549999997,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 2,
+                  "order": 1,
+                  "wall_s": 0.6283155009732582,
+                  "cpu_s": 0.4055915160000012,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 3,
+                  "order": 0,
+                  "wall_s": 0.6306361850001849,
+                  "cpu_s": 0.41113915799999745,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 4,
+                  "order": 1,
+                  "wall_s": 0.6826033130055293,
+                  "cpu_s": 0.42150299299999716,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 5,
+                  "order": 0,
+                  "wall_s": 0.6749395549995825,
+                  "cpu_s": 0.434160815999995,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 6,
+                  "order": 1,
+                  "wall_s": 0.6007749630371109,
+                  "cpu_s": 0.407470876000005,
+                  "fallback_calls": 0
+                }
+              ]
+            },
+            "memory_peaks_bytes": {
+              "original": [
+                5731350,
+                5731246,
+                5731179
+              ],
+              "prototype": [
+                5940789,
+                5940732,
+                5940730
+              ]
+            },
+            "original_median_wall_s": 0.9896640549995936,
+            "original_median_cpu_s": 0.6688797060000056,
+            "original_median_tracemalloc_peak_bytes": 5731246,
+            "prototype_median_wall_s": 0.6283155009732582,
+            "prototype_median_cpu_s": 0.407470876000005,
+            "prototype_median_tracemalloc_peak_bytes": 5940732,
+            "wall_speedup": 1.5751068586826331,
+            "cpu_speedup": 1.6415399121678513,
+            "wall_change_percent": -36.51224394792067,
+            "pairwise_wall_changes_percent": [
+              -58.727550429578514,
+              -47.49316320861659,
+              -42.817348807750555,
+              -39.42748883628353,
+              -37.506177150835065,
+              -27.114185466729346,
+              -36.193059484523424
+            ],
+            "pairwise_cpu_changes_percent": [
+              -39.80199662713835,
+              -43.471516386535946,
+              -40.25953339262816,
+              -37.96963518257029,
+              -38.74245596175575,
+              -34.63901009154284,
+              -39.1774472495268
+            ],
+            "cpu_change_percent": -39.08159085334822,
+            "timed_fallback_calls": {
+              "original": 0,
+              "prototype": 0
+            }
+          },
+          "intersecting_5": {
+            "component_sizes": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "component_centers": [
+              [
+                -0.4,
+                0.0,
+                0.0
+              ],
+              [
+                -0.2,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.2,
+                0.0,
+                0.0
+              ],
+              [
+                0.4,
+                0.0,
+                0.0
+              ]
+            ],
+            "exact_reports_equal_except_reference": true,
+            "original_volume_sample_sequence_equal": true,
+            "interior_points": 16893,
+            "original_queries": {
+              "contains_calls": 50,
+              "queried_points": 100000,
+              "queried_points_by_component": [
+                20000,
+                20000,
+                20000,
+                20000,
+                20000
+              ],
+              "max_batch_size": 2048,
+              "sample_order_preserved": true,
+              "fallback_calls": 0
+            },
+            "prototype_queries": {
+              "contains_calls": 28,
+              "queried_points": 51026,
+              "queried_points_by_component": [
+                20000,
+                10570,
+                8700,
+                6815,
+                4941
+              ],
+              "max_batch_size": 2048,
+              "sample_order_preserved": true,
+              "fallback_calls": 0
+            },
+            "timings": {
+              "original": [
+                {
+                  "round": 0,
+                  "order": 0,
+                  "wall_s": 1.1633842369774356,
+                  "cpu_s": 0.9692749179999964,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 1,
+                  "order": 1,
+                  "wall_s": 1.1924264159752056,
+                  "cpu_s": 0.9599961910000019,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 2,
+                  "order": 0,
+                  "wall_s": 1.1929593950044364,
+                  "cpu_s": 0.9485893839999875,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 3,
+                  "order": 1,
+                  "wall_s": 1.2683514799573459,
+                  "cpu_s": 0.9849658269999964,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 4,
+                  "order": 0,
+                  "wall_s": 1.23081102600554,
+                  "cpu_s": 0.9902227190000019,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 5,
+                  "order": 1,
+                  "wall_s": 1.3618145160144195,
+                  "cpu_s": 1.0286499719999966,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 6,
+                  "order": 0,
+                  "wall_s": 1.3720573320169933,
+                  "cpu_s": 1.029112522999995,
+                  "fallback_calls": 0
+                }
+              ],
+              "prototype": [
+                {
+                  "round": 0,
+                  "order": 1,
+                  "wall_s": 0.42743185302242637,
+                  "cpu_s": 0.3729269100000039,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 1,
+                  "order": 0,
+                  "wall_s": 0.42897947295568883,
+                  "cpu_s": 0.368718973,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 2,
+                  "order": 1,
+                  "wall_s": 0.502038239967078,
+                  "cpu_s": 0.37321950800000536,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 3,
+                  "order": 0,
+                  "wall_s": 0.4482837470131926,
+                  "cpu_s": 0.3646058449999998,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 4,
+                  "order": 1,
+                  "wall_s": 0.4750233609811403,
+                  "cpu_s": 0.36803943299999275,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 5,
+                  "order": 0,
+                  "wall_s": 0.5201008679578081,
+                  "cpu_s": 0.38282553800000585,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 6,
+                  "order": 1,
+                  "wall_s": 0.5494803449837491,
+                  "cpu_s": 0.39964609100000814,
+                  "fallback_calls": 0
+                }
+              ]
+            },
+            "memory_peaks_bytes": {
+              "original": [
+                4091636,
+                4091016,
+                4091121
+              ],
+              "prototype": [
+                4234449,
+                4234117,
+                4233959
+              ]
+            },
+            "original_median_wall_s": 1.23081102600554,
+            "original_median_cpu_s": 0.9849658269999964,
+            "original_median_tracemalloc_peak_bytes": 4091121,
+            "prototype_median_wall_s": 0.4750233609811403,
+            "prototype_median_cpu_s": 0.3729269100000039,
+            "prototype_median_tracemalloc_peak_bytes": 4234117,
+            "wall_speedup": 2.5910536767357146,
+            "cpu_speedup": 2.6411765967759906,
+            "wall_change_percent": -61.4056625310893,
+            "pairwise_wall_changes_percent": [
+              -63.25961454205979,
+              -64.0246586951988,
+              -57.9165693258813,
+              -64.65618922695874,
+              -61.4056625310893,
+              -61.80824467343973,
+              -59.95208566277728
+            ],
+            "pairwise_cpu_changes_percent": [
+              -61.52516658849463,
+              -61.59162125258899,
+              -60.655314691987925,
+              -62.98289392328318,
+              -62.832661184378246,
+              -62.78369237149922,
+              -61.16594812829713
+            ],
+            "cpu_change_percent": -62.13808644144918,
+            "timed_fallback_calls": {
+              "original": 0,
+              "prototype": 0
+            }
+          },
+          "disjoint_small_2": {
+            "component_sizes": [
+              0.2,
+              0.2
+            ],
+            "component_centers": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "exact_reports_equal_except_reference": true,
+            "original_volume_sample_sequence_equal": true,
+            "interior_points": 543,
+            "original_queries": {
+              "contains_calls": 20,
+              "queried_points": 40000,
+              "queried_points_by_component": [
+                20000,
+                20000
+              ],
+              "max_batch_size": 2048,
+              "sample_order_preserved": true,
+              "fallback_calls": 0
+            },
+            "prototype_queries": {
+              "contains_calls": 20,
+              "queried_points": 39731,
+              "queried_points_by_component": [
+                20000,
+                19731
+              ],
+              "max_batch_size": 2048,
+              "sample_order_preserved": true,
+              "fallback_calls": 0
+            },
+            "timings": {
+              "original": [
+                {
+                  "round": 0,
+                  "order": 0,
+                  "wall_s": 0.030747295008040965,
+                  "cpu_s": 0.026394265000007522,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 1,
+                  "order": 1,
+                  "wall_s": 0.04674813098972663,
+                  "cpu_s": 0.030163254000001416,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 2,
+                  "order": 0,
+                  "wall_s": 0.03369890799513087,
+                  "cpu_s": 0.028765405000001465,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 3,
+                  "order": 1,
+                  "wall_s": 0.0411571380100213,
+                  "cpu_s": 0.03035009499998864,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 4,
+                  "order": 0,
+                  "wall_s": 0.0307951049762778,
+                  "cpu_s": 0.02772759300000871,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 5,
+                  "order": 1,
+                  "wall_s": 0.033127329021226615,
+                  "cpu_s": 0.028193428999998105,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 6,
+                  "order": 0,
+                  "wall_s": 0.027727721026167274,
+                  "cpu_s": 0.026079843999994523,
+                  "fallback_calls": 0
+                }
+              ],
+              "prototype": [
+                {
+                  "round": 0,
+                  "order": 1,
+                  "wall_s": 0.03381276497384533,
+                  "cpu_s": 0.028309999000001085,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 1,
+                  "order": 0,
+                  "wall_s": 0.033886334975250065,
+                  "cpu_s": 0.027439763000003836,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 2,
+                  "order": 1,
+                  "wall_s": 0.03529815503861755,
+                  "cpu_s": 0.027942629999998303,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 3,
+                  "order": 0,
+                  "wall_s": 0.04758702003164217,
+                  "cpu_s": 0.031629472000005876,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 4,
+                  "order": 1,
+                  "wall_s": 0.026501915010157973,
+                  "cpu_s": 0.026411558000006607,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 5,
+                  "order": 0,
+                  "wall_s": 0.02633071900345385,
+                  "cpu_s": 0.026295200000006957,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 6,
+                  "order": 1,
+                  "wall_s": 0.025912371987942606,
+                  "cpu_s": 0.0259104160000021,
+                  "fallback_calls": 0
+                }
+              ]
+            },
+            "memory_peaks_bytes": {
+              "original": [
+                1084115,
+                1084115,
+                1084115
+              ],
+              "prototype": [
+                1230907,
+                1230736,
+                1230305
+              ]
+            },
+            "original_median_wall_s": 0.033127329021226615,
+            "original_median_cpu_s": 0.028193428999998105,
+            "original_median_tracemalloc_peak_bytes": 1084115,
+            "prototype_median_wall_s": 0.03381276497384533,
+            "prototype_median_cpu_s": 0.027439763000003836,
+            "prototype_median_tracemalloc_peak_bytes": 1230736,
+            "wall_speedup": 0.979728485583805,
+            "cpu_speedup": 1.027466199325197,
+            "wall_change_percent": 2.06909513344562,
+            "pairwise_wall_changes_percent": [
+              9.969885041928706,
+              -27.512963068626373,
+              4.745693966456588,
+              15.622762739370422,
+              -13.941144118284289,
+              -20.51662545271241,
+              -6.54705461192242
+            ],
+            "pairwise_cpu_changes_percent": [
+              7.25814490380019,
+              -9.029168404700139,
+              -2.860293467111341,
+              4.215397019408718,
+              -4.746300914045043,
+              -6.732877366535572,
+              -0.6496511251848691
+            ],
+            "cpu_change_percent": -2.6731973609677606,
+            "timed_fallback_calls": {
+              "original": 0,
+              "prototype": 0
+            }
+          },
+          "disjoint_small_5": {
+            "component_sizes": [
+              0.2,
+              0.2,
+              0.2,
+              0.2,
+              0.2
+            ],
+            "component_centers": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                -1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "exact_reports_equal_except_reference": true,
+            "original_volume_sample_sequence_equal": true,
+            "interior_points": 1371,
+            "original_queries": {
+              "contains_calls": 50,
+              "queried_points": 100000,
+              "queried_points_by_component": [
+                20000,
+                20000,
+                20000,
+                20000,
+                20000
+              ],
+              "max_batch_size": 2048,
+              "sample_order_preserved": true,
+              "fallback_calls": 0
+            },
+            "prototype_queries": {
+              "contains_calls": 50,
+              "queried_points": 97274,
+              "queried_points_by_component": [
+                20000,
+                19731,
+                19452,
+                19188,
+                18903
+              ],
+              "max_batch_size": 2048,
+              "sample_order_preserved": true,
+              "fallback_calls": 0
+            },
+            "timings": {
+              "original": [
+                {
+                  "round": 0,
+                  "order": 0,
+                  "wall_s": 0.07515596499433741,
+                  "cpu_s": 0.06856988500000227,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 1,
+                  "order": 1,
+                  "wall_s": 0.0840314159868285,
+                  "cpu_s": 0.07238378499999953,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 2,
+                  "order": 0,
+                  "wall_s": 0.11516857199603692,
+                  "cpu_s": 0.08028801600001145,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 3,
+                  "order": 1,
+                  "wall_s": 0.06218518200330436,
+                  "cpu_s": 0.059152221000005056,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 4,
+                  "order": 0,
+                  "wall_s": 0.09428746596677229,
+                  "cpu_s": 0.07582058300000938,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 5,
+                  "order": 1,
+                  "wall_s": 0.06860286794835702,
+                  "cpu_s": 0.06553148100000783,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 6,
+                  "order": 0,
+                  "wall_s": 0.1598461129469797,
+                  "cpu_s": 0.0842135930000012,
+                  "fallback_calls": 0
+                }
+              ],
+              "prototype": [
+                {
+                  "round": 0,
+                  "order": 1,
+                  "wall_s": 0.07855516200652346,
+                  "cpu_s": 0.06874983500000553,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 1,
+                  "order": 0,
+                  "wall_s": 0.0828280319692567,
+                  "cpu_s": 0.07375288400000102,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 2,
+                  "order": 1,
+                  "wall_s": 0.1106800299603492,
+                  "cpu_s": 0.08063089400000933,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 3,
+                  "order": 0,
+                  "wall_s": 0.06326656200690195,
+                  "cpu_s": 0.0631910970000007,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 4,
+                  "order": 1,
+                  "wall_s": 0.11033390800002962,
+                  "cpu_s": 0.08223243199999786,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 5,
+                  "order": 0,
+                  "wall_s": 0.11296759598189965,
+                  "cpu_s": 0.07981936400000222,
+                  "fallback_calls": 0
+                },
+                {
+                  "round": 6,
+                  "order": 1,
+                  "wall_s": 0.11260768998181447,
+                  "cpu_s": 0.07652518800000507,
+                  "fallback_calls": 0
+                }
+              ]
+            },
+            "memory_peaks_bytes": {
+              "original": [
+                1223334,
+                1222864,
+                1222765
+              ],
+              "prototype": [
+                1373325,
+                1372567,
+                1372176
+              ]
+            },
+            "original_median_wall_s": 0.0840314159868285,
+            "original_median_cpu_s": 0.07238378499999953,
+            "original_median_tracemalloc_peak_bytes": 1222864,
+            "prototype_median_wall_s": 0.11033390800002962,
+            "prototype_median_cpu_s": 0.07652518800000507,
+            "prototype_median_tracemalloc_peak_bytes": 1372567,
+            "wall_speedup": 0.7616100753614741,
+            "cpu_speedup": 0.9458818317440101,
+            "wall_change_percent": 31.300784003596817,
+            "pairwise_wall_changes_percent": [
+              4.5228572508411835,
+              -1.4320644290469087,
+              -3.8973671010196886,
+              1.7389673371706493,
+              17.01863749197825,
+              64.66891160722258,
+              -29.552437712910805
+            ],
+            "pairwise_cpu_changes_percent": [
+              0.26243299081405436,
+              1.8914443338400977,
+              0.42705999859036226,
+              6.827936350851971,
+              8.456607356854118,
+              21.803082704620525,
+              -9.129648464228346
+            ],
+            "cpu_change_percent": 5.7214512891327285,
+            "timed_fallback_calls": {
+              "original": 0,
+              "prototype": 0
+            }
+          }
+        },
+        "non_union_controls": {
+          "single": {
+            "uncontrolled_calls": [
+              {
+                "implementation": "original",
+                "fallback_calls": 0,
+                "report": {
+                  "small": {
+                    "surface_coverage": 0.0,
+                    "surface_gap_p95_m": 0.5446424841966957,
+                    "sphere_volume_sum_m3": 0.06702064327658226,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  },
+                  "large": {
+                    "surface_coverage": 0.08266666666666667,
+                    "surface_gap_p95_m": 0.2446424841966958,
+                    "sphere_volume_sum_m3": 1.0471975511965976,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  },
+                  "offset": {
+                    "surface_coverage": 0.018666666666666668,
+                    "surface_gap_p95_m": 0.39464248419669584,
+                    "sphere_volume_sum_m3": 0.35918876006043293,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  }
+                }
+              },
+              {
+                "implementation": "prototype",
+                "fallback_calls": 0,
+                "report": {
+                  "small": {
+                    "surface_coverage": 0.0,
+                    "surface_gap_p95_m": 0.5446424841966957,
+                    "sphere_volume_sum_m3": 0.06702064327658226,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  },
+                  "large": {
+                    "surface_coverage": 0.08266666666666667,
+                    "surface_gap_p95_m": 0.2446424841966958,
+                    "sphere_volume_sum_m3": 1.0471975511965976,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  },
+                  "offset": {
+                    "surface_coverage": 0.018666666666666668,
+                    "surface_gap_p95_m": 0.39464248419669584,
+                    "sphere_volume_sum_m3": 0.35918876006043293,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  }
+                }
+              },
+              {
+                "implementation": "original",
+                "fallback_calls": 0,
+                "report": {
+                  "small": {
+                    "surface_coverage": 0.0,
+                    "surface_gap_p95_m": 0.5446424841966957,
+                    "sphere_volume_sum_m3": 0.06702064327658226,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  },
+                  "large": {
+                    "surface_coverage": 0.08266666666666667,
+                    "surface_gap_p95_m": 0.2446424841966958,
+                    "sphere_volume_sum_m3": 1.0471975511965976,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  },
+                  "offset": {
+                    "surface_coverage": 0.018666666666666668,
+                    "surface_gap_p95_m": 0.39464248419669584,
+                    "sphere_volume_sum_m3": 0.35918876006043293,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  }
+                }
+              },
+              {
+                "implementation": "prototype",
+                "fallback_calls": 0,
+                "report": {
+                  "small": {
+                    "surface_coverage": 0.0,
+                    "surface_gap_p95_m": 0.5446424841966957,
+                    "sphere_volume_sum_m3": 0.06702064327658226,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  },
+                  "large": {
+                    "surface_coverage": 0.08266666666666667,
+                    "surface_gap_p95_m": 0.2446424841966958,
+                    "sphere_volume_sum_m3": 1.0471975511965976,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  },
+                  "offset": {
+                    "surface_coverage": 0.018666666666666668,
+                    "surface_gap_p95_m": 0.39464248419669584,
+                    "sphere_volume_sum_m3": 0.35918876006043293,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  }
+                }
+              }
+            ],
+            "uncontrolled_original_self_difference": {},
+            "uncontrolled_original_prototype_difference": {},
+            "fixed_fallback_calls": [
+              {
+                "implementation": "original",
+                "fallback_calls": 0,
+                "remaining_indices_lines_executed": [],
+                "report": {
+                  "small": {
+                    "surface_coverage": 0.0,
+                    "surface_gap_p95_m": 0.5446424841966957,
+                    "sphere_volume_sum_m3": 0.06702064327658226,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  },
+                  "large": {
+                    "surface_coverage": 0.08266666666666667,
+                    "surface_gap_p95_m": 0.2446424841966958,
+                    "sphere_volume_sum_m3": 1.0471975511965976,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  },
+                  "offset": {
+                    "surface_coverage": 0.018666666666666668,
+                    "surface_gap_p95_m": 0.39464248419669584,
+                    "sphere_volume_sum_m3": 0.35918876006043293,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  }
+                }
+              },
+              {
+                "implementation": "prototype",
+                "fallback_calls": 0,
+                "remaining_indices_lines_executed": [],
+                "report": {
+                  "small": {
+                    "surface_coverage": 0.0,
+                    "surface_gap_p95_m": 0.5446424841966957,
+                    "sphere_volume_sum_m3": 0.06702064327658226,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  },
+                  "large": {
+                    "surface_coverage": 0.08266666666666667,
+                    "surface_gap_p95_m": 0.2446424841966958,
+                    "sphere_volume_sum_m3": 1.0471975511965976,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  },
+                  "offset": {
+                    "surface_coverage": 0.018666666666666668,
+                    "surface_gap_p95_m": 0.39464248419669584,
+                    "sphere_volume_sum_m3": 0.35918876006043293,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  }
+                }
+              },
+              {
+                "implementation": "original",
+                "fallback_calls": 0,
+                "remaining_indices_lines_executed": [],
+                "report": {
+                  "small": {
+                    "surface_coverage": 0.0,
+                    "surface_gap_p95_m": 0.5446424841966957,
+                    "sphere_volume_sum_m3": 0.06702064327658226,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  },
+                  "large": {
+                    "surface_coverage": 0.08266666666666667,
+                    "surface_gap_p95_m": 0.2446424841966958,
+                    "sphere_volume_sum_m3": 1.0471975511965976,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  },
+                  "offset": {
+                    "surface_coverage": 0.018666666666666668,
+                    "surface_gap_p95_m": 0.39464248419669584,
+                    "sphere_volume_sum_m3": 0.35918876006043293,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  }
+                }
+              },
+              {
+                "implementation": "prototype",
+                "fallback_calls": 0,
+                "remaining_indices_lines_executed": [],
+                "report": {
+                  "small": {
+                    "surface_coverage": 0.0,
+                    "surface_gap_p95_m": 0.5446424841966957,
+                    "sphere_volume_sum_m3": 0.06702064327658226,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  },
+                  "large": {
+                    "surface_coverage": 0.08266666666666667,
+                    "surface_gap_p95_m": 0.2446424841966958,
+                    "sphere_volume_sum_m3": 1.0471975511965976,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  },
+                  "offset": {
+                    "surface_coverage": 0.018666666666666668,
+                    "surface_gap_p95_m": 0.39464248419669584,
+                    "sphere_volume_sum_m3": 0.35918876006043293,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_evaluation_skipped": "Multiple surface bodies: choose explicit parity or union-components policy"
+                  }
+                }
+              }
+            ],
+            "fixed_fallback_all_reports_exactly_equal": true,
+            "reference_unchanged": true,
+            "prototype_remaining_indices_lines_executed": []
+          },
+          "parity": {
+            "uncontrolled_calls": [
+              {
+                "implementation": "original",
+                "fallback_calls": 10,
+                "report": {
+                  "small": {
+                    "surface_coverage": 0.0,
+                    "surface_gap_p95_m": 0.5446424841966957,
+                    "sphere_volume_sum_m3": 0.06702064327658226,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.04989568845618915,
+                    "outside_volume_over_mesh": 0.021557719054242003,
+                    "sphere_precision": 0.6982968369829684,
+                    "volume_iou": 0.0488427501701838,
+                    "validation_interior_points": 11504,
+                    "validation_true_positive": 574,
+                    "validation_false_negative": 10930,
+                    "validation_false_positive": 248,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  },
+                  "large": {
+                    "surface_coverage": 0.08266666666666667,
+                    "surface_gap_p95_m": 0.2446424841966958,
+                    "sphere_volume_sum_m3": 1.0471975511965976,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.5413769123783032,
+                    "outside_volume_over_mesh": 0.32918984700973575,
+                    "sphere_precision": 0.6218671992011982,
+                    "volume_iou": 0.4072984108298999,
+                    "validation_interior_points": 11504,
+                    "validation_true_positive": 6228,
+                    "validation_false_negative": 5276,
+                    "validation_false_positive": 3787,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  },
+                  "offset": {
+                    "surface_coverage": 0.018666666666666668,
+                    "surface_gap_p95_m": 0.39464248419669584,
+                    "sphere_volume_sum_m3": 0.35918876006043293,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.2086230876216968,
+                    "outside_volume_over_mesh": 0.11326495132127956,
+                    "sphere_precision": 0.6481231433972455,
+                    "volume_iou": 0.18739751698289997,
+                    "validation_interior_points": 11504,
+                    "validation_true_positive": 2400,
+                    "validation_false_negative": 9104,
+                    "validation_false_positive": 1303,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  }
+                }
+              },
+              {
+                "implementation": "prototype",
+                "fallback_calls": 10,
+                "report": {
+                  "small": {
+                    "surface_coverage": 0.0,
+                    "surface_gap_p95_m": 0.5446424841966957,
+                    "sphere_volume_sum_m3": 0.06702064327658226,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.04895264116575592,
+                    "outside_volume_over_mesh": 0.044626593806921674,
+                    "sphere_precision": 0.5231143552311436,
+                    "volume_iou": 0.0468613775065388,
+                    "validation_interior_points": 8784,
+                    "validation_true_positive": 430,
+                    "validation_false_negative": 8354,
+                    "validation_false_positive": 392,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  },
+                  "large": {
+                    "surface_coverage": 0.08266666666666667,
+                    "surface_gap_p95_m": 0.2446424841966958,
+                    "sphere_volume_sum_m3": 1.0471975511965976,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.4959016393442623,
+                    "outside_volume_over_mesh": 0.6442395264116576,
+                    "sphere_precision": 0.4349475786320519,
+                    "volume_iou": 0.3015993907083016,
+                    "validation_interior_points": 8784,
+                    "validation_true_positive": 4356,
+                    "validation_false_negative": 4428,
+                    "validation_false_positive": 5659,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  },
+                  "offset": {
+                    "surface_coverage": 0.018666666666666668,
+                    "surface_gap_p95_m": 0.39464248419669584,
+                    "sphere_volume_sum_m3": 0.35918876006043293,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.1930783242258652,
+                    "outside_volume_over_mesh": 0.22848360655737704,
+                    "sphere_precision": 0.45800702133405347,
+                    "volume_iou": 0.15716801037901956,
+                    "validation_interior_points": 8784,
+                    "validation_true_positive": 1696,
+                    "validation_false_negative": 7088,
+                    "validation_false_positive": 2007,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  }
+                }
+              },
+              {
+                "implementation": "original",
+                "fallback_calls": 10,
+                "report": {
+                  "small": {
+                    "surface_coverage": 0.0,
+                    "surface_gap_p95_m": 0.5446424841966957,
+                    "sphere_volume_sum_m3": 0.06702064327658226,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.05063291139240506,
+                    "outside_volume_over_mesh": 0.01693243465395364,
+                    "sphere_precision": 0.7493917274939172,
+                    "volume_iou": 0.049789848043970256,
+                    "validation_interior_points": 12166,
+                    "validation_true_positive": 616,
+                    "validation_false_negative": 11550,
+                    "validation_false_positive": 206,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  },
+                  "large": {
+                    "surface_coverage": 0.08266666666666667,
+                    "surface_gap_p95_m": 0.2446424841966958,
+                    "sphere_volume_sum_m3": 1.0471975511965976,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.5309879993424297,
+                    "outside_volume_over_mesh": 0.2922077922077922,
+                    "sphere_precision": 0.6450324513230155,
+                    "volume_iou": 0.4109153361745436,
+                    "validation_interior_points": 12166,
+                    "validation_true_positive": 6460,
+                    "validation_false_negative": 5706,
+                    "validation_false_positive": 3555,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  },
+                  "offset": {
+                    "surface_coverage": 0.018666666666666668,
+                    "surface_gap_p95_m": 0.39464248419669584,
+                    "sphere_volume_sum_m3": 0.35918876006043293,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.2045043564030906,
+                    "outside_volume_over_mesh": 0.09986848594443531,
+                    "sphere_precision": 0.6718876586551444,
+                    "volume_iou": 0.18593528136910545,
+                    "validation_interior_points": 12166,
+                    "validation_true_positive": 2488,
+                    "validation_false_negative": 9678,
+                    "validation_false_positive": 1215,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  }
+                }
+              },
+              {
+                "implementation": "prototype",
+                "fallback_calls": 10,
+                "report": {
+                  "small": {
+                    "surface_coverage": 0.0,
+                    "surface_gap_p95_m": 0.5446424841966957,
+                    "sphere_volume_sum_m3": 0.06702064327658226,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.048057149042104126,
+                    "outside_volume_over_mesh": 0.040913518779088644,
+                    "sphere_precision": 0.5401459854014599,
+                    "volume_iou": 0.04616824373505251,
+                    "validation_interior_points": 9239,
+                    "validation_true_positive": 444,
+                    "validation_false_negative": 8795,
+                    "validation_false_positive": 378,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  },
+                  "large": {
+                    "surface_coverage": 0.08266666666666667,
+                    "surface_gap_p95_m": 0.2446424841966958,
+                    "sphere_volume_sum_m3": 1.0471975511965976,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.5104448533391059,
+                    "outside_volume_over_mesh": 0.5735469206624093,
+                    "sphere_precision": 0.4708936595107339,
+                    "volume_iou": 0.3243912505158894,
+                    "validation_interior_points": 9239,
+                    "validation_true_positive": 4716,
+                    "validation_false_negative": 4523,
+                    "validation_false_positive": 5299,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  },
+                  "offset": {
+                    "surface_coverage": 0.018666666666666668,
+                    "surface_gap_p95_m": 0.39464248419669584,
+                    "sphere_volume_sum_m3": 0.35918876006043293,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.1945015694339214,
+                    "outside_volume_over_mesh": 0.20629938305011364,
+                    "sphere_precision": 0.48528220361868757,
+                    "volume_iou": 0.16123822341857336,
+                    "validation_interior_points": 9239,
+                    "validation_true_positive": 1797,
+                    "validation_false_negative": 7442,
+                    "validation_false_positive": 1906,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  }
+                }
+              }
+            ],
+            "uncontrolled_original_self_difference": {
+              "small": {
+                "validation_false_negative": {
+                  "first": 10930,
+                  "second": 11550
+                },
+                "outside_volume_over_mesh": {
+                  "first": 0.021557719054242003,
+                  "second": 0.01693243465395364
+                },
+                "validation_interior_points": {
+                  "first": 11504,
+                  "second": 12166
+                },
+                "validation_true_positive": {
+                  "first": 574,
+                  "second": 616
+                },
+                "validation_false_positive": {
+                  "first": 248,
+                  "second": 206
+                },
+                "sphere_precision": {
+                  "first": 0.6982968369829684,
+                  "second": 0.7493917274939172
+                },
+                "volume_iou": {
+                  "first": 0.0488427501701838,
+                  "second": 0.049789848043970256
+                },
+                "volume_coverage": {
+                  "first": 0.04989568845618915,
+                  "second": 0.05063291139240506
+                }
+              },
+              "large": {
+                "validation_false_negative": {
+                  "first": 5276,
+                  "second": 5706
+                },
+                "outside_volume_over_mesh": {
+                  "first": 0.32918984700973575,
+                  "second": 0.2922077922077922
+                },
+                "validation_interior_points": {
+                  "first": 11504,
+                  "second": 12166
+                },
+                "validation_true_positive": {
+                  "first": 6228,
+                  "second": 6460
+                },
+                "validation_false_positive": {
+                  "first": 3787,
+                  "second": 3555
+                },
+                "sphere_precision": {
+                  "first": 0.6218671992011982,
+                  "second": 0.6450324513230155
+                },
+                "volume_iou": {
+                  "first": 0.4072984108298999,
+                  "second": 0.4109153361745436
+                },
+                "volume_coverage": {
+                  "first": 0.5413769123783032,
+                  "second": 0.5309879993424297
+                }
+              },
+              "offset": {
+                "validation_false_negative": {
+                  "first": 9104,
+                  "second": 9678
+                },
+                "outside_volume_over_mesh": {
+                  "first": 0.11326495132127956,
+                  "second": 0.09986848594443531
+                },
+                "validation_interior_points": {
+                  "first": 11504,
+                  "second": 12166
+                },
+                "validation_true_positive": {
+                  "first": 2400,
+                  "second": 2488
+                },
+                "validation_false_positive": {
+                  "first": 1303,
+                  "second": 1215
+                },
+                "sphere_precision": {
+                  "first": 0.6481231433972455,
+                  "second": 0.6718876586551444
+                },
+                "volume_iou": {
+                  "first": 0.18739751698289997,
+                  "second": 0.18593528136910545
+                },
+                "volume_coverage": {
+                  "first": 0.2086230876216968,
+                  "second": 0.2045043564030906
+                }
+              }
+            },
+            "uncontrolled_original_prototype_difference": {
+              "small": {
+                "validation_false_negative": {
+                  "first": 10930,
+                  "second": 8354
+                },
+                "outside_volume_over_mesh": {
+                  "first": 0.021557719054242003,
+                  "second": 0.044626593806921674
+                },
+                "validation_interior_points": {
+                  "first": 11504,
+                  "second": 8784
+                },
+                "validation_true_positive": {
+                  "first": 574,
+                  "second": 430
+                },
+                "validation_false_positive": {
+                  "first": 248,
+                  "second": 392
+                },
+                "sphere_precision": {
+                  "first": 0.6982968369829684,
+                  "second": 0.5231143552311436
+                },
+                "volume_iou": {
+                  "first": 0.0488427501701838,
+                  "second": 0.0468613775065388
+                },
+                "volume_coverage": {
+                  "first": 0.04989568845618915,
+                  "second": 0.04895264116575592
+                }
+              },
+              "large": {
+                "validation_false_negative": {
+                  "first": 5276,
+                  "second": 4428
+                },
+                "outside_volume_over_mesh": {
+                  "first": 0.32918984700973575,
+                  "second": 0.6442395264116576
+                },
+                "validation_interior_points": {
+                  "first": 11504,
+                  "second": 8784
+                },
+                "validation_true_positive": {
+                  "first": 6228,
+                  "second": 4356
+                },
+                "validation_false_positive": {
+                  "first": 3787,
+                  "second": 5659
+                },
+                "sphere_precision": {
+                  "first": 0.6218671992011982,
+                  "second": 0.4349475786320519
+                },
+                "volume_iou": {
+                  "first": 0.4072984108298999,
+                  "second": 0.3015993907083016
+                },
+                "volume_coverage": {
+                  "first": 0.5413769123783032,
+                  "second": 0.4959016393442623
+                }
+              },
+              "offset": {
+                "validation_false_negative": {
+                  "first": 9104,
+                  "second": 7088
+                },
+                "outside_volume_over_mesh": {
+                  "first": 0.11326495132127956,
+                  "second": 0.22848360655737704
+                },
+                "validation_interior_points": {
+                  "first": 11504,
+                  "second": 8784
+                },
+                "validation_true_positive": {
+                  "first": 2400,
+                  "second": 1696
+                },
+                "validation_false_positive": {
+                  "first": 1303,
+                  "second": 2007
+                },
+                "sphere_precision": {
+                  "first": 0.6481231433972455,
+                  "second": 0.45800702133405347
+                },
+                "volume_iou": {
+                  "first": 0.18739751698289997,
+                  "second": 0.15716801037901956
+                },
+                "volume_coverage": {
+                  "first": 0.2086230876216968,
+                  "second": 0.1930783242258652
+                }
+              }
+            },
+            "fixed_fallback_calls": [
+              {
+                "implementation": "original",
+                "fallback_calls": 10,
+                "remaining_indices_lines_executed": [],
+                "report": {
+                  "small": {
+                    "surface_coverage": 0.0,
+                    "surface_gap_p95_m": 0.5446424841966957,
+                    "sphere_volume_sum_m3": 0.06702064327658226,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.05579291279215883,
+                    "outside_volume_over_mesh": 0.013068610203568736,
+                    "sphere_precision": 0.8102189781021898,
+                    "volume_iou": 0.05507318283304391,
+                    "validation_interior_points": 11937,
+                    "validation_true_positive": 666,
+                    "validation_false_negative": 11271,
+                    "validation_false_positive": 156,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  },
+                  "large": {
+                    "surface_coverage": 0.08266666666666667,
+                    "surface_gap_p95_m": 0.2446424841966958,
+                    "sphere_volume_sum_m3": 1.0471975511965976,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.5374884811929296,
+                    "outside_volume_over_mesh": 0.30149953924771716,
+                    "sphere_precision": 0.6406390414378432,
+                    "volume_iou": 0.4129763130792997,
+                    "validation_interior_points": 11937,
+                    "validation_true_positive": 6416,
+                    "validation_false_negative": 5521,
+                    "validation_false_positive": 3599,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  },
+                  "offset": {
+                    "surface_coverage": 0.018666666666666668,
+                    "surface_gap_p95_m": 0.39464248419669584,
+                    "sphere_volume_sum_m3": 0.35918876006043293,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.22023959118706543,
+                    "outside_volume_over_mesh": 0.08997235486303092,
+                    "sphere_precision": 0.7099648933297327,
+                    "volume_iou": 0.20205979555760512,
+                    "validation_interior_points": 11937,
+                    "validation_true_positive": 2629,
+                    "validation_false_negative": 9308,
+                    "validation_false_positive": 1074,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  }
+                }
+              },
+              {
+                "implementation": "prototype",
+                "fallback_calls": 10,
+                "remaining_indices_lines_executed": [],
+                "report": {
+                  "small": {
+                    "surface_coverage": 0.0,
+                    "surface_gap_p95_m": 0.5446424841966957,
+                    "sphere_volume_sum_m3": 0.06702064327658226,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.05579291279215883,
+                    "outside_volume_over_mesh": 0.013068610203568736,
+                    "sphere_precision": 0.8102189781021898,
+                    "volume_iou": 0.05507318283304391,
+                    "validation_interior_points": 11937,
+                    "validation_true_positive": 666,
+                    "validation_false_negative": 11271,
+                    "validation_false_positive": 156,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  },
+                  "large": {
+                    "surface_coverage": 0.08266666666666667,
+                    "surface_gap_p95_m": 0.2446424841966958,
+                    "sphere_volume_sum_m3": 1.0471975511965976,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.5374884811929296,
+                    "outside_volume_over_mesh": 0.30149953924771716,
+                    "sphere_precision": 0.6406390414378432,
+                    "volume_iou": 0.4129763130792997,
+                    "validation_interior_points": 11937,
+                    "validation_true_positive": 6416,
+                    "validation_false_negative": 5521,
+                    "validation_false_positive": 3599,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  },
+                  "offset": {
+                    "surface_coverage": 0.018666666666666668,
+                    "surface_gap_p95_m": 0.39464248419669584,
+                    "sphere_volume_sum_m3": 0.35918876006043293,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.22023959118706543,
+                    "outside_volume_over_mesh": 0.08997235486303092,
+                    "sphere_precision": 0.7099648933297327,
+                    "volume_iou": 0.20205979555760512,
+                    "validation_interior_points": 11937,
+                    "validation_true_positive": 2629,
+                    "validation_false_negative": 9308,
+                    "validation_false_positive": 1074,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  }
+                }
+              },
+              {
+                "implementation": "original",
+                "fallback_calls": 10,
+                "remaining_indices_lines_executed": [],
+                "report": {
+                  "small": {
+                    "surface_coverage": 0.0,
+                    "surface_gap_p95_m": 0.5446424841966957,
+                    "sphere_volume_sum_m3": 0.06702064327658226,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.05579291279215883,
+                    "outside_volume_over_mesh": 0.013068610203568736,
+                    "sphere_precision": 0.8102189781021898,
+                    "volume_iou": 0.05507318283304391,
+                    "validation_interior_points": 11937,
+                    "validation_true_positive": 666,
+                    "validation_false_negative": 11271,
+                    "validation_false_positive": 156,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  },
+                  "large": {
+                    "surface_coverage": 0.08266666666666667,
+                    "surface_gap_p95_m": 0.2446424841966958,
+                    "sphere_volume_sum_m3": 1.0471975511965976,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.5374884811929296,
+                    "outside_volume_over_mesh": 0.30149953924771716,
+                    "sphere_precision": 0.6406390414378432,
+                    "volume_iou": 0.4129763130792997,
+                    "validation_interior_points": 11937,
+                    "validation_true_positive": 6416,
+                    "validation_false_negative": 5521,
+                    "validation_false_positive": 3599,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  },
+                  "offset": {
+                    "surface_coverage": 0.018666666666666668,
+                    "surface_gap_p95_m": 0.39464248419669584,
+                    "sphere_volume_sum_m3": 0.35918876006043293,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.22023959118706543,
+                    "outside_volume_over_mesh": 0.08997235486303092,
+                    "sphere_precision": 0.7099648933297327,
+                    "volume_iou": 0.20205979555760512,
+                    "validation_interior_points": 11937,
+                    "validation_true_positive": 2629,
+                    "validation_false_negative": 9308,
+                    "validation_false_positive": 1074,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  }
+                }
+              },
+              {
+                "implementation": "prototype",
+                "fallback_calls": 10,
+                "remaining_indices_lines_executed": [],
+                "report": {
+                  "small": {
+                    "surface_coverage": 0.0,
+                    "surface_gap_p95_m": 0.5446424841966957,
+                    "sphere_volume_sum_m3": 0.06702064327658226,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.05579291279215883,
+                    "outside_volume_over_mesh": 0.013068610203568736,
+                    "sphere_precision": 0.8102189781021898,
+                    "volume_iou": 0.05507318283304391,
+                    "validation_interior_points": 11937,
+                    "validation_true_positive": 666,
+                    "validation_false_negative": 11271,
+                    "validation_false_positive": 156,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  },
+                  "large": {
+                    "surface_coverage": 0.08266666666666667,
+                    "surface_gap_p95_m": 0.2446424841966958,
+                    "sphere_volume_sum_m3": 1.0471975511965976,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.5374884811929296,
+                    "outside_volume_over_mesh": 0.30149953924771716,
+                    "sphere_precision": 0.6406390414378432,
+                    "volume_iou": 0.4129763130792997,
+                    "validation_interior_points": 11937,
+                    "validation_true_positive": 6416,
+                    "validation_false_negative": 5521,
+                    "validation_false_positive": 3599,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  },
+                  "offset": {
+                    "surface_coverage": 0.018666666666666668,
+                    "surface_gap_p95_m": 0.39464248419669584,
+                    "sphere_volume_sum_m3": 0.35918876006043293,
+                    "sphere_count": 2,
+                    "evaluation_seed": 73001,
+                    "evaluation_domain_m": [
+                      [
+                        -0.624,
+                        -0.524,
+                        -0.524
+                      ],
+                      [
+                        0.624,
+                        0.524,
+                        0.524
+                      ]
+                    ],
+                    "evaluation_surface_samples": 6000,
+                    "self_intersection_checked": false,
+                    "volume_coverage": 0.22023959118706543,
+                    "outside_volume_over_mesh": 0.08997235486303092,
+                    "sphere_precision": 0.7099648933297327,
+                    "volume_iou": 0.20205979555760512,
+                    "validation_interior_points": 11937,
+                    "validation_true_positive": 2629,
+                    "validation_false_negative": 9308,
+                    "validation_false_positive": 1074,
+                    "evaluation_volume_samples": 20000,
+                    "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+                    "solid_policy": "parity"
+                  }
+                }
+              }
+            ],
+            "fixed_fallback_all_reports_exactly_equal": true,
+            "reference_unchanged": true,
+            "prototype_remaining_indices_lines_executed": [],
+            "geometry_caveat": "The overlapping coplanar shell combination is self-intersecting under global-parity interpretation, outside the documented non-self-intersection premise. Its baseline variation is a random-fallback diagnostic, not a claim of instability for ordinary nested shells."
+          },
+          "clean_nested_parity": {
+            "geometry": "5 nested disjoint non-self-intersecting closed surfaces",
+            "unseeded_fallback_counts": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "all_complete_reports_exactly_equal": true,
+            "validation_interior_points": [
+              11579,
+              11579,
+              11579,
+              11579
+            ],
+            "reference": "original mesh.contains, common domain; Monte Carlo estimate"
+          }
+        },
+        "source_sha256_at_end": "2fc5f18e40f87d74c47df15b0345b0c18581a6fad362353a5009c06e3870cd45",
+        "repository_source_unchanged_during_probe": true,
+        "completed": true,
+        "control_probe_note": "Initial script completed all six union cases then asserted unseeded parity equality; the independent control confirms parity baseline itself varies through random contains fallback. Fixed fallback RNG controls leave production source unchanged."
+      },
+      "raw_evidence_sha256": "de5d28cda9e0464138d714ce63d82792c290d8b0f10cb03fc433e69e08853532"
+    },
+    "test_input_correction": {
+      "reason": "The translated intersecting global-parity surface violates the non-self-intersection premise and triggers random ray fallback; use clean nested shells for the union/parity comparison.",
+      "host": {
+        "python": "3.10.0",
+        "versions": {
+          "numpy": "1.26.4",
+          "scipy": "1.15.3",
+          "trimesh": "4.12.2",
+          "rtree": "1.4.1"
+        },
+        "parameters": {
+          "surface_samples": 64,
+          "volume_samples": 12000,
+          "seed": 73001
+        },
+        "models": {
+          "model": [
+            {
+              "center": [
+                0.2,
+                0,
+                0
+              ],
+              "radius": 1.0
+            }
+          ]
+        },
+        "ray_intersector": "<class 'trimesh.ray.ray_pyembree.RayMeshIntersector'>",
+        "existing_test_translated_04_parity": {
+          "interior_counts": [
+            1253,
+            1213,
+            1107,
+            1392,
+            1293,
+            1014,
+            1146,
+            1059
+          ],
+          "fallback_counts": [
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6
+          ],
+          "all_reports_exactly_equal": false
+        },
+        "existing_test_translated_04_union": {
+          "interior_counts": [
+            1903
+          ],
+          "fallback_counts": [
+            0
+          ],
+          "all_reports_exactly_equal": true,
+          "analytical_aabb_union_interior_points": 1903,
+          "reported_count_matches_analytical_union": true
+        },
+        "strict_nested_08_union": {
+          "interior_counts": [
+            1321,
+            1321,
+            1321,
+            1321,
+            1321,
+            1321,
+            1321,
+            1321
+          ],
+          "fallback_counts": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "all_reports_exactly_equal": true,
+          "analytical_aabb_interior_points": 1321,
+          "every_count_matches_analytical_reference": true
+        },
+        "strict_nested_08_parity": {
+          "interior_counts": [
+            653,
+            653,
+            653,
+            653,
+            653,
+            653,
+            653,
+            653
+          ],
+          "fallback_counts": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "all_reports_exactly_equal": true,
+          "analytical_aabb_interior_points": 653,
+          "every_count_matches_analytical_reference": true
+        },
+        "notes": [
+          "Original overlap geometry has intersecting coplanar surface patches and is outside the documented non-self-intersection premise for global parity.",
+          "Closed nested surfaces are disjoint; union fills the interior shell and parity removes it.",
+          "No production code or dependency changed."
+        ]
+      },
+      "py311": {
+        "python": "3.11.15",
+        "versions": {
+          "numpy": "2.4.6",
+          "scipy": "1.17.1",
+          "trimesh": "5.2.0",
+          "rtree": "1.4.1"
+        },
+        "parameters": {
+          "surface_samples": 64,
+          "volume_samples": 12000,
+          "seed": 73001
+        },
+        "models": {
+          "model": [
+            {
+              "center": [
+                0.2,
+                0,
+                0
+              ],
+              "radius": 1.0
+            }
+          ]
+        },
+        "ray_intersector": "<class 'trimesh.ray.ray_triangle.RayMeshIntersector'>",
+        "existing_test_translated_04_parity": {
+          "interior_counts": [
+            1070,
+            1335,
+            1026,
+            1076,
+            1007,
+            1077,
+            1075,
+            1294
+          ],
+          "fallback_counts": [
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6
+          ],
+          "all_reports_exactly_equal": false
+        },
+        "existing_test_translated_04_union": {
+          "interior_counts": [
+            1903
+          ],
+          "fallback_counts": [
+            0
+          ],
+          "all_reports_exactly_equal": true,
+          "analytical_aabb_union_interior_points": 1903,
+          "reported_count_matches_analytical_union": true
+        },
+        "strict_nested_08_union": {
+          "interior_counts": [
+            1321,
+            1321,
+            1321,
+            1321,
+            1321,
+            1321,
+            1321,
+            1321
+          ],
+          "fallback_counts": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "all_reports_exactly_equal": true,
+          "analytical_aabb_interior_points": 1321,
+          "every_count_matches_analytical_reference": true
+        },
+        "strict_nested_08_parity": {
+          "interior_counts": [
+            653,
+            653,
+            653,
+            653,
+            653,
+            653,
+            653,
+            653
+          ],
+          "fallback_counts": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "all_reports_exactly_equal": true,
+          "analytical_aabb_interior_points": 653,
+          "every_count_matches_analytical_reference": true
+        },
+        "notes": [
+          "Original overlap geometry has intersecting coplanar surface patches and is outside the documented non-self-intersection premise for global parity.",
+          "Closed nested surfaces are disjoint; union fills the interior shell and parity removes it.",
+          "No production code or dependency changed."
+        ]
+      },
+      "independent_intersecting_union_check": "Unchanged component-wise union count equals analytical AABB union count; the intersecting global surface is not used as a parity correctness reference."
+    }
+  },
+  "tests": {
+    "main": {
+      "passed": 294,
+      "skipped": 0,
+      "elapsed_s": 42.67,
+      "versions": {
+        "python": "3.10.0",
+        "numpy": "1.26.4",
+        "scipy": "1.15.3",
+        "trimesh": "4.12.2",
+        "viser": "1.1.0",
+        "torch": "2.8.0+cu128",
+        "open3d": "0.19.0",
+        "warp-lang": "1.19.0"
+      }
+    },
+    "py312": {
+      "passed": 237,
+      "skipped": 35,
+      "elapsed_s": 16.15,
+      "versions": {
+        "python": "3.12.14",
+        "numpy": "2.5.4",
+        "scipy": "1.18.1",
+        "trimesh": "5.2.0",
+        "viser": "1.1.1"
+      }
+    },
+    "py311_geometry": {
+      "passed": 259,
+      "skipped": 5,
+      "elapsed_s": 30.18,
+      "versions": {
+        "python": "3.11.15",
+        "executable": "/tmp/assetspheres-py311-geometry/bin/python",
+        "packages": {
+          "assetspheres": "0.3.1",
+          "numpy": "2.4.6",
+          "scipy": "1.17.1",
+          "trimesh": "5.2.0",
+          "PyYAML": "6.0.3",
+          "defusedxml": "0.7.1",
+          "pytest": "9.2.0",
+          "torch": null,
+          "viser": null,
+          "rtree": "1.4.1",
+          "open3d": "0.19.0",
+          "warp-lang": "1.19.0"
+        }
+      },
+      "warnings": 0
+    },
+    "minimum_core": {
+      "passed": 224,
+      "skipped": 40,
+      "elapsed_s": 11.86,
+      "versions": {
+        "python": "3.10.12",
+        "executable": "/tmp/assetspheres-minimum-env/bin/python",
+        "packages": {
+          "assetspheres": "0.3.1",
+          "numpy": "1.24.0",
+          "scipy": "1.10.0",
+          "trimesh": "4.12.0",
+          "PyYAML": "6.0",
+          "defusedxml": "0.7.0",
+          "pytest": "7.0.0",
+          "torch": null,
+          "viser": null,
+          "rtree": null,
+          "open3d": null,
+          "warp-lang": null
+        }
+      },
+      "warning": "SciPy 1.10 SLSQP trial step clipped to bounds in torus slab test"
+    },
+    "lint": "ruff check and format check passed; 61 files formatted",
+    "diff_check": "passed"
+  },
+  "frozen_slab_asset_corpus": {
+    "status": "complete",
+    "pid": 3615217,
+    "scope": "Result-equivalence audit, not a performance benchmark",
+    "created_utc": "2026-11-03T15:50:15.074879+00:00",
+    "sources": {
+      "baseline": {
+        "directory": "/tmp/assetspheres-corpus-refined-round4/candidate",
+        "module_count": 20,
+        "all_modules_sha256": "6043156322654f890854e52cad59aa842c9d4f240a918d06b5d786de7eeb4c33",
+        "modules_sha256": {
+          "__init__.py": "572c1060d5d623d8a84c2caae9eecbf4da3eed1c278c163ab6ae0b0cb673ac33",
+          "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+          "asset.py": "8f39e59f179171fcb8ddd0b594d5210f676af2e13dddeef4dceb8b251fe19941",
+          "cli.py": "96d2d47edf3110f0b11a7f5dcd2f1ce29bdc99875dc7f23417a835ec63800943",
+          "enclosing.py": "4c9d17a3813ad6a078923fe3c44a9a338a6d3df94168f7e78d40360f31c019e5",
+          "export.py": "6a5e5f9a5ba736c7ec1580dba11c685b0fa593b1a4361cdc4472319b37e4b2b3",
+          "fit.py": "84af6fc60fa8f2b611f464aa74e0233b30e9e9c28d4dd2b9547173807cf3b2c6",
+          "geometry.py": "6791746f448360f2cb2e474f10bde0f6dfa20ef5ee6631202600489f9507443c",
+          "model.py": "1e4b5d6dc619beaa4fc8f815686cd1c4f468803abe111c3599032e6532aa5b2b",
+          "parallel.py": "957a2337520d5653f0366ae3717444e429e2c946a63d681a323f8c882be3b0ad",
+          "quality.py": "2fc5f18e40f87d74c47df15b0345b0c18581a6fad362353a5009c06e3870cd45",
+          "refine.py": "e219b4f1aa760e266f4a6f2f44d87b3db1af9647ea3c439ab0c2ae4c2d971309",
+          "slab.py": "32ca74dabf4d9ae443b2296d1b3c6d3096f54de74d1d9dfe63804117d8f3f358",
+          "surface_fit.py": "ec92cae332eb0c37c37ce4ac7c71e91208435c89ccca24adde37bbcd6c4e1400",
+          "surface_grid.py": "408c2626ca0a3ce663b7c4b3124bbc75f80777e7451664bb970128f1f995e141",
+          "tensor_backend.py": "532acd3985e3491a7a16db7089ab4a69ee84e6576e05704a9efde7d07f4b5374",
+          "viewer.py": "cecc39904ba3d5233983ae15d273c3e4944e6f9befcd674d5b4cb8a244809ba8",
+          "voxel_fit.py": "5e5c36be64c36732409ee0f114da33a1b24b95d42bf913d62b019cd0c755d3ee",
+          "voxelization.py": "97e82ec8436b8c78c59ac2781ea8b32808effb766bd4fc7c677fa5da084d0f59",
+          "warp_queries.py": "38665fcfae9b6e2d8ce3582a8cf9f22cea7a1bc0b0cd1c73663128b2a48fd887"
+        }
+      },
+      "candidate": {
+        "directory": "/tmp/assetspheres-corpus-slab-round5/candidate",
+        "module_count": 20,
+        "all_modules_sha256": "f1d5cf02145886af7020c2d727f96cfae14503a17360dd86ff0cb677f2ad45fc",
+        "modules_sha256": {
+          "__init__.py": "572c1060d5d623d8a84c2caae9eecbf4da3eed1c278c163ab6ae0b0cb673ac33",
+          "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+          "asset.py": "8f39e59f179171fcb8ddd0b594d5210f676af2e13dddeef4dceb8b251fe19941",
+          "cli.py": "96d2d47edf3110f0b11a7f5dcd2f1ce29bdc99875dc7f23417a835ec63800943",
+          "enclosing.py": "4c9d17a3813ad6a078923fe3c44a9a338a6d3df94168f7e78d40360f31c019e5",
+          "export.py": "6a5e5f9a5ba736c7ec1580dba11c685b0fa593b1a4361cdc4472319b37e4b2b3",
+          "fit.py": "84af6fc60fa8f2b611f464aa74e0233b30e9e9c28d4dd2b9547173807cf3b2c6",
+          "geometry.py": "6791746f448360f2cb2e474f10bde0f6dfa20ef5ee6631202600489f9507443c",
+          "model.py": "1e4b5d6dc619beaa4fc8f815686cd1c4f468803abe111c3599032e6532aa5b2b",
+          "parallel.py": "957a2337520d5653f0366ae3717444e429e2c946a63d681a323f8c882be3b0ad",
+          "quality.py": "8e173ced80b6c36e54e910a5b711565b3e6ca912e97f12b5e1635976270badd6",
+          "refine.py": "e219b4f1aa760e266f4a6f2f44d87b3db1af9647ea3c439ab0c2ae4c2d971309",
+          "slab.py": "af93fbb2e8cd5bad527af281082b8bc609fae72399b71c1eb76ef39ea307a550",
+          "surface_fit.py": "ec92cae332eb0c37c37ce4ac7c71e91208435c89ccca24adde37bbcd6c4e1400",
+          "surface_grid.py": "408c2626ca0a3ce663b7c4b3124bbc75f80777e7451664bb970128f1f995e141",
+          "tensor_backend.py": "532acd3985e3491a7a16db7089ab4a69ee84e6576e05704a9efde7d07f4b5374",
+          "viewer.py": "cecc39904ba3d5233983ae15d273c3e4944e6f9befcd674d5b4cb8a244809ba8",
+          "voxel_fit.py": "5e5c36be64c36732409ee0f114da33a1b24b95d42bf913d62b019cd0c755d3ee",
+          "voxelization.py": "97e82ec8436b8c78c59ac2781ea8b32808effb766bd4fc7c677fa5da084d0f59",
+          "warp_queries.py": "38665fcfae9b6e2d8ce3582a8cf9f22cea7a1bc0b0cd1c73663128b2a48fd887"
+        }
+      }
+    },
+    "workers": 2,
+    "executor": "thread",
+    "planned_cases": 16,
+    "assets": {
+      "UnitreeG1": {
+        "source": "/home/ubuntu/workspace/chase/HumanoidAssets/UnitreeG1/robot.urdf",
+        "links": 36,
+        "triangles": 344373,
+        "input_geometry_sha256": "d2887c92030bf4eebce090a479a1cba47f522ff8a4e1f040518d4d3e62ff6c97"
+      },
+      "UnitreeH1": {
+        "source": "/home/ubuntu/workspace/chase/HumanoidAssets/UnitreeH1/robot.urdf",
+        "links": 24,
+        "triangles": 11136,
+        "input_geometry_sha256": "4238b2481f4621d3f4dd05772fb73c91695153ee7ce1d38c6aa57ec6112b321f"
+      },
+      "UnitreeR1": {
+        "source": "/home/ubuntu/workspace/chase/HumanoidAssets/UnitreeR1/robot.urdf",
+        "links": 40,
+        "triangles": 413275,
+        "input_geometry_sha256": "600628335c2645245901701a291e7053498571b414d61e1aa66b35bfd9aa0432"
+      },
+      "UnitreeGo1": {
+        "source": "/home/ubuntu/workspace/chase/HumanoidAssets/UnitreeGo1/robot.urdf",
+        "links": 39,
+        "triangles": 8420,
+        "input_geometry_sha256": "77b37b850ec8757598b233d593a34682a7e063363de951f5065f557bf4fe6de4"
+      },
+      "UnitreeGo2": {
+        "source": "/home/ubuntu/workspace/chase/HumanoidAssets/UnitreeGo2/robot.urdf",
+        "links": 27,
+        "triangles": 9724,
+        "input_geometry_sha256": "cab159e145835717a4a691bf3d32bc869fd4d3d16ab4b4cd68b670ccab8f5628"
+      },
+      "FrankaPanda": {
+        "source": "/home/ubuntu/workspace/chase/HumanoidAssets/FrankaPanda/robot.urdf",
+        "links": 11,
+        "triangles": 2396,
+        "input_geometry_sha256": "b9df09bdfef2e277e794f9b2aa2e3e6e4d939f51ead1c5eb490f1fc704734bad"
+      },
+      "UniversalRobotsUR5e": {
+        "source": "/home/ubuntu/workspace/chase/HumanoidAssets/UniversalRobotsUR5e/robot.urdf",
+        "links": 7,
+        "triangles": 7558,
+        "input_geometry_sha256": "ab59b791ef1e97ee919618444276db82975a9a662aa579f0ba30035603ecddd9"
+      },
+      "BoosterT1": {
+        "source": "/home/ubuntu/workspace/chase/HumanoidAssets/BoosterT1/robot.urdf",
+        "links": 24,
+        "triangles": 19088,
+        "input_geometry_sha256": "86d06a2a2026c654e120b4922e6572d7026c4cac95578833bb899e7fb6785ded"
+      }
+    },
+    "cases": {
+      "UnitreeG1/slab/cpu/subdivide/res48/count16": {
+        "case": "UnitreeG1/slab/cpu/subdivide/res48/count16",
+        "config": {
+          "method": "slab",
+          "count": 16,
+          "resolution": 48,
+          "voxel_size": null,
+          "padding": 0.003,
+          "surface_radius": 0.01,
+          "samples": 2048,
+          "seed": 41,
+          "max_grid_cells": 2000000,
+          "max_candidates": 768,
+          "non_watertight": "error",
+          "device": "cpu",
+          "iterations": 120,
+          "refine_samples": 2048,
+          "outside_weight": 10.0,
+          "refine_reference": "voxel",
+          "voxelizer": "subdivide",
+          "voxel_solid_policy": "single"
+        },
+        "workers": 2,
+        "difference_count": 0,
+        "status": "matched",
+        "exact_baseline_match": true,
+        "input_geometry_unchanged": true,
+        "export_reload_equal": true,
+        "exported_files": [
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeG1/res48-count16/exports/spheres.json",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeG1/res48-count16/exports/curobo_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeG1/res48-count16/exports/lula_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeG1/res48-count16/exports/spheres.urdf"
+        ],
+        "spheres": 548,
+        "elapsed_s": 8.870050658006221
+      },
+      "UnitreeG1/slab/cpu/subdivide/res48/count48": {
+        "case": "UnitreeG1/slab/cpu/subdivide/res48/count48",
+        "config": {
+          "method": "slab",
+          "count": 48,
+          "resolution": 48,
+          "voxel_size": null,
+          "padding": 0.003,
+          "surface_radius": 0.01,
+          "samples": 2048,
+          "seed": 41,
+          "max_grid_cells": 2000000,
+          "max_candidates": 768,
+          "non_watertight": "error",
+          "device": "cpu",
+          "iterations": 120,
+          "refine_samples": 2048,
+          "outside_weight": 10.0,
+          "refine_reference": "voxel",
+          "voxelizer": "subdivide",
+          "voxel_solid_policy": "single"
+        },
+        "workers": 2,
+        "difference_count": 0,
+        "status": "matched",
+        "exact_baseline_match": true,
+        "input_geometry_unchanged": true,
+        "export_reload_equal": true,
+        "exported_files": [
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeG1/res48-count48/exports/spheres.json",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeG1/res48-count48/exports/curobo_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeG1/res48-count48/exports/lula_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeG1/res48-count48/exports/spheres.urdf"
+        ],
+        "spheres": 1644,
+        "elapsed_s": 13.732106695999391
+      },
+      "UnitreeH1/slab/cpu/subdivide/res48/count16": {
+        "case": "UnitreeH1/slab/cpu/subdivide/res48/count16",
+        "config": {
+          "method": "slab",
+          "count": 16,
+          "resolution": 48,
+          "voxel_size": null,
+          "padding": 0.003,
+          "surface_radius": 0.01,
+          "samples": 2048,
+          "seed": 41,
+          "max_grid_cells": 2000000,
+          "max_candidates": 768,
+          "non_watertight": "error",
+          "device": "cpu",
+          "iterations": 120,
+          "refine_samples": 2048,
+          "outside_weight": 10.0,
+          "refine_reference": "voxel",
+          "voxelizer": "subdivide",
+          "voxel_solid_policy": "single"
+        },
+        "workers": 2,
+        "difference_count": 0,
+        "status": "matched",
+        "exact_baseline_match": true,
+        "input_geometry_unchanged": true,
+        "export_reload_equal": true,
+        "exported_files": [
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeH1/res48-count16/exports/spheres.json",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeH1/res48-count16/exports/curobo_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeH1/res48-count16/exports/lula_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeH1/res48-count16/exports/spheres.urdf"
+        ],
+        "spheres": 374,
+        "elapsed_s": 1.6565790419699624
+      },
+      "UnitreeH1/slab/cpu/subdivide/res48/count48": {
+        "case": "UnitreeH1/slab/cpu/subdivide/res48/count48",
+        "config": {
+          "method": "slab",
+          "count": 48,
+          "resolution": 48,
+          "voxel_size": null,
+          "padding": 0.003,
+          "surface_radius": 0.01,
+          "samples": 2048,
+          "seed": 41,
+          "max_grid_cells": 2000000,
+          "max_candidates": 768,
+          "non_watertight": "error",
+          "device": "cpu",
+          "iterations": 120,
+          "refine_samples": 2048,
+          "outside_weight": 10.0,
+          "refine_reference": "voxel",
+          "voxelizer": "subdivide",
+          "voxel_solid_policy": "single"
+        },
+        "workers": 2,
+        "difference_count": 0,
+        "status": "matched",
+        "exact_baseline_match": true,
+        "input_geometry_unchanged": true,
+        "export_reload_equal": true,
+        "exported_files": [
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeH1/res48-count48/exports/spheres.json",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeH1/res48-count48/exports/curobo_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeH1/res48-count48/exports/lula_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeH1/res48-count48/exports/spheres.urdf"
+        ],
+        "spheres": 1120,
+        "elapsed_s": 4.020531478978228
+      },
+      "UnitreeR1/slab/cpu/subdivide/res48/count16": {
+        "case": "UnitreeR1/slab/cpu/subdivide/res48/count16",
+        "config": {
+          "method": "slab",
+          "count": 16,
+          "resolution": 48,
+          "voxel_size": null,
+          "padding": 0.003,
+          "surface_radius": 0.01,
+          "samples": 2048,
+          "seed": 41,
+          "max_grid_cells": 2000000,
+          "max_candidates": 768,
+          "non_watertight": "error",
+          "device": "cpu",
+          "iterations": 120,
+          "refine_samples": 2048,
+          "outside_weight": 10.0,
+          "refine_reference": "voxel",
+          "voxelizer": "subdivide",
+          "voxel_solid_policy": "single"
+        },
+        "workers": 2,
+        "difference_count": 0,
+        "status": "matched",
+        "exact_baseline_match": true,
+        "input_geometry_unchanged": true,
+        "export_reload_equal": true,
+        "exported_files": [
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeR1/res48-count16/exports/spheres.json",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeR1/res48-count16/exports/curobo_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeR1/res48-count16/exports/lula_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeR1/res48-count16/exports/spheres.urdf"
+        ],
+        "spheres": 640,
+        "elapsed_s": 13.79149959696224
+      },
+      "UnitreeR1/slab/cpu/subdivide/res48/count48": {
+        "case": "UnitreeR1/slab/cpu/subdivide/res48/count48",
+        "config": {
+          "method": "slab",
+          "count": 48,
+          "resolution": 48,
+          "voxel_size": null,
+          "padding": 0.003,
+          "surface_radius": 0.01,
+          "samples": 2048,
+          "seed": 41,
+          "max_grid_cells": 2000000,
+          "max_candidates": 768,
+          "non_watertight": "error",
+          "device": "cpu",
+          "iterations": 120,
+          "refine_samples": 2048,
+          "outside_weight": 10.0,
+          "refine_reference": "voxel",
+          "voxelizer": "subdivide",
+          "voxel_solid_policy": "single"
+        },
+        "workers": 2,
+        "difference_count": 0,
+        "status": "matched",
+        "exact_baseline_match": true,
+        "input_geometry_unchanged": true,
+        "export_reload_equal": true,
+        "exported_files": [
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeR1/res48-count48/exports/spheres.json",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeR1/res48-count48/exports/curobo_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeR1/res48-count48/exports/lula_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeR1/res48-count48/exports/spheres.urdf"
+        ],
+        "spheres": 1920,
+        "elapsed_s": 18.35684876999585
+      },
+      "UnitreeGo1/slab/cpu/subdivide/res48/count16": {
+        "case": "UnitreeGo1/slab/cpu/subdivide/res48/count16",
+        "config": {
+          "method": "slab",
+          "count": 16,
+          "resolution": 48,
+          "voxel_size": null,
+          "padding": 0.003,
+          "surface_radius": 0.01,
+          "samples": 2048,
+          "seed": 41,
+          "max_grid_cells": 2000000,
+          "max_candidates": 768,
+          "non_watertight": "error",
+          "device": "cpu",
+          "iterations": 120,
+          "refine_samples": 2048,
+          "outside_weight": 10.0,
+          "refine_reference": "voxel",
+          "voxelizer": "subdivide",
+          "voxel_solid_policy": "single"
+        },
+        "workers": 2,
+        "difference_count": 0,
+        "status": "matched",
+        "exact_baseline_match": true,
+        "input_geometry_unchanged": true,
+        "export_reload_equal": true,
+        "exported_files": [
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeGo1/res48-count16/exports/spheres.json",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeGo1/res48-count16/exports/curobo_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeGo1/res48-count16/exports/lula_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeGo1/res48-count16/exports/spheres.urdf"
+        ],
+        "spheres": 624,
+        "elapsed_s": 2.1684714409639128
+      },
+      "UnitreeGo1/slab/cpu/subdivide/res48/count48": {
+        "case": "UnitreeGo1/slab/cpu/subdivide/res48/count48",
+        "config": {
+          "method": "slab",
+          "count": 48,
+          "resolution": 48,
+          "voxel_size": null,
+          "padding": 0.003,
+          "surface_radius": 0.01,
+          "samples": 2048,
+          "seed": 41,
+          "max_grid_cells": 2000000,
+          "max_candidates": 768,
+          "non_watertight": "error",
+          "device": "cpu",
+          "iterations": 120,
+          "refine_samples": 2048,
+          "outside_weight": 10.0,
+          "refine_reference": "voxel",
+          "voxelizer": "subdivide",
+          "voxel_solid_policy": "single"
+        },
+        "workers": 2,
+        "difference_count": 0,
+        "status": "matched",
+        "exact_baseline_match": true,
+        "input_geometry_unchanged": true,
+        "export_reload_equal": true,
+        "exported_files": [
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeGo1/res48-count48/exports/spheres.json",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeGo1/res48-count48/exports/curobo_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeGo1/res48-count48/exports/lula_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeGo1/res48-count48/exports/spheres.urdf"
+        ],
+        "spheres": 1872,
+        "elapsed_s": 4.316770601028111
+      },
+      "UnitreeGo2/slab/cpu/subdivide/res48/count16": {
+        "case": "UnitreeGo2/slab/cpu/subdivide/res48/count16",
+        "config": {
+          "method": "slab",
+          "count": 16,
+          "resolution": 48,
+          "voxel_size": null,
+          "padding": 0.003,
+          "surface_radius": 0.01,
+          "samples": 2048,
+          "seed": 41,
+          "max_grid_cells": 2000000,
+          "max_candidates": 768,
+          "non_watertight": "error",
+          "device": "cpu",
+          "iterations": 120,
+          "refine_samples": 2048,
+          "outside_weight": 10.0,
+          "refine_reference": "voxel",
+          "voxelizer": "subdivide",
+          "voxel_solid_policy": "single"
+        },
+        "workers": 2,
+        "difference_count": 0,
+        "status": "matched",
+        "exact_baseline_match": true,
+        "input_geometry_unchanged": true,
+        "export_reload_equal": true,
+        "exported_files": [
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeGo2/res48-count16/exports/spheres.json",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeGo2/res48-count16/exports/curobo_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeGo2/res48-count16/exports/lula_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeGo2/res48-count16/exports/spheres.urdf"
+        ],
+        "spheres": 432,
+        "elapsed_s": 1.4032102109631523
+      },
+      "UnitreeGo2/slab/cpu/subdivide/res48/count48": {
+        "case": "UnitreeGo2/slab/cpu/subdivide/res48/count48",
+        "config": {
+          "method": "slab",
+          "count": 48,
+          "resolution": 48,
+          "voxel_size": null,
+          "padding": 0.003,
+          "surface_radius": 0.01,
+          "samples": 2048,
+          "seed": 41,
+          "max_grid_cells": 2000000,
+          "max_candidates": 768,
+          "non_watertight": "error",
+          "device": "cpu",
+          "iterations": 120,
+          "refine_samples": 2048,
+          "outside_weight": 10.0,
+          "refine_reference": "voxel",
+          "voxelizer": "subdivide",
+          "voxel_solid_policy": "single"
+        },
+        "workers": 2,
+        "difference_count": 0,
+        "status": "matched",
+        "exact_baseline_match": true,
+        "input_geometry_unchanged": true,
+        "export_reload_equal": true,
+        "exported_files": [
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeGo2/res48-count48/exports/spheres.json",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeGo2/res48-count48/exports/curobo_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeGo2/res48-count48/exports/lula_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UnitreeGo2/res48-count48/exports/spheres.urdf"
+        ],
+        "spheres": 1296,
+        "elapsed_s": 3.99355866399128
+      },
+      "FrankaPanda/slab/cpu/subdivide/res48/count16": {
+        "case": "FrankaPanda/slab/cpu/subdivide/res48/count16",
+        "config": {
+          "method": "slab",
+          "count": 16,
+          "resolution": 48,
+          "voxel_size": null,
+          "padding": 0.003,
+          "surface_radius": 0.01,
+          "samples": 2048,
+          "seed": 41,
+          "max_grid_cells": 2000000,
+          "max_candidates": 768,
+          "non_watertight": "error",
+          "device": "cpu",
+          "iterations": 120,
+          "refine_samples": 2048,
+          "outside_weight": 10.0,
+          "refine_reference": "voxel",
+          "voxelizer": "subdivide",
+          "voxel_solid_policy": "single"
+        },
+        "workers": 2,
+        "difference_count": 0,
+        "status": "matched",
+        "exact_baseline_match": true,
+        "input_geometry_unchanged": true,
+        "export_reload_equal": true,
+        "exported_files": [
+          "/tmp/assetspheres-corpus-slab-round5/cases/FrankaPanda/res48-count16/exports/spheres.json",
+          "/tmp/assetspheres-corpus-slab-round5/cases/FrankaPanda/res48-count16/exports/curobo_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/FrankaPanda/res48-count16/exports/lula_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/FrankaPanda/res48-count16/exports/spheres.urdf"
+        ],
+        "spheres": 176,
+        "elapsed_s": 0.7682776370202191
+      },
+      "FrankaPanda/slab/cpu/subdivide/res48/count48": {
+        "case": "FrankaPanda/slab/cpu/subdivide/res48/count48",
+        "config": {
+          "method": "slab",
+          "count": 48,
+          "resolution": 48,
+          "voxel_size": null,
+          "padding": 0.003,
+          "surface_radius": 0.01,
+          "samples": 2048,
+          "seed": 41,
+          "max_grid_cells": 2000000,
+          "max_candidates": 768,
+          "non_watertight": "error",
+          "device": "cpu",
+          "iterations": 120,
+          "refine_samples": 2048,
+          "outside_weight": 10.0,
+          "refine_reference": "voxel",
+          "voxelizer": "subdivide",
+          "voxel_solid_policy": "single"
+        },
+        "workers": 2,
+        "difference_count": 0,
+        "status": "matched",
+        "exact_baseline_match": true,
+        "input_geometry_unchanged": true,
+        "export_reload_equal": true,
+        "exported_files": [
+          "/tmp/assetspheres-corpus-slab-round5/cases/FrankaPanda/res48-count48/exports/spheres.json",
+          "/tmp/assetspheres-corpus-slab-round5/cases/FrankaPanda/res48-count48/exports/curobo_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/FrankaPanda/res48-count48/exports/lula_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/FrankaPanda/res48-count48/exports/spheres.urdf"
+        ],
+        "spheres": 528,
+        "elapsed_s": 2.410945300012827
+      },
+      "UniversalRobotsUR5e/slab/cpu/subdivide/res48/count16": {
+        "case": "UniversalRobotsUR5e/slab/cpu/subdivide/res48/count16",
+        "config": {
+          "method": "slab",
+          "count": 16,
+          "resolution": 48,
+          "voxel_size": null,
+          "padding": 0.003,
+          "surface_radius": 0.01,
+          "samples": 2048,
+          "seed": 41,
+          "max_grid_cells": 2000000,
+          "max_candidates": 768,
+          "non_watertight": "error",
+          "device": "cpu",
+          "iterations": 120,
+          "refine_samples": 2048,
+          "outside_weight": 10.0,
+          "refine_reference": "voxel",
+          "voxelizer": "subdivide",
+          "voxel_solid_policy": "single"
+        },
+        "workers": 2,
+        "difference_count": 0,
+        "status": "matched",
+        "exact_baseline_match": true,
+        "input_geometry_unchanged": true,
+        "export_reload_equal": true,
+        "exported_files": [
+          "/tmp/assetspheres-corpus-slab-round5/cases/UniversalRobotsUR5e/res48-count16/exports/spheres.json",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UniversalRobotsUR5e/res48-count16/exports/curobo_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UniversalRobotsUR5e/res48-count16/exports/lula_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UniversalRobotsUR5e/res48-count16/exports/spheres.urdf"
+        ],
+        "spheres": 112,
+        "elapsed_s": 0.5647424499620683
+      },
+      "UniversalRobotsUR5e/slab/cpu/subdivide/res48/count48": {
+        "case": "UniversalRobotsUR5e/slab/cpu/subdivide/res48/count48",
+        "config": {
+          "method": "slab",
+          "count": 48,
+          "resolution": 48,
+          "voxel_size": null,
+          "padding": 0.003,
+          "surface_radius": 0.01,
+          "samples": 2048,
+          "seed": 41,
+          "max_grid_cells": 2000000,
+          "max_candidates": 768,
+          "non_watertight": "error",
+          "device": "cpu",
+          "iterations": 120,
+          "refine_samples": 2048,
+          "outside_weight": 10.0,
+          "refine_reference": "voxel",
+          "voxelizer": "subdivide",
+          "voxel_solid_policy": "single"
+        },
+        "workers": 2,
+        "difference_count": 0,
+        "status": "matched",
+        "exact_baseline_match": true,
+        "input_geometry_unchanged": true,
+        "export_reload_equal": true,
+        "exported_files": [
+          "/tmp/assetspheres-corpus-slab-round5/cases/UniversalRobotsUR5e/res48-count48/exports/spheres.json",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UniversalRobotsUR5e/res48-count48/exports/curobo_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UniversalRobotsUR5e/res48-count48/exports/lula_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/UniversalRobotsUR5e/res48-count48/exports/spheres.urdf"
+        ],
+        "spheres": 336,
+        "elapsed_s": 1.5752360559999943
+      },
+      "BoosterT1/slab/cpu/subdivide/res48/count16": {
+        "case": "BoosterT1/slab/cpu/subdivide/res48/count16",
+        "config": {
+          "method": "slab",
+          "count": 16,
+          "resolution": 48,
+          "voxel_size": null,
+          "padding": 0.003,
+          "surface_radius": 0.01,
+          "samples": 2048,
+          "seed": 41,
+          "max_grid_cells": 2000000,
+          "max_candidates": 768,
+          "non_watertight": "error",
+          "device": "cpu",
+          "iterations": 120,
+          "refine_samples": 2048,
+          "outside_weight": 10.0,
+          "refine_reference": "voxel",
+          "voxelizer": "subdivide",
+          "voxel_solid_policy": "single"
+        },
+        "workers": 2,
+        "difference_count": 0,
+        "status": "matched",
+        "exact_baseline_match": true,
+        "input_geometry_unchanged": true,
+        "export_reload_equal": true,
+        "exported_files": [
+          "/tmp/assetspheres-corpus-slab-round5/cases/BoosterT1/res48-count16/exports/spheres.json",
+          "/tmp/assetspheres-corpus-slab-round5/cases/BoosterT1/res48-count16/exports/curobo_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/BoosterT1/res48-count16/exports/lula_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/BoosterT1/res48-count16/exports/spheres.urdf"
+        ],
+        "spheres": 384,
+        "elapsed_s": 1.9512698710313998
+      },
+      "BoosterT1/slab/cpu/subdivide/res48/count48": {
+        "case": "BoosterT1/slab/cpu/subdivide/res48/count48",
+        "config": {
+          "method": "slab",
+          "count": 48,
+          "resolution": 48,
+          "voxel_size": null,
+          "padding": 0.003,
+          "surface_radius": 0.01,
+          "samples": 2048,
+          "seed": 41,
+          "max_grid_cells": 2000000,
+          "max_candidates": 768,
+          "non_watertight": "error",
+          "device": "cpu",
+          "iterations": 120,
+          "refine_samples": 2048,
+          "outside_weight": 10.0,
+          "refine_reference": "voxel",
+          "voxelizer": "subdivide",
+          "voxel_solid_policy": "single"
+        },
+        "workers": 2,
+        "difference_count": 0,
+        "status": "matched",
+        "exact_baseline_match": true,
+        "input_geometry_unchanged": true,
+        "export_reload_equal": true,
+        "exported_files": [
+          "/tmp/assetspheres-corpus-slab-round5/cases/BoosterT1/res48-count48/exports/spheres.json",
+          "/tmp/assetspheres-corpus-slab-round5/cases/BoosterT1/res48-count48/exports/curobo_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/BoosterT1/res48-count48/exports/lula_spheres.yml",
+          "/tmp/assetspheres-corpus-slab-round5/cases/BoosterT1/res48-count48/exports/spheres.urdf"
+        ],
+        "spheres": 1152,
+        "elapsed_s": 4.513627577980515
+      }
+    },
+    "errors": {},
+    "updated_utc": "2026-11-03T15:51:40.656305+00:00",
+    "completed_cases": 16,
+    "error_count": 0
+  },
+  "frozen_slab_independent_verification": {
+    "cases_reopened_and_verified": 16,
+    "case_names": [
+      "BoosterT1/slab/cpu/subdivide/res48/count16",
+      "BoosterT1/slab/cpu/subdivide/res48/count48",
+      "FrankaPanda/slab/cpu/subdivide/res48/count16",
+      "FrankaPanda/slab/cpu/subdivide/res48/count48",
+      "UnitreeG1/slab/cpu/subdivide/res48/count16",
+      "UnitreeG1/slab/cpu/subdivide/res48/count48",
+      "UnitreeGo1/slab/cpu/subdivide/res48/count16",
+      "UnitreeGo1/slab/cpu/subdivide/res48/count48",
+      "UnitreeGo2/slab/cpu/subdivide/res48/count16",
+      "UnitreeGo2/slab/cpu/subdivide/res48/count48",
+      "UnitreeH1/slab/cpu/subdivide/res48/count16",
+      "UnitreeH1/slab/cpu/subdivide/res48/count48",
+      "UnitreeR1/slab/cpu/subdivide/res48/count16",
+      "UnitreeR1/slab/cpu/subdivide/res48/count48",
+      "UniversalRobotsUR5e/slab/cpu/subdivide/res48/count16",
+      "UniversalRobotsUR5e/slab/cpu/subdivide/res48/count48"
+    ],
+    "full_baseline_candidate_json_equal": true,
+    "all_diff_files_empty": true,
+    "all_exports_reloaded_by_frozen_candidate": true,
+    "all_input_geometry_hashes_match_phase4": true,
+    "all_parameters_match_phase4_slab_defaults_except_count_samples_padding_seed": true,
+    "frozen_module_manifests_unchanged": true,
+    "audit_process_exit_code_observed": 0,
+    "verification_process_exit_code_observed": 0,
+    "terminal_state_observed_utc": "2026-11-03T15:53:27.001317+00:00",
+    "workspace_source_still_matches_frozen_candidate": true,
+    "changed_modules_from_phase4": [
+      "quality.py",
+      "slab.py"
+    ]
+  },
+  "remote_ci_run": false,
+  "package": {
+    "verified_at_utc": "2026-11-03T15:59:00.929685+00:00",
+    "wheel": "/tmp/assetspheres-round5-dist/assetspheres-0.3.1-py3-none-any.whl",
+    "wheel_sha256": "b653720c3e9c08f2aa754d9ff7c50a659edfe7cefcadbe4e986162aa4e820058",
+    "wheel_modules": 20,
+    "all_modules_sha256": "f1d5cf02145886af7020c2d727f96cfae14503a17360dd86ff0cb677f2ad45fc",
+    "all_wheel_frozen_workspace_installed_source_bytes_equal": true,
+    "installed_path": "/tmp/assetspheres-round5-wheel-installed",
+    "test_directory": "/tmp/assetspheres-round5-wheel-verify",
+    "console_entrypoint": {
+      "actual_generated_script": "/tmp/assetspheres-round5-wheel-installed/bin/assetspheres",
+      "working_directory": "/tmp/assetspheres-round5-wheel-verify",
+      "slab_fit_arguments": [
+        "fit",
+        "/tmp/assetspheres-round5-wheel-verify/two_link.urdf",
+        "--method",
+        "slab",
+        "--count",
+        "4",
+        "--samples",
+        "128",
+        "--padding",
+        "0.003",
+        "--seed",
+        "41",
+        "--workers",
+        "2",
+        "--force",
+        "-o",
+        "/tmp/assetspheres-round5-wheel-verify/outputs"
+      ],
+      "slab_fit_five_outputs": [
+        "curobo_spheres.yml",
+        "lula_spheres.yml",
+        "preview.glb",
+        "spheres.json",
+        "spheres.urdf"
+      ],
+      "report_json_matches_saved": true
+    },
+    "python_api": {
+      "python": "3.12.14 (main, Aug 14 2026, 15:34:45) [Clang 22.1.3 ]",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "trimesh": "5.2.0",
+      "json_reload_exact": true,
+      "planner_yaml_reloaded_exact": true,
+      "urdf_sphere_count_matches": true,
+      "glb_reloaded": true,
+      "strictly_nested_shells": true,
+      "union_reference": "component-wise mesh.contains union, common domain; Monte Carlo estimate",
+      "parity_reference": "original mesh.contains, common domain; Monte Carlo estimate",
+      "union_interior_points": 1321,
+      "parity_interior_points": 653,
+      "all_18_non_entrypoint_non_warp_project_modules_imported": true,
+      "optional_warp_module_excluded": "warp is unavailable; not used by this CPU audit",
+      "project_import_origins": {
+        "assetspheres.model": "/tmp/assetspheres-round5-wheel-installed/assetspheres/model.py",
+        "assetspheres.asset": "/tmp/assetspheres-round5-wheel-installed/assetspheres/asset.py",
+        "assetspheres.geometry": "/tmp/assetspheres-round5-wheel-installed/assetspheres/geometry.py",
+        "assetspheres.surface_fit": "/tmp/assetspheres-round5-wheel-installed/assetspheres/surface_fit.py",
+        "assetspheres.surface_grid": "/tmp/assetspheres-round5-wheel-installed/assetspheres/surface_grid.py",
+        "assetspheres.voxel_fit": "/tmp/assetspheres-round5-wheel-installed/assetspheres/voxel_fit.py",
+        "assetspheres.fit": "/tmp/assetspheres-round5-wheel-installed/assetspheres/fit.py",
+        "assetspheres": "/tmp/assetspheres-round5-wheel-installed/assetspheres/__init__.py",
+        "assetspheres.export": "/tmp/assetspheres-round5-wheel-installed/assetspheres/export.py",
+        "assetspheres.quality": "/tmp/assetspheres-round5-wheel-installed/assetspheres/quality.py",
+        "assetspheres.cli": "/tmp/assetspheres-round5-wheel-installed/assetspheres/cli.py",
+        "assetspheres.enclosing": "/tmp/assetspheres-round5-wheel-installed/assetspheres/enclosing.py",
+        "assetspheres.parallel": "/tmp/assetspheres-round5-wheel-installed/assetspheres/parallel.py",
+        "assetspheres.refine": "/tmp/assetspheres-round5-wheel-installed/assetspheres/refine.py",
+        "assetspheres.slab": "/tmp/assetspheres-round5-wheel-installed/assetspheres/slab.py",
+        "assetspheres.tensor_backend": "/tmp/assetspheres-round5-wheel-installed/assetspheres/tensor_backend.py",
+        "assetspheres.viewer": "/tmp/assetspheres-round5-wheel-installed/assetspheres/viewer.py",
+        "assetspheres.voxelization": "/tmp/assetspheres-round5-wheel-installed/assetspheres/voxelization.py"
+      }
+    },
+    "all_project_imports_from_wheel": true,
+    "import_evidence": {
+      "console_fit": "/tmp/assetspheres-round5-wheel-verify/console-fit-imports.json",
+      "console_report": "/tmp/assetspheres-round5-wheel-verify/console-report-imports.json",
+      "python_api": "/tmp/assetspheres-round5-wheel-verify/python-api-imports.json"
+    },
+    "sdist": {
+      "archive": "/tmp/assetspheres-round5-dist/assetspheres-0.3.1.tar.gz",
+      "sdist_sha256": "285a2f983efa461054ad1f05b65fb1a04a3dc4dffbcd370294a2119a739db882",
+      "archive_root": "assetspheres-0.3.1",
+      "source_modules": 20,
+      "all_modules_sha256": "f1d5cf02145886af7020c2d727f96cfae14503a17360dd86ff0cb677f2ad45fc",
+      "all_archive_frozen_workspace_source_bytes_equal": true,
+      "benchmark_files": 2,
+      "test_files": 20,
+      "all_required_files_match_workspace_bytes": true,
+      "required_files_present": [
+        "benchmarks/__init__.py",
+        "benchmarks/benchmark_hotpaths.py",
+        "tests/test_assets_and_exports.py",
+        "tests/test_cli.py",
+        "tests/test_component_grids.py",
+        "tests/test_coordinate_precision.py",
+        "tests/test_distances.py",
+        "tests/test_enclosing.py",
+        "tests/test_fitting.py",
+        "tests/test_geometry.py",
+        "tests/test_mesh_instances.py",
+        "tests/test_model.py",
+        "tests/test_output_safety.py",
+        "tests/test_parallel.py",
+        "tests/test_readability_regression.py",
+        "tests/test_refine_quality.py",
+        "tests/test_slab.py",
+        "tests/test_surface_grid.py",
+        "tests/test_tensor_backend.py",
+        "tests/test_viewer.py",
+        "tests/test_voxelization.py",
+        "tests/test_voxelization_concurrency.py",
+        "docs/optimization-round5-2026-11-03.json"
+      ],
+      "phase5_completed_audits": [
+        {
+          "path": "$.frozen_slab_asset_corpus",
+          "status": "complete",
+          "completed_cases": 16,
+          "error_count": 0
+        }
+      ],
+      "verified_at_utc": "2026-11-03T15:59:43.204993+00:00",
+      "build_log": "/tmp/assetspheres-round5-sdist-build.log",
+      "unchanged_surface_grid_and_full_package_tests_not_repeated": true
+    },
+    "final_wheel_sdist_frozen_workspace_sources_identical": true,
+    "status": "complete"
+  }
+}

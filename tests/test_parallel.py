@@ -77,3 +77,20 @@ def test_validate_executor_and_link_names():
     with pytest.raises(ValueError, match="nonempty"):
         fit_links([("", *inputs[0][1:])])
     assert fit_links([], workers=2) == []
+
+
+@pytest.mark.parametrize("executor", ["thread", "process"])
+def test_direct_parallel_api_enforces_one_cuda_owner(monkeypatch, executor):
+    import assetspheres.parallel as module
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("CUDA multi-worker tasks must fail before starting a pool")
+
+    monkeypatch.setattr(module, "ThreadPoolExecutor", forbidden)
+    monkeypatch.setattr(module, "ProcessPoolExecutor", forbidden)
+    inputs = [
+        (name, mesh, replace(config, method="voxel", device="cuda"))
+        for name, mesh, config in tasks()
+    ]
+    with pytest.raises(ValueError, match="one GPU owner"):
+        fit_links(inputs, workers=2, executor=executor)

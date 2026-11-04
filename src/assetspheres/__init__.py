@@ -14,4 +14,4 @@ __all__ = [
     "fit_asset",
     "fit_mesh",
 ]
-__version__ = "0.3.0"
+__version__ = "0.3.1"

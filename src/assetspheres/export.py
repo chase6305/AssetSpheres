@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import math
 import os
 import tempfile
 from dataclasses import replace
@@ -12,12 +13,27 @@ import numpy as np
 import trimesh
 import yaml
 
-from .asset import Asset, load_asset, resolve_mesh
+from .asset import Asset, load_asset, resolve_mesh, source_paths, urdf_file_references
 from .model import FitResult
 
 
 def read_result(path: str | Path) -> FitResult:
-    return FitResult.from_dict(json.loads(Path(path).read_text(encoding="utf-8")))
+    def reject_nonfinite(value: str) -> None:
+        raise ValueError(f"Result JSON contains a non-finite number: {value}")
+
+    def parse_finite_float(value: str) -> float:
+        number = float(value)
+        if not math.isfinite(number):
+            reject_nonfinite(value)
+        return number
+
+    return FitResult.from_dict(
+        json.loads(
+            Path(path).read_text(encoding="utf-8"),
+            parse_constant=reject_nonfinite,
+            parse_float=parse_finite_float,
+        )
+    )
 
 
 def load_result_asset(
@@ -45,22 +61,24 @@ def _urdf(asset: Asset, result: FitResult, output: Path) -> bytes:
         root = copy.deepcopy(asset.urdf.getroot())
     else:
         root = ET.Element("robot", name=asset.path.stem)
-        link = ET.SubElement(root, "link", name=next(iter(asset.links)))
-        geometry = ET.SubElement(ET.SubElement(link, "visual"), "geometry")
+        link_element = ET.SubElement(root, "link", name=next(iter(asset.links)))
+        geometry = ET.SubElement(ET.SubElement(link_element, "visual"), "geometry")
         ET.SubElement(
             geometry,
             "mesh",
             filename=str(asset.path),
             scale=" ".join([format(asset.mesh_scale, ".17g")] * 3),
         )
-    for link in root.findall("link"):
-        name = link.get("name")
-        if name not in result.links:
+    for link_element in root.findall("link"):
+        link_name = link_element.get("name")
+        if link_name not in result.links:
             continue
-        for collision in link.findall("collision"):
-            link.remove(collision)
-        for i, sphere in enumerate(result.links[name]):
-            collision = ET.SubElement(link, "collision", name=f"assetspheres_{i}")
+        for collision in link_element.findall("collision"):
+            link_element.remove(collision)
+        for sphere_index, sphere in enumerate(result.links[link_name]):
+            collision = ET.SubElement(
+                link_element, "collision", name=f"assetspheres_{sphere_index}"
+            )
             ET.SubElement(
                 collision,
                 "origin",
@@ -70,35 +88,81 @@ def _urdf(asset: Asset, result: FitResult, output: Path) -> bytes:
             ET.SubElement(
                 ET.SubElement(collision, "geometry"), "sphere", radius=format(sphere.radius, ".17g")
             )
-    # Output location changes; rebase every retained visual/collision mesh URI.
-    for mesh in root.findall(".//geometry/mesh"):
-        filename = mesh.get("filename")
+    # Output location changes; rebase retained meshes and URDF material textures.
+    for reference in urdf_file_references(root):
+        filename = reference.get("filename")
         if not filename:
-            raise ValueError("Retained URDF mesh is missing filename")
+            raise ValueError(f"Retained URDF {reference.tag} is missing filename")
         resolved = resolve_mesh(filename, asset.path.parent, asset.package_roots)
-        mesh.set("filename", Path(os.path.relpath(resolved, output.parent)).as_posix())
+        reference.set("filename", Path(os.path.relpath(resolved, output.parent)).as_posix())
     ET.indent(root, space="  ")
     return ET.tostring(root, encoding="utf-8", xml_declaration=True)
 
 
 def make_scene(asset: Asset, result: FitResult) -> trimesh.Scene:
     scene = trimesh.Scene()
-    for index, (name, spheres) in enumerate(result.links.items()):
-        transform = np.asarray(result.transforms.get(name, np.eye(4)), dtype=float)
-        mesh = asset.links[name].mesh.copy()
+    for link_index, (link_name, spheres) in enumerate(result.links.items()):
+        link_transform = np.asarray(result.transforms.get(link_name, np.eye(4)), dtype=float)
+        mesh = asset.links[link_name].mesh.copy()
         mesh.visual = trimesh.visual.ColorVisuals(mesh, face_colors=[165, 178, 191, 120])
-        scene.add_geometry(mesh, node_name=f"mesh/{index}", transform=transform)
-        color = [
-            int(c) for c in trimesh.visual.color.hsv_to_rgba([[(index * 0.19) % 1, 0.65, 0.95]])[0]
+        scene.add_geometry(mesh, node_name=f"mesh/{link_index}", transform=link_transform)
+        sphere_color = [
+            int(c)
+            for c in trimesh.visual.color.hsv_to_rgba([[(link_index * 0.19) % 1, 0.65, 0.95]])[0]
         ]
-        color[3] = 160
-        for i, sphere in enumerate(spheres):
-            ball = trimesh.creation.icosphere(subdivisions=2, radius=sphere.radius)
-            ball.visual.face_colors = color
-            local = np.eye(4)
-            local[:3, 3] = sphere.center
-            scene.add_geometry(ball, node_name=f"spheres/{index}/{i}", transform=transform @ local)
+        sphere_color[3] = 160
+        # GLB instances share unit sphere buffers per link. Node transforms map
+        # unit sphere -> link -> scene: link_transform @ sphere_transform.
+        unit_sphere = trimesh.creation.icosphere(subdivisions=2, radius=1.0)
+        unit_sphere.visual.face_colors = sphere_color
+        geometry_name = f"sphere_template/{link_index}"
+        for sphere_index, sphere in enumerate(spheres):
+            sphere_transform = np.diag([sphere.radius, sphere.radius, sphere.radius, 1.0])
+            sphere_transform[:3, 3] = sphere.center
+            node_name = f"spheres/{link_index}/{sphere_index}"
+            if sphere_index == 0:
+                scene.add_geometry(
+                    unit_sphere,
+                    geom_name=geometry_name,
+                    node_name=node_name,
+                    transform=link_transform @ sphere_transform,
+                )
+            else:
+                scene.graph.update(
+                    frame_to=node_name,
+                    matrix=link_transform @ sphere_transform,
+                    geometry=geometry_name,
+                )
     return scene
+
+
+def check_output_paths(
+    asset: Asset,
+    directory: str | Path,
+    *,
+    force: bool = False,
+    include_glb: bool = True,
+) -> list[Path]:
+    """Validate export destinations without fitting, creating, or replacing files."""
+    directory = Path(directory).expanduser().resolve()
+    if directory.exists() and not directory.is_dir():
+        raise ValueError(f"Output directory is not a directory: {directory}")
+    names = ["spheres.json", "curobo_spheres.yml", "lula_spheres.yml", "spheres.urdf"]
+    if include_glb:
+        names.append("preview.glb")
+    paths = [directory / name for name in names]
+    protected = source_paths(asset)
+    for path in paths:
+        if path.resolve() in protected:
+            raise ValueError(
+                f"Output would overwrite a source asset: {path}; choose another directory"
+            )
+        if path.is_dir():
+            raise ValueError(f"Output path is a directory: {path}")
+    existing = [path.name for path in paths if path.exists() or path.is_symlink()]
+    if existing and not force:
+        raise ValueError(f"Outputs already exist: {existing}; use --force to replace them")
+    return paths
 
 
 def write_outputs(
@@ -109,18 +173,14 @@ def write_outputs(
     force: bool = False,
     include_glb: bool = True,
 ) -> list[Path]:
-    """Export a JSON result, planner sphere fragments, URDF, and optional GLB preview.
+    """Export JSON, planner sphere fragments, URDF, and an optional GLB preview.
 
-    Existing named outputs require force. Compute all payloads before replacing files.
-    Mesh references in the URDF are relative to its output location, not copied.
+    Existing outputs require force; source assets are always protected. Compute
+    all payloads before replacing files. Retained URDF mesh/texture references
+    are relative to the output location, not copied.
     """
-    directory = Path(directory).expanduser().resolve()
-    names = ["spheres.json", "curobo_spheres.yml", "lula_spheres.yml", "spheres.urdf"]
-    if include_glb:
-        names.append("preview.glb")
-    existing = [name for name in names if (directory / name).exists()]
-    if existing and not force:
-        raise ValueError(f"Outputs already exist: {existing}; use --force to replace them")
+    paths = check_output_paths(asset, directory, force=force, include_glb=include_glb)
+    directory = paths[0].parent
     if set(result.links) != set(asset.links):
         raise ValueError("Result links must match loaded asset links")
     # An explicit source-path override must survive a subsequent result reload.
@@ -152,4 +212,4 @@ def write_outputs(
             (Path(temp) / name).write_bytes(data)
         for name in payloads:
             os.replace(Path(temp) / name, directory / name)
-    return [directory / name for name in payloads]
+    return paths

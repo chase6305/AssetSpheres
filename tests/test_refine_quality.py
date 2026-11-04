@@ -5,17 +5,26 @@ import pytest
 import trimesh
 from scipy.optimize import check_grad
 
-from assetspheres import FitConfig, Sphere, fit_asset, fit_mesh, load_asset
+from assetspheres import FitConfig, Sphere, fit_asset, fit_mesh, load_asset, refine
 from assetspheres.quality import compare_sphere_models
 from assetspheres.refine import _loss_gradient
+from benchmarks.benchmark_hotpaths import reference_gradient
 
 
-def test_refinement_analytic_gradient_matches_finite_difference():
+@pytest.mark.parametrize("block_pair_limit", [1_000_000, 14])
+def test_refinement_analytic_gradient_matches_finite_difference(monkeypatch, block_pair_limit):
+    monkeypatch.setattr(refine, "MAXIMUM_GRADIENT_BLOCK_PAIRS", block_pair_limit)
     rng = np.random.default_rng(3)
     points = rng.normal(size=(23, 3))
     parameters = np.array([[0.0, 0.0, 0.0, 0.8], [1.0, 0.0, 0.0, 0.6]])
     positive = np.arange(len(points)) % 2 == 0
     weights = np.full(len(points), 1 / len(points))
+    expected_loss, expected_gradient = reference_gradient(
+        parameters, points, positive, weights, 0.01
+    )
+    actual_loss, actual_gradient = _loss_gradient(parameters, points, positive, weights, 0.01)
+    assert actual_loss == expected_loss
+    np.testing.assert_array_equal(actual_gradient, expected_gradient)
 
     def objective(flat):
         return _loss_gradient(flat.reshape(-1, 4), points, positive, weights, 0.01)[0]
@@ -24,6 +33,20 @@ def test_refinement_analytic_gradient_matches_finite_difference():
         return _loss_gradient(flat.reshape(-1, 4), points, positive, weights, 0.01)[1].ravel()
 
     assert check_grad(objective, gradient, parameters.ravel()) < 1e-5
+
+
+def test_blocked_gradient_preserves_ties_clamping_and_zero_weight_samples(monkeypatch):
+    monkeypatch.setattr(refine, "MAXIMUM_GRADIENT_BLOCK_PAIRS", 14)
+    parameters = np.array([[0, 0, 0, 0.1], [0, 0, 0, 0.1], [1, 0, 0, 0.2]])
+    points = np.tile([[0, 0, 0], [1e-13, 0, 0], [1e-12, 0, 0], [2, 0, 0], [1, 0, 0]], (5, 1))
+    positive = np.arange(len(points)) % 2 == 0
+    weights = np.full(len(points), 1 / len(points))
+    weights[::7] = 0
+    inputs = parameters, points, positive, weights, 0.001
+    expected_loss, expected_gradient = reference_gradient(*inputs)
+    actual_loss, actual_gradient = _loss_gradient(*inputs)
+    assert actual_loss == expected_loss
+    np.testing.assert_array_equal(actual_gradient, expected_gradient)
 
 
 def test_numpy_clamped_norm_has_zero_center_gradient():
@@ -35,6 +58,24 @@ def test_numpy_clamped_norm_has_zero_center_gradient():
         0.001,
     )
     assert np.array_equal(gradient[:, :3], np.zeros((1, 3)))
+
+
+def test_refinement_budget_is_checked_before_sampling(monkeypatch):
+    from assetspheres import refine
+
+    monkeypatch.setattr(
+        refine,
+        "_prepare_training_samples",
+        lambda *args: pytest.fail("Must reject before sampling"),
+    )
+    with pytest.raises(ValueError, match="pair budget"):
+        refine.refine_spheres(
+            trimesh.creation.box(),
+            [Sphere((0.0, 0.0, 0.0), 0.1)],
+            np.zeros((1, 3)),
+            0.01,
+            FitConfig(method="refined", refine_samples=10**12),
+        )
 
 
 def test_refined_reduces_training_loss_and_obeys_budget_padding():
@@ -98,12 +139,47 @@ def test_quality_open_mesh_does_not_claim_solid_metrics():
     assert "volume_iou" not in result
 
 
+@pytest.mark.parametrize("geometry", ["open", "multiple_bodies"])
+def test_quality_skips_volume_sampling_without_solid_reference(monkeypatch, geometry):
+    from types import SimpleNamespace
+
+    mesh = trimesh.creation.box()
+    if geometry == "open":
+        mesh.update_faces(np.arange(len(mesh.faces) - 1))
+    else:
+        second = mesh.copy()
+        second.apply_translation((2, 0, 0))
+        mesh = trimesh.util.concatenate((mesh, second))
+
+    evaluation_seed = 53101
+    default_rng = np.random.default_rng
+
+    def reject_volume_sampling(*args, **kwargs):
+        pytest.fail("Volume sampling should be skipped without a solid reference")
+
+    def random_generator(seed):
+        if seed == evaluation_seed:
+            return SimpleNamespace(uniform=reject_volume_sampling)
+        return default_rng(seed)
+
+    monkeypatch.setattr(np.random, "default_rng", random_generator)
+    report = compare_sphere_models(
+        mesh,
+        {"model": [Sphere((0.0, 0.0, 0.0), 1.0)]},
+        surface_samples=64,
+        volume_samples=1_000_000_000,
+        seed=evaluation_seed,
+    )["model"]
+    assert "volume_evaluation_skipped" in report
+    assert "volume_iou" not in report
+
+
 def test_quality_requires_explicit_multibody_solid_semantics():
     pytest.importorskip("rtree")
-    first = trimesh.creation.box()
-    second = first.copy()
-    second.apply_translation((0.4, 0, 0))
-    mesh = trimesh.util.concatenate((first, second))
+    outer_shell = trimesh.creation.box()
+    inner_shell = outer_shell.copy()
+    inner_shell.apply_scale(0.8)
+    mesh = trimesh.util.concatenate((outer_shell, inner_shell))
     models = {"model": [Sphere((0.2, 0.0, 0.0), 1.0)]}
     default = compare_sphere_models(mesh, models, surface_samples=64, volume_samples=4000)["model"]
     assert "volume_iou" not in default
@@ -115,6 +191,8 @@ def test_quality_requires_explicit_multibody_solid_semantics():
     )["model"]
     assert union["validation_interior_points"] > parity["validation_interior_points"] * 1.2
     assert union["solid_policy"] == "union-components"
+    assert union["reference"].startswith("component-wise mesh.contains union")
+    assert parity["reference"].startswith("original mesh.contains")
 
 
 def test_cover_tight_preserves_surface_and_never_enlarges_partition_balls():

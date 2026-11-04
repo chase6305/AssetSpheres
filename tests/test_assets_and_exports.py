@@ -52,6 +52,16 @@ def test_scene_node_transforms_and_repeated_instances(tmp_path):
     assert len(mesh.faces) == 24
 
 
+@pytest.mark.parametrize("face", ["1 2 99", "-10 -2 -1"])
+def test_invalid_obj_face_indices_report_the_source_path(tmp_path, face):
+    source = tmp_path / "invalid.obj"
+    source.write_text(f"v 0 0 0\nv 1 0 0\nv 0 1 0\nf {face}\n")
+    with pytest.raises(ValueError, match="Invalid triangle mesh") as outcome:
+        load_asset(source)
+    assert str(source) in str(outcome.value)
+    assert isinstance(outcome.value.__cause__, IndexError)
+
+
 def test_exports_roundtrip_and_preserve_urdf(tmp_path):
     asset = load_asset(EXAMPLE)
     result = fit_asset(
@@ -81,7 +91,18 @@ def test_exports_roundtrip_and_preserve_urdf(tmp_path):
     assert lula["collision_spheres"][1]["arm"] == curobo["collision_spheres"]["arm"]
     assert load_asset(tmp_path / "output" / "spheres.urdf").links.keys() == asset.links.keys()
     preview = trimesh.load(tmp_path / "output" / "preview.glb", force="scene")
-    assert len(preview.geometry) == sum(map(len, result.links.values())) + len(asset.links)
+    assert len(preview.graph.nodes_geometry) == sum(map(len, result.links.values())) + len(
+        asset.links
+    )
+    # Shared GLB buffers must preserve the position and radius of every instance.
+    for link_index, (name, spheres) in enumerate(result.links.items()):
+        for sphere_index, sphere in enumerate(spheres):
+            transform, _ = preview.graph[f"spheres/{link_index}/{sphere_index}"]
+            expected = np.asarray(result.transforms[name])
+            assert np.allclose(
+                transform[:3, 3], trimesh.transform_points([sphere.center], expected)[0]
+            )
+            assert np.allclose(np.linalg.norm(transform[:3, :3], axis=0), sphere.radius)
     with pytest.raises(ValueError, match="already exist"):
         write_outputs(asset, result, tmp_path / "output")
 
@@ -196,3 +217,14 @@ def test_malformed_urdf_has_cli_error_without_traceback(tmp_path, capsys):
     source.write_text('<robot name="unfinished"><link>')
     assert main(["fit", str(source), "-o", str(tmp_path / "out")]) == 2
     assert "Invalid URDF XML" in capsys.readouterr().err
+
+
+def test_urdf_entity_rejection_has_cli_error_without_traceback(tmp_path, capsys):
+    source = tmp_path / "entity.urdf"
+    source.write_text(
+        '<!DOCTYPE robot [<!ENTITY injected "entity">]>'
+        '<robot name="&injected;"><link name="body"/></robot>'
+    )
+    assert main(["inspect", str(source)]) == 2
+    error = capsys.readouterr().err
+    assert "Invalid URDF XML" in error and "Traceback" not in error

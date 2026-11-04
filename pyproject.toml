@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "assetspheres"
-version = "0.3.0"
+version = "0.3.1"
 description = "Turn URDF and mesh assets into link-local collision spheres"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -29,6 +29,7 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100

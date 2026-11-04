@@ -12,7 +12,9 @@ from typing import Any
 import numpy as np
 import trimesh
 from scipy import ndimage
+from scipy.spatial.distance import cdist
 
+from .geometry import sample_surface
 from .model import FitConfig, Sphere
 
 SURFACE_COVERAGE_WEIGHT = 8.0
@@ -21,6 +23,7 @@ RADIUS_REGULARIZATION_WEIGHT = 0.002
 MINIMUM_CENTER_DISTANCE = 1e-12
 NORMALIZED_LEARNING_RATE = 0.006
 MAXIMUM_TRAINING_PAIRS = 4_000_000
+MAXIMUM_GRADIENT_BLOCK_PAIRS = 1_000_000
 
 
 def _sample_mesh_reference_regions(
@@ -123,8 +126,6 @@ def _prepare_training_samples(
     voxel_size_m: float,
     configuration: FitConfig,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, dict[str, int]]:
-    from .fit import sample_surface
-
     random_generator = np.random.default_rng(configuration.seed + 1009)
     sample_count = configuration.refine_samples
     interior_samples = occupied_points[
@@ -153,15 +154,33 @@ def _loss_gradient(
     sample_weights: np.ndarray,
     coverage_margin: float,
 ) -> tuple[float, np.ndarray]:
-    """Piecewise analytic gradient; ties select the first ball deterministically."""
+    """Float64 training gradient; ties select the first ball deterministically."""
     sphere_centers, sphere_radii = sphere_parameters[:, :3], sphere_parameters[:, 3]
-    center_offsets = sphere_centers[None, :, :] - training_points[:, None, :]
-    center_distances = np.linalg.norm(center_offsets, axis=2)
-    safe_distances = np.maximum(center_distances, MINIMUM_CENTER_DISTANCE)
-    all_gaps = safe_distances - sphere_radii[None]
-    nearest_sphere_indices = np.argmin(all_gaps, axis=1)
-    point_indices = np.arange(len(training_points))
-    nearest_gaps = all_gaps[point_indices, nearest_sphere_indices]
+    if len(training_points) * len(sphere_parameters) <= MAXIMUM_GRADIENT_BLOCK_PAIRS:
+        all_gaps = cdist(training_points, sphere_centers)
+        np.maximum(all_gaps, MINIMUM_CENTER_DISTANCE, out=all_gaps)
+        all_gaps -= sphere_radii[None]
+        nearest_sphere_indices = np.argmin(all_gaps, axis=1)
+        point_indices = np.arange(len(training_points))
+        nearest_gaps = all_gaps[point_indices, nearest_sphere_indices]
+        # Release the dense workspace before constructing gradient directions.
+        del all_gaps
+    else:
+        # Point rows are independent; retain the global loss/gradient accumulation below.
+        nearest_sphere_indices = np.empty(len(training_points), dtype=np.intp)
+        nearest_gaps = np.empty(len(training_points), dtype=np.float64)
+        points_per_block = max(1, MAXIMUM_GRADIENT_BLOCK_PAIRS // len(sphere_parameters))
+        for first_point in range(0, len(training_points), points_per_block):
+            last_point = first_point + points_per_block
+            all_gaps = cdist(training_points[first_point:last_point], sphere_centers)
+            np.maximum(all_gaps, MINIMUM_CENTER_DISTANCE, out=all_gaps)
+            all_gaps -= sphere_radii[None]
+            block_nearest_indices = np.argmin(all_gaps, axis=1)
+            nearest_sphere_indices[first_point:last_point] = block_nearest_indices
+            nearest_gaps[first_point:last_point] = all_gaps[
+                np.arange(len(block_nearest_indices)), block_nearest_indices
+            ]
+            del all_gaps
     coverage_errors = np.where(
         positive_mask,
         np.maximum(nearest_gaps + coverage_margin, 0),
@@ -169,20 +188,27 @@ def _loss_gradient(
     )
     gap_derivatives = 2 * sample_weights * coverage_errors
     parameter_gradient = np.zeros_like(sphere_parameters)
+    # Satisfied samples have zero derivative; only contributing points need directions.
+    contributing_samples = gap_derivatives != 0
+    nearest_sphere_indices = nearest_sphere_indices[contributing_samples]
+    gap_derivatives = gap_derivatives[contributing_samples]
+    center_offsets = sphere_centers[nearest_sphere_indices] - training_points[contributing_samples]
+    center_distances = np.linalg.norm(center_offsets, axis=1)
     center_directions = (
-        center_offsets[point_indices, nearest_sphere_indices]
-        / safe_distances[point_indices, nearest_sphere_indices, None]
+        center_offsets / np.maximum(center_distances, MINIMUM_CENTER_DISTANCE)[:, None]
     )
     # Match the derivative of torch.clamp_min, including its exact boundary.
-    center_directions[
-        center_distances[point_indices, nearest_sphere_indices] < MINIMUM_CENTER_DISTANCE
-    ] = 0
-    np.add.at(
-        parameter_gradient[:, :3],
-        nearest_sphere_indices,
-        gap_derivatives[:, None] * center_directions,
+    center_directions[center_distances < MINIMUM_CENTER_DISTANCE] = 0
+    # Group sample contributions by their active sphere.
+    for axis in range(3):
+        parameter_gradient[:, axis] = np.bincount(
+            nearest_sphere_indices,
+            weights=gap_derivatives * center_directions[:, axis],
+            minlength=len(sphere_parameters),
+        )
+    parameter_gradient[:, 3] = np.bincount(
+        nearest_sphere_indices, weights=-gap_derivatives, minlength=len(sphere_parameters)
     )
-    np.add.at(parameter_gradient[:, 3], nearest_sphere_indices, -gap_derivatives)
     loss = float(
         np.sum(sample_weights * coverage_errors**2)
         + RADIUS_REGULARIZATION_WEIGHT * np.mean(sphere_radii**3)
@@ -207,16 +233,11 @@ def _numpy_adam(
     first_moment = np.zeros_like(sphere_parameters)
     second_moment = np.zeros_like(sphere_parameters)
     best_parameters = sphere_parameters.copy()
-    initial_loss, _ = _loss_gradient(
+    initial_loss, gradient = _loss_gradient(
         sphere_parameters, training_points, positive_mask, sample_weights, coverage_margin
     )
     best_loss = initial_loss
     for step in range(1, iterations + 1):
-        current_loss, gradient = _loss_gradient(
-            sphere_parameters, training_points, positive_mask, sample_weights, coverage_margin
-        )
-        if current_loss < best_loss:
-            best_loss, best_parameters = current_loss, sphere_parameters.copy()
         first_moment = 0.9 * first_moment + 0.1 * gradient
         second_moment = 0.999 * second_moment + 0.001 * gradient**2
         parameter_update = (
@@ -227,11 +248,11 @@ def _numpy_adam(
         sphere_parameters = np.clip(
             sphere_parameters - parameter_update, lower_bounds, upper_bounds
         )
-    final_loss, _ = _loss_gradient(
-        sphere_parameters, training_points, positive_mask, sample_weights, coverage_margin
-    )
-    if final_loss < best_loss:
-        best_loss, best_parameters = final_loss, sphere_parameters.copy()
+        current_loss, gradient = _loss_gradient(
+            sphere_parameters, training_points, positive_mask, sample_weights, coverage_margin
+        )
+        if current_loss < best_loss:
+            best_loss, best_parameters = current_loss, sphere_parameters.copy()
     return best_parameters, initial_loss, best_loss
 
 
@@ -323,6 +344,17 @@ def refine_spheres(
     """Refine existing link-local spheres; add user padding only after optimization."""
     # Preserve the existing keyword interface at this public module boundary.
     configuration, voxel_size_m = cfg, pitch
+    if not initial:
+        raise ValueError("Refinement requires at least one initial sphere")
+    # Reject clearly impossible sample requests before allocating point arrays
+    # or preparing labels. The final check uses the actual packed sample count.
+    minimum_training_count = configuration.refine_samples + min(
+        configuration.refine_samples, len(occupied)
+    )
+    if minimum_training_count * len(initial) > MAXIMUM_TRAINING_PAIRS:
+        raise ValueError(
+            "Refinement exceeds the 4M point-ball pair budget; reduce refine_samples/count"
+        )
     training_points, positive_mask, sample_weights, training_counts = _prepare_training_samples(
         mesh, occupied, voxel_size_m, configuration
     )

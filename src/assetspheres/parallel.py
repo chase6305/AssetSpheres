@@ -50,8 +50,9 @@ def fit_links(
     point guarded by ``if __name__ == '__main__':``.
 
     Each task is ``(link_name, mesh_in_link_frame, FitConfig)``. A worker failure
-    raises ``ValueError`` containing the link name and preserves the original
-    exception as its cause. Input meshes are not modified by ``fit_mesh``.
+    raises ``ValueError`` containing the link name. In serial/thread mode its
+    cause is the original exception; process mode preserves a remote traceback.
+    Input meshes are not modified by ``fit_mesh``.
     """
     if not isinstance(workers, int) or isinstance(workers, bool) or workers < 1:
         raise ValueError("workers must be a positive integer")
@@ -68,6 +69,8 @@ def fit_links(
     workers = min(workers, len(prepared))
     if workers == 1:
         return [_fit_link(task) for task in prepared]
+    if any(config.device == "cuda" for _, _, config in prepared):
+        raise ValueError("CUDA fitting uses one GPU owner; use workers=1")
     if executor == "thread":
         pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="assetspheres")
     else:

@@ -42,6 +42,8 @@ def slab_spheres(mesh: trimesh.Trimesh, config: FitConfig) -> tuple[list[Sphere]
     cross = np.cross(triangles[:, 1] - triangles[:, 0], triangles[:, 2] - triangles[:, 0])
     if not np.any(np.any(cross != 0, axis=1)):
         raise ValueError("Mesh must contain a nondegenerate triangle")
+    # Release preprocessing buffers before PCA and clipping allocations.
+    del relative, triangles, cross
 
     centered = normalized - normalized.mean(axis=0)
     _, _, axes = np.linalg.svd(centered, full_matrices=False)

@@ -96,6 +96,23 @@ def test_optimizer_failure_keeps_original_center_and_full_radius(monkeypatch):
     assert diagnostic["optimizer_success"] is False
 
 
+def test_full_support_still_rechecks_an_undersized_optimizer_radius(monkeypatch):
+    from types import SimpleNamespace
+
+    import assetspheres.enclosing as module
+
+    monkeypatch.setattr(
+        module,
+        "minimize",
+        lambda *args, **kwargs: SimpleNamespace(success=True, x=np.zeros(4), nit=1),
+    )
+    points = np.random.default_rng(163).normal(size=(64, 3))
+    _, radius, diagnostic = assert_certified_improvement(points, np.array([3.0, 2.0, 1.0]))
+    assert radius > 0
+    assert diagnostic["constraint_rounds"] == 1
+    assert diagnostic["support_points"] == 64
+
+
 @pytest.mark.parametrize(
     "points, center",
     [

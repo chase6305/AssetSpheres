@@ -10,6 +10,7 @@ from __future__ import annotations
 import importlib
 import math
 import threading
+from collections.abc import Iterator
 from contextlib import closing, nullcontext
 from dataclasses import dataclass
 from typing import Any
@@ -49,7 +50,9 @@ class GridLayout:
         )
 
     def normalized_points(self, first: int, stop: int) -> np.ndarray:
-        flat_indices = np.arange(first, stop, dtype=np.int64)
+        return self.normalized_points_at(np.arange(first, stop, dtype=np.int64))
+
+    def normalized_points_at(self, flat_indices: np.ndarray) -> np.ndarray:
         indices = np.column_stack(np.unravel_index(flat_indices, self.shape))
         # Query the SAME rounded physical centers later used by the fitted balls.
         # Normalizing before world-coordinate reconstruction differs at large offsets.
@@ -58,6 +61,30 @@ class GridLayout:
             (physical_centers - self.normalization_origin_m) / self.normalization_scale_m,
             dtype=np.float32,
         )
+
+
+def _component_grid_batches(layout: GridLayout, bounds: np.ndarray) -> Iterator[np.ndarray]:
+    """Global flat indices in an expanded component AABB, in lattice order.
+
+    A bounded component cannot contain points outside its AABB. Include an
+    extra lattice cell on both sides to protect rounding at float32 query and
+    world-coordinate boundaries. Local batches avoid enumerating the entire
+    asset grid separately for every disconnected component.
+    """
+    lower = np.maximum(
+        np.floor((bounds[0] - layout.origin_m) / layout.voxel_size_m).astype(np.int64) - 1,
+        0,
+    )
+    upper = np.minimum(
+        np.ceil((bounds[1] - layout.origin_m) / layout.voxel_size_m).astype(np.int64) + 2,
+        layout.shape,
+    )
+    local_shape = tuple(upper - lower)
+    cell_count = math.prod(local_shape)
+    for first in range(0, cell_count, _QUERY_BATCH_SIZE):
+        local_flat = np.arange(first, min(first + _QUERY_BATCH_SIZE, cell_count), dtype=np.int64)
+        indices = np.asarray(np.unravel_index(local_flat, local_shape)) + lower[:, None]
+        yield np.ravel_multi_index(indices, layout.shape)
 
 
 def _grid_layout(triangle_mesh: trimesh.Trimesh, configuration: FitConfig) -> GridLayout:
@@ -171,15 +198,16 @@ def _merge_component_clearance(
     distance_query,
     interior_clearance: np.ndarray,
     numerical_allowance_m: float,
+    component_bounds: np.ndarray,
 ) -> tuple[int, int]:
     """Merge one component into the shared clearance lower bound in batch order."""
-    cell_count = len(interior_clearance)
     interior_count = 0
     best_clearance_m = 0.0
     representative_index = -1
-    for first in range(0, cell_count, _QUERY_BATCH_SIZE):
-        stop = min(first + _QUERY_BATCH_SIZE, cell_count)
-        signed_distances = distance_query.signed_distances(layout.normalized_points(first, stop))
+    for flat_indices in _component_grid_batches(layout, component_bounds):
+        signed_distances = distance_query.signed_distances(
+            layout.normalized_points_at(flat_indices)
+        )
         if not np.all(np.isfinite(signed_distances)):
             raise ValueError("Mesh distance query returned a non-finite result")
         if np.any(np.abs(signed_distances) >= 1e20):
@@ -193,11 +221,11 @@ def _merge_component_clearance(
         best_local_index = int(np.argmax(component_clearance))
         if component_clearance[best_local_index] > best_clearance_m:
             best_clearance_m = component_clearance[best_local_index]
-            representative_index = first + best_local_index
+            representative_index = int(flat_indices[best_local_index])
         # Each ball fits in an individual solid. The largest component distance
         # is a lower bound for clearance inside the components' solid union.
-        interior_clearance[first:stop] = np.maximum(
-            interior_clearance[first:stop], component_clearance
+        interior_clearance[flat_indices] = np.maximum(
+            interior_clearance[flat_indices], component_clearance
         )
     return interior_count, representative_index
 
@@ -225,7 +253,7 @@ def _sample_closed_components(
             )
         ) as distance_query:
             interior_count, representative_index = _merge_component_clearance(
-                layout, distance_query, interior_clearance, numerical_allowance_m
+                layout, distance_query, interior_clearance, numerical_allowance_m, component.bounds
             )
         if not interior_count:
             raise ValueError(

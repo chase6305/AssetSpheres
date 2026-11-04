@@ -70,9 +70,9 @@ def tighten_ball(
         diagnostics["optimizer_status"] = "coincident_points_exact"
     else:
         normalized = np.asarray(relative / scale, dtype=np.float64)
-        lower, upper = normalized.min(axis=0), normalized.max(axis=0)
-        start = normalized.mean(axis=0)
-        start_squared = np.sum((normalized - start) ** 2, axis=1)
+        lower_center_bounds, upper_center_bounds = normalized.min(axis=0), normalized.max(axis=0)
+        initial_center = normalized.mean(axis=0)
+        initial_squared_distances = np.sum((normalized - initial_center) ** 2, axis=1)
         # Extrema in axis and box-diagonal directions provide a useful small
         # support set, including both endpoints of collinear point clouds.
         directions = np.vstack(
@@ -86,27 +86,31 @@ def tighten_ball(
             support_indices = np.arange(len(normalized))
         else:
             support_indices = np.unique(
-                np.r_[np.argmax(normalized @ directions.T, axis=0), np.argmax(start_squared)]
+                np.r_[
+                    np.argmax(normalized @ directions.T, axis=0),
+                    np.argmax(initial_squared_distances),
+                ]
             )
-        current = np.r_[start, start_squared.max()]
+        # Parameters pack the normalized center and squared radius.
+        current_parameters = np.r_[initial_center, initial_squared_distances.max()]
         status = "fallback_original"
         for round_index in range(6):
             support = np.unique(normalized[support_indices], axis=0)
 
-            def constraints(x):
-                delta = support - x[:3]
-                return x[3] - np.sum(delta * delta, axis=1)
+            def constraints(parameters):
+                delta = support - parameters[:3]
+                return parameters[3] - np.sum(delta * delta, axis=1)
 
-            def constraint_jacobian(x):
-                return np.column_stack((2 * (support - x[:3]), np.ones(len(support))))
+            def constraint_jacobian(parameters):
+                return np.column_stack((2 * (support - parameters[:3]), np.ones(len(support))))
 
             try:
                 optimized = minimize(
-                    lambda x: x[3],
-                    current,
+                    lambda parameters: parameters[3],
+                    current_parameters,
                     method="SLSQP",
-                    jac=lambda x: np.array([0.0, 0.0, 0.0, 1.0]),
-                    bounds=[*zip(lower, upper), (0.0, None)],
+                    jac=lambda parameters: np.array([0.0, 0.0, 0.0, 1.0]),
+                    bounds=[*zip(lower_center_bounds, upper_center_bounds), (0.0, None)],
                     constraints={"type": "ineq", "fun": constraints, "jac": constraint_jacobian},
                     options={"maxiter": 64, "ftol": 1e-12},
                 )
@@ -120,24 +124,27 @@ def tighten_ball(
                 status = "optimizer_failed_previous_certified_ball_retained"
                 break
             diagnostics["optimizer_success"] = True
-            candidate = np.asarray(
+            candidate_center = np.asarray(
                 pivot + optimized.x[:3].astype(np.longdouble) * scale, dtype=np.float64
             )
-            candidate_radius = _certified_radius(points, candidate)
+            candidate_radius = _certified_radius(points, candidate_center)
             if candidate_radius < best_radius:
-                best_center, best_radius = candidate, candidate_radius
+                best_center, best_radius = candidate_center, candidate_radius
                 status = "optimized"
-            squared = np.sum((normalized - optimized.x[:3]) ** 2, axis=1)
-            violations = squared - optimized.x[3]
-            if violations.max() <= 1e-10:
+            squared_distances = np.sum((normalized - optimized.x[:3]) ** 2, axis=1)
+            violations = squared_distances - optimized.x[3]
+            if violations.max() <= 1e-10 or len(support_indices) >= 64:
                 break
-            remaining = np.setdiff1d(np.arange(len(normalized)), support_indices)
-            remaining = remaining[violations[remaining] > 1e-10]
-            if not len(remaining) or len(support_indices) >= 64:
+            remaining_mask = violations > 1e-10
+            remaining_mask[support_indices] = False
+            remaining_indices = np.flatnonzero(remaining_mask)
+            if not len(remaining_indices):
                 break
-            add = remaining[np.argsort(-violations[remaining], kind="stable")[:8]]
-            support_indices = np.r_[support_indices, add][:64]
-            current = np.r_[optimized.x[:3], squared.max()]
+            additional_indices = remaining_indices[
+                np.argsort(-violations[remaining_indices], kind="stable")[:8]
+            ]
+            support_indices = np.r_[support_indices, additional_indices][:64]
+            current_parameters = np.r_[optimized.x[:3], squared_distances.max()]
         diagnostics["optimizer_status"] = status
 
     diagnostics["final_radius_m"] = best_radius

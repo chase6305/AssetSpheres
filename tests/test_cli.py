@@ -231,6 +231,17 @@ def test_missing_file_message_and_parser_error_codes(capsys):
     assert outcome.value.code == 2
 
 
+@pytest.mark.parametrize("face", ["1 2 99", "-10 -2 -1"])
+def test_invalid_obj_face_indices_have_a_concise_cli_error(tmp_path, capsys, face):
+    source = tmp_path / "invalid.obj"
+    source.write_text(f"v 0 0 0\nv 1 0 0\nv 0 1 0\nf {face}\n")
+    assert main(["inspect", str(source), "--json"]) == 2
+    output = capsys.readouterr()
+    assert not output.out
+    assert "Invalid triangle mesh" in output.err and str(source) in output.err
+    assert "Traceback" not in output.err
+
+
 def test_new_voxelizer_options_are_explicit_and_default_to_legacy_backend():
     parser = build_parser()
     defaults = parser.parse_args(["fit", str(EXAMPLE)])

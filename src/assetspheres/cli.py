@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from .asset import Asset, load_asset
-from .export import load_result_asset, read_result, write_outputs
+from .export import check_output_paths, load_result_asset, read_result, write_outputs
 from .fit import fit_asset
 from .model import FitConfig, FitResult
 
@@ -367,6 +367,9 @@ def _run_fit_command(arguments: argparse.Namespace) -> None:
     configuration = _build_fit_configuration(arguments)
     asset = _load_input_asset(arguments)
     output_directory = getattr(arguments, "output", Path("outputs") / arguments.input.stem)
+    check_output_paths(
+        asset, output_directory, force=arguments.force, include_glb=not arguments.no_glb
+    )
     print(f"Fitting {len(asset.links)} link(s) with {configuration.method}...", flush=True)
     result = fit_asset(
         asset,
