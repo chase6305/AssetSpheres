@@ -108,8 +108,8 @@ def test_exports_roundtrip_and_preserve_urdf(tmp_path):
         write_outputs(asset, result, tmp_path / "output")
 
 
-def test_preview_skips_discarded_textures_and_keeps_independent_geometry_attributes(monkeypatch):
-    image_module = pytest.importorskip("PIL.Image")
+@pytest.mark.parametrize("textured", [False, True])
+def test_preview_keeps_independent_attributes_and_skips_discarded_textures(monkeypatch, textured):
     asset = load_asset(EXAMPLE, link_names=["base"])
     result = fit_asset(asset, FitConfig(method="cover", count=2, samples=64))
     source = asset.links["base"].mesh
@@ -118,13 +118,17 @@ def test_preview_skips_discarded_textures_and_keeps_independent_geometry_attribu
     labels = np.arange(len(source.faces))
     source.vertex_attributes["_FEATURES"] = features.copy()
     source.face_attributes["labels"] = labels.copy()
-    image = image_module.new("RGBA", (16, 16), (60, 120, 180, 255))
-    visual = trimesh.visual.texture.TextureVisuals(
-        uv=np.zeros((len(vertices), 2)),
-        material=trimesh.visual.material.PBRMaterial(baseColorTexture=image),
-    )
-    source.visual = visual
-    monkeypatch.setattr(image, "copy", lambda: pytest.fail("Preview discards the source texture"))
+    if textured:
+        image_module = pytest.importorskip("PIL.Image")
+        image = image_module.new("RGBA", (16, 16), (60, 120, 180, 255))
+        source.visual = trimesh.visual.texture.TextureVisuals(
+            uv=np.zeros((len(vertices), 2)),
+            material=trimesh.visual.material.PBRMaterial(baseColorTexture=image),
+        )
+        monkeypatch.setattr(
+            image, "copy", lambda: pytest.fail("Preview discards the source texture")
+        )
+    visual = source.visual
 
     scene = make_scene(asset, result)
     _, geometry_name = scene.graph["mesh/0"]
@@ -144,7 +148,30 @@ def test_preview_skips_discarded_textures_and_keeps_independent_geometry_attribu
     np.testing.assert_array_equal(source.vertex_attributes["_FEATURES"], features)
     np.testing.assert_array_equal(source.face_attributes["labels"], labels)
     assert source.visual is visual
-    assert image.getpixel((0, 0)) == (60, 120, 180, 255)
+    if textured:
+        assert image.getpixel((0, 0)) == (60, 120, 180, 255)
+
+
+def test_preview_link_geometry_and_colors_remain_independent():
+    asset = load_asset(EXAMPLE)
+    result = fit_asset(asset, FitConfig(method="cover", count=2, samples=64))
+    scene = make_scene(asset, result)
+    first = scene.geometry["sphere_template/0"]
+    second = scene.geometry["sphere_template/1"]
+    vertices, faces, colors = (
+        second.vertices.copy(),
+        second.faces.copy(),
+        second.visual.face_colors.copy(),
+    )
+    assert not np.array_equal(first.visual.face_colors, colors)
+    first.vertices[0] += 1
+    first.faces[0] = 0
+    first.visual.face_colors[0] = [0, 0, 0, 0]
+    np.testing.assert_array_equal(second.vertices, vertices)
+    np.testing.assert_array_equal(second.faces, faces)
+    np.testing.assert_array_equal(second.visual.face_colors, colors)
+    fresh_scene = make_scene(asset, result)
+    np.testing.assert_array_equal(fresh_scene.geometry["sphere_template/1"].vertices, vertices)
 
 
 def test_mesh_scaling_survives_export_and_view_reload(tmp_path):

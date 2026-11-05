@@ -82,6 +82,8 @@ def _urdf(asset: Asset, result: FitResult, output: Path) -> bytes:
 
 def make_scene(asset: Asset, result: FitResult) -> trimesh.Scene:
     scene = trimesh.Scene()
+    # Tessellate once; links retain independent geometry and colors.
+    sphere_template = trimesh.creation.icosphere(subdivisions=2, radius=1.0)
     for link_index, (link_name, spheres) in enumerate(result.links.items()):
         link_transform = np.asarray(result.transforms.get(link_name, np.eye(4)), dtype=float)
         source_mesh = asset.links[link_name].mesh
@@ -102,7 +104,7 @@ def make_scene(asset: Asset, result: FitResult) -> trimesh.Scene:
         sphere_color[3] = 160
         # GLB instances share unit sphere buffers per link. Node transforms map
         # unit sphere -> link -> scene: link_transform @ sphere_transform.
-        unit_sphere = trimesh.creation.icosphere(subdivisions=2, radius=1.0)
+        unit_sphere = sphere_template.copy(include_visual=False)
         unit_sphere.visual.face_colors = sphere_color
         geometry_name = f"sphere_template/{link_index}"
         for sphere_index, sphere in enumerate(spheres):
