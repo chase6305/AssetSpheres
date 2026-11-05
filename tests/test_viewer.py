@@ -337,7 +337,8 @@ def test_camera_frames_world_bounds_and_selected_link(monkeypatch, tmp_path):
     client = SimpleNamespace(camera=camera, atomic=nullcontext)
     callbacks[0](client)
     bounds = _scene_bounds(asset, result, list(result.links))
-    np.testing.assert_allclose(camera.look_at, bounds.mean(axis=0))
+    # Equivalent midpoint formulas can round differently near zero.
+    np.testing.assert_allclose(camera.look_at, bounds.mean(axis=0), atol=1e-15)
     distance = np.linalg.norm(camera.position - camera.look_at)
     radius = np.linalg.norm(bounds[1] - bounds[0]) / 2
     assert distance > radius
@@ -349,7 +350,7 @@ def test_camera_frames_world_bounds_and_selected_link(monkeypatch, tmp_path):
     widgets["Only selected link"].emit()
     widgets["Frame model"].emit(client=client)
     expected = _scene_bounds(asset, result, ["arm"]).mean(axis=0)
-    np.testing.assert_allclose(camera.look_at, expected)
+    np.testing.assert_allclose(camera.look_at, expected, atol=1e-15)
 
 
 def test_sub_tolerance_center_edits_reach_visible_geometry(monkeypatch, tmp_path):
