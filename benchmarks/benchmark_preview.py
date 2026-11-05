@@ -108,9 +108,9 @@ def main():
             )
             mesh.face_attributes["label"] = np.arange(len(mesh.faces))
             source_vertices = mesh.vertices.copy()
-            source_triangles = mesh.faces.copy()
-            source_attributes = copy.deepcopy(mesh.vertex_attributes)
-            source_faces = copy.deepcopy(mesh.face_attributes)
+            source_faces = mesh.faces.copy()
+            source_vertex_attributes = copy.deepcopy(mesh.vertex_attributes)
+            source_face_attributes = copy.deepcopy(mesh.face_attributes)
             image_digest = hashlib.sha256(image.tobytes()).digest() if image is not None else None
             transform = trimesh.transformations.euler_matrix(0.2, -0.4, 0.7)
             transform[:3, 3] = [0.1, 0.2, 0.3]
@@ -170,10 +170,10 @@ def main():
                     for name, values in times.items()
                 }
             assert np.array_equal(mesh.vertices, source_vertices)
-            assert np.array_equal(mesh.faces, source_triangles)
-            for name, values in source_attributes.items():
+            assert np.array_equal(mesh.faces, source_faces)
+            for name, values in source_vertex_attributes.items():
                 assert np.array_equal(mesh.vertex_attributes[name], values)
-            for name, values in source_faces.items():
+            for name, values in source_face_attributes.items():
                 assert np.array_equal(mesh.face_attributes[name], values)
             if image is not None:
                 assert hashlib.sha256(image.tobytes()).digest() == image_digest
