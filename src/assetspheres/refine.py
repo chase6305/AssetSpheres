@@ -11,10 +11,10 @@ from typing import Any
 
 import numpy as np
 import trimesh
-from scipy import ndimage
 from scipy.spatial.distance import cdist
 
 from .geometry import sample_surface
+from .grid_distance import unit_grid_distances
 from .model import FitConfig, Sphere
 
 SURFACE_COVERAGE_WEIGHT = 8.0
@@ -96,7 +96,7 @@ def _sample_voxel_exterior(
         block_indices = np.rint((point_block - lattice_origin) / voxel_size_m).astype(int)
         occupied_cells[tuple((block_indices + border_cells).T)] = True
     del block_indices
-    exterior_distance = ndimage.distance_transform_edt(~occupied_cells)
+    exterior_distance = unit_grid_distances(~occupied_cells)
     exterior_indices = np.argwhere((exterior_distance >= 1.5) & (exterior_distance <= border_cells))
     if not len(exterior_indices):
         raise ValueError("No exterior training samples; increase voxel resolution")

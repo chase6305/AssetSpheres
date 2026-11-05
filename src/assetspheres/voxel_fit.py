@@ -18,6 +18,7 @@ from scipy import ndimage
 from scipy.spatial import cKDTree
 
 from .geometry import make_spheres, sphere_gaps
+from .grid_distance import unit_grid_distances
 from .model import FitConfig, Sphere
 from .surface_grid import subdivide_surface_grid
 
@@ -102,7 +103,7 @@ def _prepare_voxel_candidates(mesh: trimesh.Trimesh, configuration: FitConfig) -
     transform = voxel_grid.transform
     if prepared_grid.clearance_grid_m is None:
         # EDT needs exterior cells even when the mesh fills its entire voxel bounds.
-        distance_grid = ndimage.distance_transform_edt(np.pad(occupied_cells, 1))[1:-1, 1:-1, 1:-1]
+        distance_grid = unit_grid_distances(np.pad(occupied_cells, 1))[1:-1, 1:-1, 1:-1]
         clearance_radii = (
             np.maximum(distance_grid[tuple(occupied_indices.T)] - 0.5, 0.5) * voxel_size_m
         )

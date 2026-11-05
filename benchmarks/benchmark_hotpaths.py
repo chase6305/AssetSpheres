@@ -29,6 +29,7 @@ from scipy.spatial.distance import cdist
 from assetspheres import FitConfig, Sphere, asset, voxelization
 from assetspheres.fit import sphere_gaps
 from assetspheres.geometry import farthest_point_indices
+from assetspheres.grid_distance import unit_grid_distances
 from assetspheres.refine import _loss_gradient, _sample_voxel_exterior
 from assetspheres.surface_cover import _triangle_requirements
 from assetspheres.surface_grid import subdivide_surface_grid
@@ -314,6 +315,17 @@ def main():
                 lambda: reference_triangle_requirements(*inputs),
                 lambda: _triangle_requirements(*inputs),
                 lambda a, b: all(np.array_equal(x, y) for x, y in zip(a, b)),
+                args.repeats,
+            ),
+        )
+    for side in (48, 112):
+        occupied = np.pad(np.ones((side - 2,) * 3, dtype=bool), 1)
+        save(
+            f"unit-grid-distance/cube{side}",
+            compare(
+                lambda: ndimage.distance_transform_edt(occupied),
+                lambda: unit_grid_distances(occupied),
+                np.array_equal,
                 args.repeats,
             ),
         )

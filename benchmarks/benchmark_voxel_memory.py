@@ -30,6 +30,7 @@ import scipy
 import trimesh
 
 import assetspheres.fit as fitting
+import assetspheres.grid_distance as grid_distance
 import assetspheres.refine as refinement
 import assetspheres.voxel_fit as optimized
 from assetspheres import FitConfig
@@ -115,6 +116,9 @@ def main():
         ).hexdigest(),
         "optimized_refine_sha256": hashlib.sha256(
             Path(refinement.__file__).read_bytes()
+        ).hexdigest(),
+        "optimized_grid_distance_sha256": hashlib.sha256(
+            Path(grid_distance.__file__).read_bytes()
         ).hexdigest(),
         "threads": {
             name: os.environ.get(name) for name in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS")
