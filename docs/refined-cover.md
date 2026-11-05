@@ -130,7 +130,7 @@ python benchmarks/benchmark_algorithms.py \
 修补使用归一化 float64 坐标、尺度/源坐标 ULP 裕量和向外舍入，不是区间算术。
 最大深度 8、最多 100,000 次细分；达到预算时包住剩余粗三角形，可能增加外扩，不丢弃区域。
 报告保留粗叶数量、增长球数和最大半径增量。具体构造见
-[算法说明](algorithm.md#refined-cover保留优化结果构造三角表面包络)。
+[算法说明](algorithm.md#refined-cover)。
 
 ## 复现
 

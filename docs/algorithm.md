@@ -135,7 +135,7 @@ margin = 0.15 * voxel_pitch / normalization_scale
 
 训练种子为用户 seed 加固定偏移，表面报告和最终比较样本使用其他种子。CPU/CUDA 在本地测试中同目标、同数值精度，夹紧距离的梯度也保持一致；一般硬件与库版本下不承诺全局逐位确定性。训练矩阵最多 400 万个点球对，超过时显式要求降低样本数或球数。这个预算不是进程总内存的严格上限。
 
-## `refined-cover`：保留优化结果，构造三角表面包络
+## `refined-cover`
 
 先执行与 `refined` 相同的体素初始化、优化和一次用户 padding，再执行独立的
 `surface_cover.repair_surface_cover`。修补不使用质量评价样本，也不改变球心、球数或减小半径：
