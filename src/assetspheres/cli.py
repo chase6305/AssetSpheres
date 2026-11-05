@@ -55,6 +55,13 @@ METHODS = (
         "Core; torch for CUDA; rtree for mesh labels",
     ),
     MethodInfo(
+        "refined-cover",
+        True,
+        ("cpu", "cuda"),
+        "Refined balls with triangle enclosure",
+        "Core; CPU repair; torch for CUDA; rtree for mesh labels",
+    ),
+    MethodInfo(
         "lula", True, ("cpu",), "Native installed Lula generator", "Isaac Sim Lula bindings"
     ),
 )
@@ -224,7 +231,7 @@ def _add_fit_command(commands) -> None:
         "--device",
         choices=["cpu", "cuda"],
         default="cpu",
-        help="voxel/refined tensor device; CUDA requires compatible PyTorch",
+        help="voxel/refined/refined-cover tensor device; CUDA requires compatible PyTorch",
     )
     parallel.add_argument(
         "--workers", type=int, default=1, help="CPU link workers; CUDA fitting uses one GPU owner"

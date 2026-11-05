@@ -59,7 +59,7 @@ def _prepare_mesh(mesh: trimesh.Trimesh) -> trimesh.Trimesh:
 def _resolve_configuration(
     mesh: trimesh.Trimesh, requested: FitConfig
 ) -> tuple[FitConfig, list[str]]:
-    needs_volume = requested.method in {"voxel", "refined", "lula"}
+    needs_volume = requested.method in {"voxel", "refined", "refined-cover", "lula"}
     if not needs_volume or mesh.is_watertight:
         return requested, []
     if requested.non_watertight == "error":
@@ -77,24 +77,41 @@ def _fit_with_method(
     details: dict[str, Any] = {}
     occupied_points = None
     warnings = []
-    if configuration.method in {"voxel", "refined"}:
+    if configuration.method in {"voxel", "refined", "refined-cover"}:
         # Refinement adds user padding only after optimization, exactly once.
         initial_configuration = (
             replace(configuration, padding=0)
-            if configuration.method == "refined"
+            if configuration.method in {"refined", "refined-cover"}
             else configuration
         )
         spheres, details, occupied_points = fit_voxel_spheres(mesh, initial_configuration)
-        if configuration.method == "refined":
+        if configuration.method in {"refined", "refined-cover"}:
             from .refine import refine_spheres
 
             spheres, refinement_details = refine_spheres(
                 mesh, spheres, occupied_points, details["voxel_size_m"], configuration
             )
             details.update(refinement_details)
-            warnings.append(
-                "Sampled refinement trades coverage against exterior volume; no certificate"
-            )
+            if configuration.method == "refined-cover":
+                from .surface_cover import repair_surface_cover
+
+                spheres, repair_details = repair_surface_cover(mesh, spheres)
+                details.update(repair_details)
+                details["triangle_surface_coverage_certified"] = True
+                details["surface_repair_device"] = "cpu"
+                details["optimization_scope"] = "before user padding and surface repair"
+                warnings.append(
+                    "Triangle leaves are enclosed after repair; solid interiors are not certified"
+                )
+                if repair_details["surface_repair_coarse_leaves"]:
+                    warnings.append(
+                        "Surface repair retained coarse leaves at its subdivision limit; "
+                        "inspect exterior volume"
+                    )
+            else:
+                warnings.append(
+                    "Sampled refinement trades coverage against exterior volume; no certificate"
+                )
         warnings.append("Voxel spheres approximate volume and can leave gaps; inspect coverage")
         warnings.extend(details.get("voxelizer_warnings", []))
     elif configuration.method == "surface":

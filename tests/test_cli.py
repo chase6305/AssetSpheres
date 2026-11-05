@@ -52,6 +52,7 @@ def test_methods_json_lists_supported_choices_without_human_text(capsys):
         "cover-opt",
         "slab",
         "refined",
+        "refined-cover",
         "lula",
     }
     assert methods["voxel"]["closed_mesh_required"] is True

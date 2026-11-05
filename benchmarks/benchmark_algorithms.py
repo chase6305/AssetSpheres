@@ -38,6 +38,7 @@ def main():
     parser.add_argument("--output", type=Path, default=Path("outputs/benchmark-algorithms.json"))
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--count", type=int, default=24)
+    parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--samples", type=int, default=3000)
     parser.add_argument("--iterations", type=int, default=120)
     parser.add_argument("--refine-samples", type=int, default=1024)
@@ -57,7 +58,7 @@ def main():
     parser.add_argument(
         "--method",
         action="append",
-        choices=("voxel", "cover", "cover-tight", "cover-opt", "slab", "refined"),
+        choices=("voxel", "cover", "cover-tight", "cover-opt", "slab", "refined", "refined-cover"),
         help="Repeat to select methods",
     )
     args = parser.parse_args()
@@ -67,19 +68,23 @@ def main():
         parser.error("--input and --shape are mutually exclusive")
     config = FitConfig(
         count=args.count,
+        seed=args.seed,
         samples=args.samples,
         iterations=args.iterations,
         refine_samples=args.refine_samples,
         padding=args.padding,
     )
     selected_methods = dict.fromkeys(
-        args.method or ("voxel", "cover", "cover-tight", "cover-opt", "slab", "refined")
+        args.method
+        or ("voxel", "cover", "cover-tight", "cover-opt", "slab", "refined", "refined-cover")
     )
     methods = [(method, "cpu") for method in selected_methods]
     if args.cuda:
         # Intentionally do not import torch until the first measured CUDA fit.
         methods.extend(
-            (method, "cuda") for method in ("voxel", "refined") if method in selected_methods
+            (method, "cuda")
+            for method in ("voxel", "refined", "refined-cover")
+            if method in selected_methods
         )
     meshes = shapes()
     source = None

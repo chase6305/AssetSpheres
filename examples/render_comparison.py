@@ -110,7 +110,10 @@ def main():
     parser.add_argument("--zoom", type=float, default=1.0, help="Shared display magnification")
     parser.add_argument("--geometry", choices=("auto", "collision", "visual"), default="auto")
     parser.add_argument(
-        "--method", action="append", choices=(*METHODS, "cover-opt"), help="Repeat to select panels"
+        "--method",
+        action="append",
+        choices=(*METHODS, "cover-opt", "refined-cover"),
+        help="Repeat to select panels",
     )
     arguments = parser.parse_args()
     if not np.isfinite(arguments.zoom) or arguments.zoom <= 0:
