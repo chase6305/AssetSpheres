@@ -1,9 +1,11 @@
-"""Render actual fits of the bundled URDF; no third-party assets are needed.
+"""Render actual fits of the bundled URDF or a supplied URDF/mesh.
 
 From the repository root, after installing the plots extra:
     python examples/render_comparison.py
 """
 
+import argparse
+import hashlib
 import json
 import platform
 from dataclasses import asdict
@@ -24,7 +26,7 @@ from assetspheres import FitConfig, fit_asset, load_asset
 from assetspheres.geometry import sample_surface, sphere_gaps
 
 METHODS = ("voxel", "cover", "cover-tight", "slab", "refined")
-LINK_COLORS = ("#1496b8", "#ed9b32")
+LINK_COLORS = ("#1496b8", "#ed9b32", "#8672bc", "#4aa78b", "#ce7486", "#5793c5", "#92a64f")
 BACKGROUND = "#f6f8fc"
 TEXT_COLOR = "#17344b"
 VALIDATION_SAMPLES = 10_000
@@ -49,7 +51,7 @@ def scene_bounds(asset, results):
     return minimum - margin, maximum + margin
 
 
-def draw_model(axis, asset, result, bounds):
+def draw_model(axis, asset, result, bounds, zoom=1.0):
     for link_index, (link_name, link) in enumerate(asset.links.items()):
         transform = asset.zero_pose_transforms[link_name]
         source_vertices = trimesh.transform_points(link.mesh.vertices, transform)
@@ -62,6 +64,7 @@ def draw_model(axis, asset, result, bounds):
                 alpha=1.0 if result is None else 0.12,
                 shade=True,
                 lightsource=LightSource(azdeg=315, altdeg=45),
+                clip_on=False,
             )
         )
         if result is None:
@@ -81,6 +84,7 @@ def draw_model(axis, asset, result, bounds):
                 alpha=0.78,
                 shade=True,
                 lightsource=LightSource(azdeg=315, altdeg=45),
+                clip_on=False,
             )
         )
 
@@ -88,7 +92,7 @@ def draw_model(axis, asset, result, bounds):
     axis.set(
         xlim=(minimum[0], maximum[0]), ylim=(minimum[1], maximum[1]), zlim=(minimum[2], maximum[2])
     )
-    axis.set_box_aspect(maximum - minimum)
+    axis.set_box_aspect(maximum - minimum, zoom=zoom)
     axis.set_proj_type("ortho")
     axis.view_init(elev=18, azim=-64)
     axis.set_axis_off()
@@ -96,7 +100,23 @@ def draw_model(axis, asset, result, bounds):
 
 def main():
     root = Path(__file__).resolve().parents[1]
-    asset = load_asset(root / "examples/two_link.urdf")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--input", type=Path, default=root / "examples/two_link.urdf")
+    parser.add_argument(
+        "--output", type=Path, help="PNG destination; matching JSON is written beside it"
+    )
+    parser.add_argument("--title", default="Collision sphere fitting")
+    parser.add_argument("--columns", type=int, choices=(2, 3), default=3)
+    parser.add_argument("--zoom", type=float, default=1.0, help="Shared display magnification")
+    parser.add_argument("--geometry", choices=("auto", "collision", "visual"), default="auto")
+    arguments = parser.parse_args()
+    if not np.isfinite(arguments.zoom) or arguments.zoom <= 0:
+        parser.error("--zoom must be finite and positive")
+    output = arguments.output or root / "docs/comparison.png"
+    data_output = (
+        output.with_suffix(".json") if arguments.output else root / "docs/visual-examples.json"
+    )
+    asset = load_asset(arguments.input, geometry=arguments.geometry)
     results = {}
     records = {
         "scope": "Actual CPU fits; illustration and held-out surface checks, not a speed benchmark",
@@ -105,7 +125,30 @@ def main():
         "scipy": scipy.__version__,
         "trimesh": trimesh.__version__,
         "matplotlib": matplotlib.__version__,
-        "input": "examples/two_link.urdf",
+        "input": f"{asset.path.parent.name}/{asset.path.name}",
+        "title": arguments.title,
+        "input_sha256": hashlib.sha256(asset.path.read_bytes()).hexdigest(),
+        "display_pose": "all joint positions zero"
+        if asset.urdf is not None
+        else "source mesh frame",
+        "view": {
+            "columns": arguments.columns,
+            "zoom": arguments.zoom,
+            "elevation": 18,
+            "azimuth": -64,
+        },
+        "geometry": asset.geometry,
+        "links": {
+            name: {
+                "geometry_source": link.geometry_source,
+                "triangle_count": len(link.mesh.faces),
+                "watertight": bool(link.mesh.is_watertight),
+                "mesh_sha256": hashlib.sha256(
+                    np.asarray(link.mesh.vertices).tobytes() + np.asarray(link.mesh.faces).tobytes()
+                ).hexdigest(),
+            }
+            for name, link in asset.links.items()
+        },
         "validation": {
             "samples_per_link": VALIDATION_SAMPLES,
             "seed": VALIDATION_SEED,
@@ -146,12 +189,19 @@ def main():
     figure = plt.figure(figsize=(12, 10), facecolor=BACKGROUND)
     bounds = scene_bounds(asset, results)
     panels = [("Source geometry", None), *[(method, results[method]) for method in METHODS]]
+    rows = len(panels) // arguments.columns
     for panel_index, (label, result) in enumerate(panels):
-        axis = figure.add_subplot(2, 3, panel_index + 1, projection="3d", facecolor=BACKGROUND)
-        draw_model(axis, asset, result, bounds)
+        axis = figure.add_subplot(
+            rows, arguments.columns, panel_index + 1, projection="3d", facecolor=BACKGROUND
+        )
+        draw_model(axis, asset, result, bounds, zoom=arguments.zoom)
         axis.set_title(label, fontsize=16, weight="bold", pad=0, color=TEXT_COLOR)
         if result is None:
-            caption = "Bundled two-link URDF"
+            caption = (
+                f"{len(asset.links)} fitted links  |  zero joint pose"
+                if asset.urdf is not None
+                else "Standalone mesh  |  source frame"
+            )
         else:
             record = records["methods"][label]
             caption = (
@@ -169,7 +219,7 @@ def main():
             color="#536b7e",
         )
 
-    figure.suptitle("Collision sphere fitting", x=0.5, y=0.98, fontsize=23, weight="bold")
+    figure.suptitle(arguments.title, x=0.5, y=0.98, fontsize=23, weight="bold")
     figure.text(
         0.5,
         0.94,
@@ -180,15 +230,15 @@ def main():
     )
     figure.legend(
         handles=[
-            Patch(facecolor=LINK_COLORS[0], label="base balls"),
-            Patch(facecolor=LINK_COLORS[1], label="arm balls"),
-            Patch(facecolor="#899bab", label="source mesh"),
-        ],
+            Patch(facecolor=LINK_COLORS[index % len(LINK_COLORS)], label=name)
+            for index, name in enumerate(asset.links)
+        ]
+        + [Patch(facecolor="#899bab", label="source mesh")],
         loc="upper center",
         bbox_to_anchor=(0.5, 0.917),
-        ncol=3,
+        ncol=min(4, len(asset.links) + 1),
         frameon=False,
-        fontsize=11,
+        fontsize=9,
     )
     figure.text(
         0.5,
@@ -200,14 +250,20 @@ def main():
         color="#536b7e",
         linespacing=1.6,
     )
-    figure.subplots_adjust(left=0.01, right=0.99, bottom=0.075, top=0.85, wspace=0.01, hspace=0.08)
-    figure.savefig(root / "docs/comparison.png", dpi=160, facecolor=BACKGROUND)
-    plt.close(figure)
-    (root / "docs/visual-examples.json").write_text(
-        json.dumps(records, indent=2, allow_nan=False) + "\n", encoding="utf-8"
+    figure.subplots_adjust(
+        left=0.01,
+        right=0.99,
+        bottom=0.075,
+        top=0.85,
+        wspace=0.01,
+        hspace=0.18 if rows == 3 else 0.08,
     )
-    print(root / "docs/comparison.png")
-    print(root / "docs/visual-examples.json")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    figure.savefig(output, dpi=160, facecolor=BACKGROUND)
+    plt.close(figure)
+    data_output.write_text(json.dumps(records, indent=2, allow_nan=False) + "\n", encoding="utf-8")
+    print(output)
+    print(data_output)
 
 
 if __name__ == "__main__":

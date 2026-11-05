@@ -6,6 +6,30 @@
   "trimesh": "4.12.2",
   "matplotlib": "3.10.9",
   "input": "examples/two_link.urdf",
+  "title": "Collision sphere fitting",
+  "input_sha256": "4099629f37f833c34e1ed98039e47968d05a0007e697c4cba9a803d79cbbceb0",
+  "display_pose": "all joint positions zero",
+  "view": {
+    "columns": 3,
+    "zoom": 1.0,
+    "elevation": 18,
+    "azimuth": -64
+  },
+  "geometry": "auto",
+  "links": {
+    "base": {
+      "geometry_source": "collision",
+      "triangle_count": 12,
+      "watertight": true,
+      "mesh_sha256": "aac162ffd088ea9eab5aeafe2e884804c152a45e8d3f3c6b33d6b10e7e0f966b"
+    },
+    "arm": {
+      "geometry_source": "collision",
+      "triangle_count": 1472,
+      "watertight": true,
+      "mesh_sha256": "1a79a5b0b2e323dc4673f77bb4ff75504e828bc8dbe0e9b07bc5630ff28298a7"
+    }
+  },
   "validation": {
     "samples_per_link": 10000,
     "seed": 950071,
