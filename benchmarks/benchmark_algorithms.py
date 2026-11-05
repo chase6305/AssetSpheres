@@ -91,6 +91,14 @@ def main():
             for method in ("voxel", "refined", "refined-cover")
             if method in selected_methods
         )
+    recipes = [
+        (method, device, config.refine_reference, f"{method}/{device}")
+        for method, device in methods
+    ]
+    if args.mesh_reference:
+        recipes.append(("refined", "cpu", "mesh", "refined-mesh/cpu"))
+        if "refined-cover" in selected_methods:
+            recipes.append(("refined-cover", "cpu", "mesh", "refined-cover-mesh/cpu"))
     meshes = shapes()
     source = None
     if args.input:
@@ -115,6 +123,12 @@ def main():
         "trimesh": trimesh.__version__,
         "input": source,
         "config": asdict(config),
+        "recipes": {
+            label: asdict(
+                replace(config, method=method, device=device, refine_reference=reference_mode)
+            )
+            for method, device, reference_mode, label in recipes
+        },
         "repeats": args.repeats,
         "timing_scope": "full fit_mesh, preloaded mesh; no load/export/evaluation",
         "quality": f"common original-mesh Monte Carlo; held-out seed {args.evaluation_seed}",
@@ -124,9 +138,8 @@ def main():
         if args.shape and name not in args.shape:
             continue
         fitted, timings, reports = {}, {}, {}
-        for method, device in methods:
-            label = f"{method}/{device}"
-            local = replace(config, method=method, device=device)
+        for method, device, reference_mode, label in recipes:
+            local = replace(config, method=method, device=device, refine_reference=reference_mode)
             durations = []
             for repeat in range(args.repeats + 1):
                 if device == "cuda" and repeat > 0:
@@ -152,21 +165,6 @@ def main():
                 f"warm={timings[label]['warm_median_s']:.4f}s",
                 flush=True,
             )
-        if args.mesh_reference:
-            local = replace(config, method="refined", refine_reference="mesh")
-            duration = []
-            for _ in range(args.repeats + 1):
-                started = time.perf_counter()
-                spheres, report = fit_mesh(mesh, local)
-                duration.append(time.perf_counter() - started)
-            label = "refined-mesh/cpu"
-            fitted[label], reports[label] = spheres, report
-            timings[label] = {
-                "first_call_s": duration[0],
-                "warm_times_s": duration[1:],
-                "warm_median_s": statistics.median(duration[1:]),
-            }
-            print(f"{name:10} {label:20} warm={timings[label]['warm_median_s']:.4f}s", flush=True)
         quality = compare_sphere_models(
             mesh,
             fitted,
