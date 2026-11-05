@@ -24,6 +24,7 @@ MINIMUM_CENTER_DISTANCE = 1e-12
 NORMALIZED_LEARNING_RATE = 0.006
 MAXIMUM_TRAINING_PAIRS = 4_000_000
 MAXIMUM_GRADIENT_BLOCK_PAIRS = 1_000_000
+VOXEL_POINT_BATCH_SIZE = 32768
 
 
 def _sample_mesh_reference_regions(
@@ -84,11 +85,17 @@ def _sample_voxel_exterior(
 ) -> np.ndarray:
     # Keep negative labels away from the ambiguous rasterized boundary.
     lattice_origin = occupied_points.min(axis=0)
-    occupied_indices = np.rint((occupied_points - lattice_origin) / voxel_size_m).astype(int)
+    maximum_coordinates = occupied_points.max(axis=0)
+    maximum_indices = np.rint((maximum_coordinates - lattice_origin) / voxel_size_m).astype(int)
     border_cells = 4
-    grid_shape = tuple(occupied_indices.max(axis=0) + 1 + 2 * border_cells)
+    grid_shape = tuple(maximum_indices + 1 + 2 * border_cells)
     occupied_cells = np.zeros(grid_shape, dtype=bool)
-    occupied_cells[tuple((occupied_indices + border_cells).T)] = True
+    # Avoid retaining a full point-index array during the distance transform.
+    for first_point in range(0, len(occupied_points), VOXEL_POINT_BATCH_SIZE):
+        point_block = occupied_points[first_point : first_point + VOXEL_POINT_BATCH_SIZE]
+        block_indices = np.rint((point_block - lattice_origin) / voxel_size_m).astype(int)
+        occupied_cells[tuple((block_indices + border_cells).T)] = True
+    del block_indices
     exterior_distance = ndimage.distance_transform_edt(~occupied_cells)
     exterior_indices = np.argwhere((exterior_distance >= 1.5) & (exterior_distance <= border_cells))
     if not len(exterior_indices):

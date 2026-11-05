@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import platform
 import statistics
 import time
@@ -42,6 +43,8 @@ def main():
     parser.add_argument("--samples", type=int, default=3000)
     parser.add_argument("--iterations", type=int, default=120)
     parser.add_argument("--refine-samples", type=int, default=1024)
+    parser.add_argument("--refine-reference", choices=("voxel", "mesh"), default="voxel")
+    parser.add_argument("--outside-weight", type=float, default=10.0)
     parser.add_argument("--volume-samples", type=int, default=20000)
     parser.add_argument("--surface-samples", type=int, default=6000)
     parser.add_argument("--evaluation-seed", type=int, default=88003)
@@ -72,6 +75,8 @@ def main():
         samples=args.samples,
         iterations=args.iterations,
         refine_samples=args.refine_samples,
+        refine_reference=args.refine_reference,
+        outside_weight=args.outside_weight,
         padding=args.padding,
     )
     selected_methods = dict.fromkeys(
@@ -99,6 +104,12 @@ def main():
     results = {
         "python": platform.python_version(),
         "platform": platform.platform(),
+        "cpu_affinity": sorted(os.sched_getaffinity(0))
+        if hasattr(os, "sched_getaffinity")
+        else None,
+        "threads": {
+            name: os.environ.get(name) for name in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS")
+        },
         "numpy": np.__version__,
         "scipy": scipy.__version__,
         "trimesh": trimesh.__version__,

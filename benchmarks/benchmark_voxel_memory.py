@@ -30,12 +30,13 @@ import scipy
 import trimesh
 
 import assetspheres.fit as fitting
+import assetspheres.refine as refinement
 import assetspheres.voxel_fit as optimized
 from assetspheres import FitConfig
 
 
-def load_reference(path):
-    spec = importlib.util.spec_from_file_location("assetspheres._voxel_memory_reference", path)
+def load_reference(path, name="assetspheres._voxel_memory_reference"):
+    spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
@@ -81,6 +82,9 @@ def paired(reference, current, equal, repeats):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--reference", type=Path, required=True)
+    parser.add_argument(
+        "--reference-refine", type=Path, help="Also compare the prior refinement sampler"
+    )
     parser.add_argument("--output", type=Path, default=Path("outputs/benchmark-voxel-memory.json"))
     parser.add_argument("--repeats", type=int, default=7)
     parser.add_argument("--resolution", type=int, action="append")
@@ -93,6 +97,11 @@ def main():
     if not args.reference.is_file():
         parser.error("--reference must point to a previous voxel_fit.py")
     reference = load_reference(args.reference)
+    reference_refine = (
+        load_reference(args.reference_refine, "assetspheres._refine_memory_reference")
+        if args.reference_refine
+        else refinement
+    )
     records = {
         "python": platform.python_version(),
         "platform": platform.platform(),
@@ -101,6 +110,12 @@ def main():
         "trimesh": trimesh.__version__,
         "reference_sha256": hashlib.sha256(args.reference.read_bytes()).hexdigest(),
         "optimized_sha256": hashlib.sha256(Path(optimized.__file__).read_bytes()).hexdigest(),
+        "reference_refine_sha256": hashlib.sha256(
+            Path(reference_refine.__file__).read_bytes()
+        ).hexdigest(),
+        "optimized_refine_sha256": hashlib.sha256(
+            Path(refinement.__file__).read_bytes()
+        ).hexdigest(),
         "threads": {
             name: os.environ.get(name) for name in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS")
         },
@@ -144,7 +159,10 @@ def main():
                 local = replace(config, method=method)
 
                 def old_fit():
-                    with patch.object(fitting, "fit_voxel_spheres", reference.fit_voxel_spheres):
+                    with (
+                        patch.object(fitting, "fit_voxel_spheres", reference.fit_voxel_spheres),
+                        patch.object(refinement, "refine_spheres", reference_refine.refine_spheres),
+                    ):
                         return fitting.fit_mesh(mesh, local)
 
                 save(

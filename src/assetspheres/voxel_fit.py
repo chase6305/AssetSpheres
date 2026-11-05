@@ -81,7 +81,8 @@ def _transform_voxel_indices(indices: np.ndarray, transform: np.ndarray) -> np.n
     """Bound conversion temporaries while preserving Trimesh's transform semantics."""
     if len(indices) <= _POINT_TRANSFORM_BATCH_SIZE:
         return trimesh.transform_points(indices, transform)
-    points = np.empty((len(indices), 3), dtype=np.float64)
+    # Column-major storage keeps subsequent coordinate reductions inexpensive.
+    points = np.empty((len(indices), 3), dtype=np.float64, order="F")
     for first in range(0, len(indices), _POINT_TRANSFORM_BATCH_SIZE):
         block = slice(first, first + _POINT_TRANSFORM_BATCH_SIZE)
         # Keep the library's near-identity shortcut as well as its arithmetic order.
