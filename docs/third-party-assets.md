@@ -10,7 +10,8 @@
 - 本仓库仅提交实际拟合图、查看器截图及生成参数和球模型记录，不附带第三方 URDF 或 mesh 文件。
   这些图示展示碰撞几何近似，不表示 Universal Robots 对本项目的认可。
 
-对应图片：ur5e-comparison.png、ur5e-viewer.png；数据：ur5e-comparison.json。
+对应图片：ur5e-comparison.png、ur5e-viewer.png、ur5e-cover-opt.png；
+数据：ur5e-comparison.json、ur5e-cover-opt.json、ur5e-cover-opt-benchmark.json。
 输入 URDF 的 SHA-256 和加载后的各 link 网格哈希保存在数据文件中。
 
 ### 上游许可文本

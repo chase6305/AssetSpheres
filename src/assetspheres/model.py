@@ -73,6 +73,7 @@ class FitConfig:
             "surface",
             "cover",
             "cover-tight",
+            "cover-opt",
             "slab",
             "refined",
             "lula",

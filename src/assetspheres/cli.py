@@ -45,6 +45,7 @@ METHODS = (
     MethodInfo("surface", False, ("cpu",), "Sampled surface neighborhoods", "Core"),
     MethodInfo("cover", False, ("cpu",), "Complete triangle surface", "Core"),
     MethodInfo("cover-tight", False, ("cpu",), "Tighter complete triangle surface", "Core"),
+    MethodInfo("cover-opt", False, ("cpu",), "Regrouped complete triangle surface", "Core"),
     MethodInfo("slab", False, ("cpu",), "Complete slices; conditional solid enclosure", "Core"),
     MethodInfo(
         "refined",

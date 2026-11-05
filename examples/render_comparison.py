@@ -109,6 +109,9 @@ def main():
     parser.add_argument("--columns", type=int, choices=(2, 3), default=3)
     parser.add_argument("--zoom", type=float, default=1.0, help="Shared display magnification")
     parser.add_argument("--geometry", choices=("auto", "collision", "visual"), default="auto")
+    parser.add_argument(
+        "--method", action="append", choices=(*METHODS, "cover-opt"), help="Repeat to select panels"
+    )
     arguments = parser.parse_args()
     if not np.isfinite(arguments.zoom) or arguments.zoom <= 0:
         parser.error("--zoom must be finite and positive")
@@ -161,7 +164,7 @@ def main():
         name: sample_surface(link.mesh, VALIDATION_SAMPLES, VALIDATION_SEED)
         for name, link in asset.links.items()
     }
-    for method in METHODS:
+    for method in dict.fromkeys(arguments.method or METHODS):
         configuration = FitConfig(method=method, count=24, padding=0.003, seed=0)
         result = fit_asset(asset, configuration)
         results[method] = result
@@ -186,10 +189,10 @@ def main():
         }
 
     plt.rcParams.update({"font.family": "DejaVu Sans", "text.color": TEXT_COLOR})
-    figure = plt.figure(figsize=(12, 10), facecolor=BACKGROUND)
     bounds = scene_bounds(asset, results)
-    panels = [("Source geometry", None), *[(method, results[method]) for method in METHODS]]
-    rows = len(panels) // arguments.columns
+    panels = [("Source geometry", None), *results.items()]
+    rows = (len(panels) + arguments.columns - 1) // arguments.columns
+    figure = plt.figure(figsize=(12, max(10, 2.5 * rows + 2.5)), facecolor=BACKGROUND)
     for panel_index, (label, result) in enumerate(panels):
         axis = figure.add_subplot(
             rows, arguments.columns, panel_index + 1, projection="3d", facecolor=BACKGROUND
@@ -222,7 +225,7 @@ def main():
     figure.suptitle(arguments.title, x=0.5, y=0.98, fontsize=23, weight="bold")
     figure.text(
         0.5,
-        0.94,
+        0.93,
         "CPU  /  up to 24 balls per link  /  3 mm padding  /  shared scale & view",
         ha="center",
         fontsize=11,
@@ -235,7 +238,7 @@ def main():
         ]
         + [Patch(facecolor="#899bab", label="source mesh")],
         loc="upper center",
-        bbox_to_anchor=(0.5, 0.917),
+        bbox_to_anchor=(0.5, 0.90),
         ncol=min(4, len(asset.links) + 1),
         frameon=False,
         fontsize=9,
@@ -254,9 +257,9 @@ def main():
         left=0.01,
         right=0.99,
         bottom=0.075,
-        top=0.85,
+        top=0.80,
         wspace=0.01,
-        hspace=0.18 if rows == 3 else 0.08,
+        hspace=0.18 if rows > 1 else 0.08,
     )
     output.parent.mkdir(parents=True, exist_ok=True)
     figure.savefig(output, dpi=160, facecolor=BACKGROUND)

@@ -100,7 +100,7 @@ def _fit_with_method(
     elif configuration.method == "surface":
         spheres = fit_surface_spheres(mesh, configuration)
         warnings.append("Fixed-radius surface spheres do not guarantee solid-volume coverage")
-    elif configuration.method in {"cover", "cover-tight"}:
+    elif configuration.method in {"cover", "cover-tight", "cover-opt"}:
         spheres = fit_triangle_cover(mesh, configuration)
         details["triangle_surface_coverage_certified"] = True
         warnings.append("Triangle boundary is enclosed; solid interior coverage is not certified")

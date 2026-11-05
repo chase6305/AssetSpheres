@@ -47,6 +47,7 @@ assetspheres view outputs/demo/spheres.json
 | `surface` | 薄片、表面附着物、固定半径球 | 可开口 | 覆盖采样点附近，不保证完整包络 |
 | `cover` | 包住完整三角表面 | 可开口 | 三角表面包络，不证明实体内部覆盖 |
 | `cover-tight` | 缩紧 `cover` 的同一三角分组 | 可开口 | 保留表面包络，通常更紧 |
+| `cover-opt` | 重新分组三角形，进一步减小球体积之和 | 可开口 | 保留表面包络，需要额外拟合时间 |
 | `slab` | 沿主轴切片，适合细长 link | 可开口 | 表面包络；满足有界实体边界假设时也覆盖内部 |
 | `refined`（实验） | 从体素球初始化，权衡覆盖与外扩 | 闭合 | 有限样本优化，无连续覆盖保证 |
 | `lula` | 调用已安装的原生 Lula 生成器 | 闭合，需 Lula 运行时 | 取决于原生实现和输入拓扑 |
@@ -54,6 +55,9 @@ assetspheres view outputs/demo/spheres.json
 `cover` 的球可能明显突出原网格；`slab` 在多分支、孔洞或宽横截面上也可能外扩较多。
 URDF 的球和圆柱会先三角化，几何保证针对实际参与拟合的三角网格。
 各方法的构造、浮点假设与限制见[算法说明](docs/algorithm.md)。
+
+进一步优化的 [UR5e 对比图与实测](docs/cover-optimization.md)同时比较覆盖、外扩和耗时：
+`cover-opt` 改善了 `cover-tight` 的表面包络；该机械臂若要求实体覆盖，`slab` 更合适。
 
 可用 `assetspheres methods` 比较方法，或用 `assetspheres fit --help` 查看参数。
 

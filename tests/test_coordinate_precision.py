@@ -7,7 +7,7 @@ import trimesh
 from assetspheres import FitConfig, fit_mesh
 
 
-@pytest.mark.parametrize("method", ["cover", "cover-tight", "voxel", "refined"])
+@pytest.mark.parametrize("method", ["cover", "cover-tight", "cover-opt", "voxel", "refined"])
 def test_subdivision_precision_fails_before_mesh_expansion(monkeypatch, method):
     mesh = trimesh.creation.box(extents=(0.003, 0.001, 0.0005))
     mesh.apply_translation((1e12, -1e12, 1e12))

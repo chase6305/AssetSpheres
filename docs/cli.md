@@ -57,6 +57,8 @@ assetspheres fit robot.urdf --method voxel --count 24 \
 
 assetspheres fit part.stl --method cover-tight --scale 0.001 -o outputs/part
 
+assetspheres fit robot.urdf --method cover-opt --count 24 --padding 0.003
+
 assetspheres fit robot.urdf --method slab --workers 4 --executor thread
 
 assetspheres fit robot.urdf --method refined --device cuda \
@@ -66,6 +68,10 @@ assetspheres fit robot.urdf --method refined --device cuda \
 `--count` 是每个 link 的球数上限；`--link-count LINK=N` 可重复，为某个 link 单独覆盖。`--padding` 是最终球半径的米制增量。`--link`、`--package-root` 同样可以重复，重复定义同一个键会明确报错。
 
 默认 `--device cpu --workers 1`。线程/进程适用于不同 link 的 CPU 拟合；CUDA 路径由一个 GPU 执行者处理。小任务不一定因并行而变快，完整性能取舍见 [performance.md](performance.md)。
+
+`cover-opt` 在 `cover-tight` 后最多执行两轮完整三角形重分组与包围球缩紧，只接受最终
+球体积之和更小的结果。它支持开口 mesh，仅在 CPU 运行；表面包络不代表实体内部也被覆盖。
+实测和复现命令见 [优化对比](cover-optimization.md)。
 
 体素化相关参数集中在同一组：
 
