@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import copy
 import json
-import math
 import os
 import tempfile
 from dataclasses import replace
@@ -15,25 +14,7 @@ import yaml
 
 from .asset import Asset, load_asset, resolve_mesh, source_paths, urdf_file_references
 from .model import FitResult
-
-
-def read_result(path: str | Path) -> FitResult:
-    def reject_nonfinite(value: str) -> None:
-        raise ValueError(f"Result JSON contains a non-finite number: {value}")
-
-    def parse_finite_float(value: str) -> float:
-        number = float(value)
-        if not math.isfinite(number):
-            reject_nonfinite(value)
-        return number
-
-    return FitResult.from_dict(
-        json.loads(
-            Path(path).read_text(encoding="utf-8"),
-            parse_constant=reject_nonfinite,
-            parse_float=parse_finite_float,
-        )
-    )
+from .result_io import read_result as read_result
 
 
 def load_result_asset(
@@ -101,9 +82,19 @@ def _urdf(asset: Asset, result: FitResult, output: Path) -> bytes:
 
 def make_scene(asset: Asset, result: FitResult) -> trimesh.Scene:
     scene = trimesh.Scene()
+    # Tessellate once; links retain independent geometry and colors.
+    sphere_template = trimesh.creation.icosphere(subdivisions=2, radius=1.0)
     for link_index, (link_name, spheres) in enumerate(result.links.items()):
         link_transform = np.asarray(result.transforms.get(link_name, np.eye(4)), dtype=float)
-        mesh = asset.links[link_name].mesh.copy()
+        source_mesh = asset.links[link_name].mesh
+        # The preview replaces source materials; preserve independent attributes instead.
+        mesh = source_mesh.copy(include_visual=False)
+        mesh.vertex_attributes.update(
+            {key: copy.deepcopy(value) for key, value in source_mesh.vertex_attributes.items()}
+        )
+        mesh.face_attributes.update(
+            {key: copy.deepcopy(value) for key, value in source_mesh.face_attributes.items()}
+        )
         mesh.visual = trimesh.visual.ColorVisuals(mesh, face_colors=[165, 178, 191, 120])
         scene.add_geometry(mesh, node_name=f"mesh/{link_index}", transform=link_transform)
         sphere_color = [
@@ -113,7 +104,7 @@ def make_scene(asset: Asset, result: FitResult) -> trimesh.Scene:
         sphere_color[3] = 160
         # GLB instances share unit sphere buffers per link. Node transforms map
         # unit sphere -> link -> scene: link_transform @ sphere_transform.
-        unit_sphere = trimesh.creation.icosphere(subdivisions=2, radius=1.0)
+        unit_sphere = sphere_template.copy(include_visual=False)
         unit_sphere.visual.face_colors = sphere_color
         geometry_name = f"sphere_template/{link_index}"
         for sphere_index, sphere in enumerate(spheres):

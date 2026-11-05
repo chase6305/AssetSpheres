@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import math
+
 import numpy as np
 import trimesh
 from scipy.spatial import cKDTree
+from scipy.spatial.distance import cdist
 
 from .geometry import farthest_point_indices, make_spheres, sample_surface
 from .model import FitConfig, Sphere
@@ -15,6 +18,31 @@ def _cluster_indices(labels: np.ndarray, cluster_count: int) -> list[np.ndarray]
     ordered_indices = np.argsort(labels, kind="stable")
     boundaries = np.cumsum(np.bincount(labels, minlength=cluster_count))[:-1]
     return np.split(ordered_indices, boundaries)
+
+
+def _weighted_cluster_centers(
+    triangle_centers: np.ndarray,
+    triangle_area_weights: np.ndarray,
+    cluster_labels: np.ndarray,
+    cluster_centers: np.ndarray,
+) -> np.ndarray:
+    groups = _cluster_indices(cluster_labels, len(cluster_centers))
+    # Keep NumPy's per-group weight sums: bincount would change pairwise rounding.
+    weight_sums = np.array([triangle_area_weights[indices].sum() for indices in groups])
+    occupied_clusters = np.array([len(indices) > 0 for indices in groups])
+    if np.any(weight_sums[occupied_clusters] == 0):
+        raise ZeroDivisionError("Weights sum to zero, can't be normalized")
+    updated_centers = cluster_centers.copy()
+    for axis in range(3):
+        coordinate_sums = np.bincount(
+            cluster_labels,
+            weights=triangle_centers[:, axis] * triangle_area_weights,
+            minlength=len(cluster_centers),
+        )
+        updated_centers[occupied_clusters, axis] = (
+            coordinate_sums[occupied_clusters] / weight_sums[occupied_clusters]
+        )
+    return updated_centers
 
 
 def fit_surface_spheres(mesh: trimesh.Trimesh, configuration: FitConfig) -> list[Sphere]:
@@ -55,16 +83,9 @@ def _partition_cover_triangles(
     ].copy()
     for _ in range(12):
         cluster_labels = cKDTree(cluster_centers).query(triangle_centers)[1]
-        updated_centers = cluster_centers.copy()
-        for cluster_index, indices in enumerate(
-            _cluster_indices(cluster_labels, len(cluster_centers))
-        ):
-            if len(indices):
-                updated_centers[cluster_index] = np.average(
-                    triangle_centers[indices],
-                    axis=0,
-                    weights=triangle_area_weights[indices],
-                )
+        updated_centers = _weighted_cluster_centers(
+            triangle_centers, triangle_area_weights, cluster_labels, cluster_centers
+        )
         if np.allclose(updated_centers, cluster_centers, rtol=0, atol=target_edge_length * 1e-6):
             break
         cluster_centers = updated_centers
@@ -72,26 +93,80 @@ def _partition_cover_triangles(
     return triangles, cluster_centers, cluster_labels
 
 
-def fit_triangle_cover(mesh: trimesh.Trimesh, configuration: FitConfig) -> list[Sphere]:
-    """Enclose whole triangle partitions, preserving their boundary coverage.
-
-    A ball is convex: containing each triangle's vertices contains its interior.
-    This argument concerns the boundary, not the solid enclosed by the mesh.
-    """
-    triangles, cluster_centers, cluster_labels = _partition_cover_triangles(mesh, configuration)
+def _enclose_triangle_groups(
+    triangles: np.ndarray,
+    centers: np.ndarray,
+    labels: np.ndarray,
+    *,
+    tighten: bool,
+    padding: float,
+) -> list[Sphere]:
     spheres = []
-    for center, indices in zip(
-        cluster_centers, _cluster_indices(cluster_labels, len(cluster_centers))
-    ):
+    for center, indices in zip(centers, _cluster_indices(labels, len(centers))):
         if not len(indices):
             continue
         assigned_triangles = triangles[indices]
-        if configuration.method == "cover-tight":
+        if tighten:
             from .enclosing import tighten_ball
 
             center, radius, _ = tighten_ball(assigned_triangles.reshape(-1, 3), center)
         else:
             radius = np.linalg.norm(assigned_triangles - center, axis=2).max()
-        radius = np.nextafter(radius, np.inf) + configuration.padding
+        radius = np.nextafter(radius, np.inf) + padding
         spheres.append(Sphere(tuple(center), float(radius)))
+    return spheres
+
+
+def _nearest_triangle_centers(triangles: np.ndarray, centers: np.ndarray) -> np.ndarray:
+    """Assign each whole triangle by its farthest vertex, with bounded workspace."""
+    labels = np.zeros(len(triangles), dtype=np.intp)
+    for first_triangle in range(0, len(triangles), 2048):
+        triangle_block = triangles[first_triangle : first_triangle + 2048]
+        best_distances = np.full(len(triangle_block), np.inf)
+        block_labels = labels[first_triangle : first_triangle + len(triangle_block)]
+        for first_center in range(0, len(centers), 128):
+            distances = cdist(
+                triangle_block.reshape(-1, 3), centers[first_center : first_center + 128]
+            ).reshape(len(triangle_block), 3, -1)
+            triangle_distances = distances.max(axis=1)
+            nearest = triangle_distances.argmin(axis=1)
+            candidate_distances = triangle_distances[np.arange(len(triangle_block)), nearest]
+            # Strict improvement keeps the first center when costs tie across blocks.
+            improved = candidate_distances < best_distances
+            best_distances[improved] = candidate_distances[improved]
+            block_labels[improved] = first_center + nearest[improved]
+    return labels
+
+
+def fit_triangle_cover(mesh: trimesh.Trimesh, configuration: FitConfig) -> list[Sphere]:
+    """Enclose whole triangles; optionally improve their grouping twice.
+
+    A ball is convex: containing each triangle's vertices contains its interior.
+    This argument concerns the boundary, not the solid enclosed by the mesh.
+    cover-opt accepts regrouping only when the padded sphere-volume sum falls;
+    this proxy counts overlaps and does not measure the union's exterior volume.
+    """
+    triangles, centers, labels = _partition_cover_triangles(mesh, configuration)
+    spheres = _enclose_triangle_groups(
+        triangles,
+        centers,
+        labels,
+        tighten=configuration.method in {"cover-tight", "cover-opt"},
+        padding=configuration.padding,
+    )
+    if configuration.method != "cover-opt":
+        return spheres
+    for _ in range(2):
+        centers = np.array([sphere.center for sphere in spheres])
+        labels = _nearest_triangle_centers(triangles, centers)
+        candidate = _enclose_triangle_groups(
+            triangles, centers, labels, tighten=True, padding=configuration.padding
+        )
+        # A shared scale keeps the cubic comparison finite for very large/small meshes.
+        scale = max(sphere.radius for sphere in spheres + candidate)
+        current_cost = math.fsum((sphere.radius / scale) ** 3 for sphere in spheres)
+        candidate_cost = math.fsum((sphere.radius / scale) ** 3 for sphere in candidate)
+        if candidate_cost >= current_cost:
+            break
+        spheres = candidate
     return spheres

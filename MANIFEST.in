@@ -6,3 +6,4 @@ recursive-include examples *.py *.urdf
 recursive-include tests *.py
 recursive-include benchmarks *.py
 recursive-include docs *.json
+recursive-include docs *.txt

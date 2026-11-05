@@ -44,9 +44,21 @@ def test_methods_json_lists_supported_choices_without_human_text(capsys):
     description = json.loads(output.out)
     assert description["default"] == "voxel"
     methods = {method["name"]: method for method in description["methods"]}
-    assert set(methods) == {"voxel", "surface", "cover", "cover-tight", "slab", "refined", "lula"}
+    assert set(methods) == {
+        "voxel",
+        "surface",
+        "cover",
+        "cover-tight",
+        "cover-opt",
+        "slab",
+        "refined",
+        "refined-cover",
+        "lula",
+    }
     assert methods["voxel"]["closed_mesh_required"] is True
     assert methods["surface"]["closed_mesh_required"] is False
+    assert methods["cover-opt"]["closed_mesh_required"] is False
+    assert methods["cover-opt"]["devices"] == ["cpu"]
     assert methods["refined"]["devices"] == ["cpu", "cuda"]
     assert "Isaac Sim" in methods["lula"]["dependencies"]
 

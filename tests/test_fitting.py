@@ -46,6 +46,22 @@ def test_padding_is_in_metres_and_surface_radius_is_fixed():
     assert all(s.radius == pytest.approx(0.034) for s in padded)
 
 
+def test_visuals_and_vertex_attributes_do_not_affect_fitting_or_change_on_input():
+    plain = trimesh.creation.box(extents=(0.3, 0.1, 0.15))
+    decorated = plain.copy()
+    colors = np.arange(len(plain.vertices) * 4, dtype=np.uint8).reshape(-1, 4)
+    features = np.arange(len(plain.vertices) * 16).reshape(-1, 16)
+    decorated.visual.vertex_colors = colors.copy()
+    decorated.vertex_attributes["features"] = features.copy()
+    decorated.metadata["label"] = "source mesh"
+    configuration = FitConfig(method="cover", count=8, samples=128)
+
+    assert fit_mesh(decorated, configuration) == fit_mesh(plain, configuration)
+    np.testing.assert_array_equal(decorated.visual.vertex_colors, colors)
+    np.testing.assert_array_equal(decorated.vertex_attributes["features"], features)
+    assert decorated.metadata["label"] == "source mesh"
+
+
 def test_open_mesh_requires_explicit_fallback():
     mesh = trimesh.creation.box()
     mesh.update_faces(np.arange(len(mesh.faces) - 1))

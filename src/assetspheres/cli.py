@@ -12,12 +12,11 @@ import shlex
 import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from .asset import Asset, load_asset
-from .export import check_output_paths, load_result_asset, read_result, write_outputs
-from .fit import fit_asset
-from .model import FitConfig, FitResult
+if TYPE_CHECKING:
+    from .asset import Asset
+    from .model import FitConfig, FitResult
 
 
 class CommandHelpFormatter(
@@ -45,6 +44,7 @@ METHODS = (
     MethodInfo("surface", False, ("cpu",), "Sampled surface neighborhoods", "Core"),
     MethodInfo("cover", False, ("cpu",), "Complete triangle surface", "Core"),
     MethodInfo("cover-tight", False, ("cpu",), "Tighter complete triangle surface", "Core"),
+    MethodInfo("cover-opt", False, ("cpu",), "Regrouped complete triangle surface", "Core"),
     MethodInfo("slab", False, ("cpu",), "Complete slices; conditional solid enclosure", "Core"),
     MethodInfo(
         "refined",
@@ -52,6 +52,13 @@ METHODS = (
         ("cpu", "cuda"),
         "Sampled coverage/excess-volume trade-off",
         "Core; torch for CUDA; rtree for mesh labels",
+    ),
+    MethodInfo(
+        "refined-cover",
+        True,
+        ("cpu", "cuda"),
+        "Refined balls with triangle enclosure",
+        "Core; CPU repair; torch for CUDA; rtree for mesh labels",
     ),
     MethodInfo(
         "lula", True, ("cpu",), "Native installed Lula generator", "Isaac Sim Lula bindings"
@@ -223,7 +230,7 @@ def _add_fit_command(commands) -> None:
         "--device",
         choices=["cpu", "cuda"],
         default="cpu",
-        help="voxel/refined tensor device; CUDA requires compatible PyTorch",
+        help="voxel/refined/refined-cover tensor device; CUDA requires compatible PyTorch",
     )
     parallel.add_argument(
         "--workers", type=int, default=1, help="CPU link workers; CUDA fitting uses one GPU owner"
@@ -328,6 +335,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def _load_input_asset(arguments: argparse.Namespace) -> Asset:
+    from .asset import load_asset
+
     return load_asset(
         arguments.input,
         geometry=arguments.geometry,
@@ -338,6 +347,8 @@ def _load_input_asset(arguments: argparse.Namespace) -> Asset:
 
 
 def _build_fit_configuration(arguments: argparse.Namespace) -> FitConfig:
+    from .model import FitConfig
+
     return FitConfig(
         method=arguments.method,
         count=arguments.count,
@@ -365,6 +376,9 @@ def _print_next_commands(result_path: Path) -> None:
 
 def _run_fit_command(arguments: argparse.Namespace) -> None:
     configuration = _build_fit_configuration(arguments)
+    from .export import check_output_paths, write_outputs
+    from .fit import fit_asset
+
     asset = _load_input_asset(arguments)
     output_directory = getattr(arguments, "output", Path("outputs") / arguments.input.stem)
     check_output_paths(
@@ -463,6 +477,8 @@ def _run_methods_command(arguments: argparse.Namespace) -> None:
 
 
 def _run_report_command(arguments: argparse.Namespace) -> None:
+    from .result_io import read_result
+
     result = read_result(arguments.result)
     if arguments.json:
         print(json.dumps(result.reports, ensure_ascii=False, indent=2, allow_nan=False))
@@ -471,12 +487,16 @@ def _run_report_command(arguments: argparse.Namespace) -> None:
 
 
 def _load_saved_asset(arguments: argparse.Namespace, result: FitResult) -> Asset:
+    from .export import load_result_asset
+
     return load_result_asset(
         result, path=arguments.asset, package_roots=_parse_overrides(arguments.package_root)
     )
 
 
 def _run_export_command(arguments: argparse.Namespace) -> None:
+    from .export import read_result, write_outputs
+
     result = read_result(arguments.result)
     output_paths = write_outputs(
         _load_saved_asset(arguments, result),
@@ -490,6 +510,7 @@ def _run_export_command(arguments: argparse.Namespace) -> None:
 
 
 def _run_view_command(arguments: argparse.Namespace) -> None:
+    from .export import read_result
     from .viewer import serve
 
     result = read_result(arguments.result)

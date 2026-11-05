@@ -1,0 +1,1673 @@
+{
+  "python": "3.10.0",
+  "platform": "Linux-6.8.0-106-generic-x86_64-with-glibc2.35",
+  "numpy": "1.26.4",
+  "scipy": "1.15.3",
+  "trimesh": "4.12.2",
+  "input": null,
+  "config": {
+    "method": "voxel",
+    "count": 24,
+    "resolution": 48,
+    "voxel_size": null,
+    "padding": 0.003,
+    "surface_radius": 0.01,
+    "samples": 6000,
+    "seed": 0,
+    "max_grid_cells": 2000000,
+    "max_candidates": 768,
+    "non_watertight": "error",
+    "device": "cpu",
+    "iterations": 120,
+    "refine_samples": 2048,
+    "outside_weight": 10.0,
+    "refine_reference": "voxel",
+    "voxelizer": "subdivide",
+    "voxel_solid_policy": "single"
+  },
+  "repeats": 3,
+  "timing_scope": "full fit_mesh, preloaded mesh; no load/export/evaluation",
+  "quality": "common original-mesh Monte Carlo; held-out seed 77079",
+  "cases": {
+    "box": {
+      "triangles": 12,
+      "mesh_sha256": "1638d03559805b7ede9c7a958595fec7101826d1ea3c7bebe287a9ce1b5c6140",
+      "timing": {
+        "cover-tight/cpu": {
+          "first_call_s": 0.022255853982642293,
+          "warm_times_s": [
+            0.019687126041390002,
+            0.01999690500088036,
+            0.020272861002013087
+          ],
+          "warm_median_s": 0.01999690500088036
+        },
+        "cover-opt/cpu": {
+          "first_call_s": 0.04407448600977659,
+          "warm_times_s": [
+            0.0435058840084821,
+            0.04318088595755398,
+            0.045943213044665754
+          ],
+          "warm_median_s": 0.0435058840084821
+        },
+        "slab/cpu": {
+          "first_call_s": 0.009308204054832458,
+          "warm_times_s": [
+            0.008465289953164756,
+            0.008524933946318924,
+            0.008639531908556819
+          ],
+          "warm_median_s": 0.008524933946318924
+        },
+        "refined/cpu": {
+          "first_call_s": 0.11818523402325809,
+          "warm_times_s": [
+            0.11752969597000629,
+            0.11723950400482863,
+            0.11620296095497906
+          ],
+          "warm_median_s": 0.11723950400482863
+        }
+      },
+      "quality": {
+        "cover-tight/cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.01889908739193432,
+          "sphere_count": 24,
+          "evaluation_seed": 77079,
+          "evaluation_domain_m": [
+            [
+              -0.2509484801062419,
+              -0.13181508570981604,
+              -0.12290186461947092
+            ],
+            [
+              0.25094848010624166,
+              0.1418819509354641,
+              0.1244499290843466
+            ]
+          ],
+          "evaluation_surface_samples": 10000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9987118935165307,
+          "outside_volume_over_mesh": 1.510519536281666,
+          "sphere_precision": 0.39801505817932925,
+          "volume_iou": 0.3978108431674363,
+          "validation_interior_points": 6987,
+          "validation_true_positive": 6978,
+          "validation_false_negative": 9,
+          "validation_false_positive": 10554,
+          "evaluation_volume_samples": 50000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "cover-opt/cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.016979893866580605,
+          "sphere_count": 24,
+          "evaluation_seed": 77079,
+          "evaluation_domain_m": [
+            [
+              -0.2509484801062419,
+              -0.13181508570981604,
+              -0.12290186461947092
+            ],
+            [
+              0.25094848010624166,
+              0.1418819509354641,
+              0.1244499290843466
+            ]
+          ],
+          "evaluation_surface_samples": 10000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9944182052382997,
+          "outside_volume_over_mesh": 1.352082438814942,
+          "sphere_precision": 0.42378774016468435,
+          "volume_iou": 0.42278203723986857,
+          "validation_interior_points": 6987,
+          "validation_true_positive": 6948,
+          "validation_false_negative": 39,
+          "validation_false_positive": 9447,
+          "evaluation_volume_samples": 50000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "slab/cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.09331177863144452,
+          "sphere_count": 24,
+          "evaluation_seed": 77079,
+          "evaluation_domain_m": [
+            [
+              -0.2509484801062419,
+              -0.13181508570981604,
+              -0.12290186461947092
+            ],
+            [
+              0.25094848010624166,
+              0.1418819509354641,
+              0.1244499290843466
+            ]
+          ],
+          "evaluation_surface_samples": 10000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 1.6320309145556033,
+          "sphere_precision": 0.3799347471451876,
+          "volume_iou": 0.3799347471451876,
+          "validation_interior_points": 6987,
+          "validation_true_positive": 6987,
+          "validation_false_negative": 0,
+          "validation_false_positive": 11403,
+          "evaluation_volume_samples": 50000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/cpu": {
+          "surface_coverage": 0.9788,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.019450181607227914,
+          "sphere_count": 24,
+          "evaluation_seed": 77079,
+          "evaluation_domain_m": [
+            [
+              -0.2509484801062419,
+              -0.13181508570981604,
+              -0.12290186461947092
+            ],
+            [
+              0.25094848010624166,
+              0.1418819509354641,
+              0.1244499290843466
+            ]
+          ],
+          "evaluation_surface_samples": 10000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9984256476313152,
+          "outside_volume_over_mesh": 0.5235437240589667,
+          "sphere_precision": 0.6560090276471695,
+          "volume_iou": 0.65533114138093,
+          "validation_interior_points": 6987,
+          "validation_true_positive": 6976,
+          "validation_false_negative": 11,
+          "validation_false_positive": 3658,
+          "evaluation_volume_samples": 50000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        }
+      },
+      "fit_reports": {
+        "cover-tight/cpu": {
+          "requested_method": "cover-tight",
+          "effective_method": "cover-tight",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 12,
+          "surface_sample_count": 6000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.01889908739193432,
+          "warnings": [
+            "Triangle boundary is enclosed; solid interior coverage is not certified"
+          ],
+          "triangle_surface_coverage_certified": true
+        },
+        "cover-opt/cpu": {
+          "requested_method": "cover-opt",
+          "effective_method": "cover-opt",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 12,
+          "surface_sample_count": 6000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.016979893866580605,
+          "warnings": [
+            "Triangle boundary is enclosed; solid interior coverage is not certified"
+          ],
+          "triangle_surface_coverage_certified": true
+        },
+        "slab/cpu": {
+          "requested_method": "slab",
+          "effective_method": "slab",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 12,
+          "surface_sample_count": 6000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.09331177863144452,
+          "warnings": [
+            "Parallel-slab balls enclose the surface and, assuming a complete bounded-solid boundary, its interior; transverse branches/holes may be over-enclosed"
+          ],
+          "slab_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "axis_selection": "PCA axis with largest projected vertex span",
+          "projection_origin_m": [
+            -0.15,
+            -0.08,
+            -0.05
+          ],
+          "slab_count_requested": 24,
+          "slab_count_nonempty": 24,
+          "slab_point_counts": [
+            20,
+            32,
+            24,
+            20,
+            28,
+            24,
+            16,
+            24,
+            24,
+            16,
+            24,
+            24,
+            16,
+            16,
+            16,
+            16,
+            16,
+            16,
+            16,
+            16,
+            16,
+            16,
+            16,
+            12
+          ],
+          "slab_intervals_relative_m": [
+            [
+              0.0,
+              0.012499999999999999
+            ],
+            [
+              0.012499999999999999,
+              0.024999999999999998
+            ],
+            [
+              0.024999999999999998,
+              0.0375
+            ],
+            [
+              0.0375,
+              0.049999999999999996
+            ],
+            [
+              0.049999999999999996,
+              0.06249999999999999
+            ],
+            [
+              0.06249999999999999,
+              0.075
+            ],
+            [
+              0.075,
+              0.08749999999999998
+            ],
+            [
+              0.08749999999999998,
+              0.09999999999999999
+            ],
+            [
+              0.09999999999999999,
+              0.11249999999999999
+            ],
+            [
+              0.11249999999999999,
+              0.12499999999999999
+            ],
+            [
+              0.12499999999999999,
+              0.13749999999999998
+            ],
+            [
+              0.13749999999999998,
+              0.15
+            ],
+            [
+              0.15,
+              0.16249999999999998
+            ],
+            [
+              0.16249999999999998,
+              0.17499999999999996
+            ],
+            [
+              0.17499999999999996,
+              0.1875
+            ],
+            [
+              0.1875,
+              0.19999999999999998
+            ],
+            [
+              0.19999999999999998,
+              0.21249999999999997
+            ],
+            [
+              0.21249999999999997,
+              0.22499999999999998
+            ],
+            [
+              0.22499999999999998,
+              0.2375
+            ],
+            [
+              0.2375,
+              0.24999999999999997
+            ],
+            [
+              0.24999999999999997,
+              0.2625
+            ],
+            [
+              0.2625,
+              0.27499999999999997
+            ],
+            [
+              0.27499999999999997,
+              0.2875
+            ],
+            [
+              0.2875,
+              0.3
+            ]
+          ],
+          "radius_roundoff_margin_m": 1.724532192688076e-14,
+          "tightening_iterations_total": 44,
+          "surface_certification": "Each clipped triangle polygon is enclosed by a ball checked against all its collected vertices, with a floating-point roundoff margin.",
+          "coverage_scope": "clipped triangle surfaces with floating-point clipping tolerance",
+          "geometric_assumptions": "One PCA axis for the whole mesh; all branches of a slice share a ball, which may bridge disconnected geometry or a hole. No watertightness is required.",
+          "triangle_surface_coverage_certified": true,
+          "bounded_solid_coverage_conditional": true,
+          "solid_coverage_assumption": "Input triangle surface is the complete boundary of a bounded solid; floating-point clipping and outward radius margin, not interval arithmetic.",
+          "self_intersection_checked": false
+        },
+        "refined/cpu": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 12,
+          "surface_sample_count": 6000,
+          "surface_coverage": 0.9753333333333334,
+          "surface_gap_mean_m": 6.0174808175112366e-05,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.008209171765040185,
+          "sphere_volume_sum_m3": 0.019450181607227914,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 22491,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cpu",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 2048,
+            "interior": 2048,
+            "exterior": 2048
+          },
+          "optimization_initial_loss": 0.007565541593112048,
+          "optimization_final_loss": 0.0001837337410593208,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.0009374999999999999,
+          "voxel_center_coverage": 0.9924858832421858
+        }
+      }
+    },
+    "cylinder": {
+      "triangles": 192,
+      "mesh_sha256": "4ea67a1cc8f023fef0807bc7ea649cfe30333a5816c54924f7b2b76648d1d141",
+      "timing": {
+        "cover-tight/cpu": {
+          "first_call_s": 0.09141361596994102,
+          "warm_times_s": [
+            0.09317672101315111,
+            0.09535220102407038,
+            0.0921550759812817
+          ],
+          "warm_median_s": 0.09317672101315111
+        },
+        "cover-opt/cpu": {
+          "first_call_s": 0.15641149994917214,
+          "warm_times_s": [
+            0.16092815506272018,
+            0.1572850520024076,
+            0.15712209197226912
+          ],
+          "warm_median_s": 0.1572850520024076
+        },
+        "slab/cpu": {
+          "first_call_s": 0.01333088893443346,
+          "warm_times_s": [
+            0.013141499017365277,
+            0.013673030072823167,
+            0.013194430037401617
+          ],
+          "warm_median_s": 0.013194430037401617
+        },
+        "refined/cpu": {
+          "first_call_s": 0.2765791240381077,
+          "warm_times_s": [
+            0.2750030750175938,
+            0.27292784396559,
+            0.2687565559754148
+          ],
+          "warm_median_s": 0.27292784396559
+        }
+      },
+      "quality": {
+        "cover-tight/cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.012346463664501171,
+          "sphere_count": 24,
+          "evaluation_seed": 77079,
+          "evaluation_domain_m": [
+            [
+              -0.10766890689101707,
+              -0.10047531773324148,
+              -0.20502467536395874
+            ],
+            [
+              0.10762717814442804,
+              0.09918487634654713,
+              0.20502467536395858
+            ]
+          ],
+          "evaluation_surface_samples": 10000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 2.0348978969826272,
+          "sphere_precision": 0.32950037660055237,
+          "volume_iou": 0.32950037660055237,
+          "validation_interior_points": 6562,
+          "validation_true_positive": 6562,
+          "validation_false_negative": 0,
+          "validation_false_positive": 13353,
+          "evaluation_volume_samples": 50000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "cover-opt/cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.010734828417383485,
+          "sphere_count": 24,
+          "evaluation_seed": 77079,
+          "evaluation_domain_m": [
+            [
+              -0.10766890689101707,
+              -0.10047531773324148,
+              -0.20502467536395874
+            ],
+            [
+              0.10762717814442804,
+              0.09918487634654713,
+              0.20502467536395858
+            ]
+          ],
+          "evaluation_surface_samples": 10000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 1.5734532154830845,
+          "sphere_precision": 0.3885829336175757,
+          "volume_iou": 0.3885829336175757,
+          "validation_interior_points": 6562,
+          "validation_true_positive": 6562,
+          "validation_false_negative": 0,
+          "validation_false_positive": 10325,
+          "evaluation_volume_samples": 50000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "slab/cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.015298819377044484,
+          "sphere_count": 24,
+          "evaluation_seed": 77079,
+          "evaluation_domain_m": [
+            [
+              -0.10766890689101707,
+              -0.10047531773324148,
+              -0.20502467536395874
+            ],
+            [
+              0.10762717814442804,
+              0.09918487634654713,
+              0.20502467536395858
+            ]
+          ],
+          "evaluation_surface_samples": 10000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.3715330691862237,
+          "sphere_precision": 0.7291111111111112,
+          "volume_iou": 0.7291111111111112,
+          "validation_interior_points": 6562,
+          "validation_true_positive": 6562,
+          "validation_false_negative": 0,
+          "validation_false_positive": 2438,
+          "evaluation_volume_samples": 50000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.007868310732467023,
+          "sphere_count": 24,
+          "evaluation_seed": 77079,
+          "evaluation_domain_m": [
+            [
+              -0.10766890689101707,
+              -0.10047531773324148,
+              -0.20502467536395874
+            ],
+            [
+              0.10762717814442804,
+              0.09918487634654713,
+              0.20502467536395858
+            ]
+          ],
+          "evaluation_surface_samples": 10000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.5629381286193234,
+          "sphere_precision": 0.639820592823713,
+          "volume_iou": 0.639820592823713,
+          "validation_interior_points": 6562,
+          "validation_true_positive": 6562,
+          "validation_false_negative": 0,
+          "validation_false_positive": 3694,
+          "evaluation_volume_samples": 50000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        }
+      },
+      "fit_reports": {
+        "cover-tight/cpu": {
+          "requested_method": "cover-tight",
+          "effective_method": "cover-tight",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 192,
+          "surface_sample_count": 6000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.012346463664501171,
+          "warnings": [
+            "Triangle boundary is enclosed; solid interior coverage is not certified"
+          ],
+          "triangle_surface_coverage_certified": true
+        },
+        "cover-opt/cpu": {
+          "requested_method": "cover-opt",
+          "effective_method": "cover-opt",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 192,
+          "surface_sample_count": 6000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.010734828417383485,
+          "warnings": [
+            "Triangle boundary is enclosed; solid interior coverage is not certified"
+          ],
+          "triangle_surface_coverage_certified": true
+        },
+        "slab/cpu": {
+          "requested_method": "slab",
+          "effective_method": "slab",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 192,
+          "surface_sample_count": 6000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.015298819377044484,
+          "warnings": [
+            "Parallel-slab balls enclose the surface and, assuming a complete bounded-solid boundary, its interior; transverse branches/holes may be over-enclosed"
+          ],
+          "slab_axis": [
+            -0.0,
+            1.3182570016571202e-16,
+            1.0
+          ],
+          "axis_selection": "PCA axis with largest projected vertex span",
+          "projection_origin_m": [
+            0.0,
+            0.0,
+            -0.15
+          ],
+          "slab_count_requested": 24,
+          "slab_count_nonempty": 24,
+          "slab_point_counts": [
+            173,
+            313,
+            374,
+            306,
+            290,
+            332,
+            262,
+            288,
+            288,
+            192,
+            288,
+            288,
+            192,
+            192,
+            192,
+            192,
+            192,
+            192,
+            192,
+            192,
+            192,
+            192,
+            192,
+            148
+          ],
+          "slab_intervals_relative_m": [
+            [
+              -6.591285008285601e-18,
+              0.012499999999999992
+            ],
+            [
+              0.012499999999999992,
+              0.02499999999999999
+            ],
+            [
+              0.02499999999999999,
+              0.03749999999999999
+            ],
+            [
+              0.03749999999999999,
+              0.04999999999999999
+            ],
+            [
+              0.04999999999999999,
+              0.062499999999999986
+            ],
+            [
+              0.062499999999999986,
+              0.07499999999999998
+            ],
+            [
+              0.07499999999999998,
+              0.08749999999999998
+            ],
+            [
+              0.08749999999999998,
+              0.09999999999999999
+            ],
+            [
+              0.09999999999999999,
+              0.11249999999999999
+            ],
+            [
+              0.11249999999999999,
+              0.12499999999999999
+            ],
+            [
+              0.12499999999999999,
+              0.13749999999999998
+            ],
+            [
+              0.13749999999999998,
+              0.15
+            ],
+            [
+              0.15,
+              0.16249999999999998
+            ],
+            [
+              0.16249999999999998,
+              0.17499999999999996
+            ],
+            [
+              0.17499999999999996,
+              0.1875
+            ],
+            [
+              0.1875,
+              0.19999999999999998
+            ],
+            [
+              0.19999999999999998,
+              0.21249999999999997
+            ],
+            [
+              0.21249999999999997,
+              0.22499999999999998
+            ],
+            [
+              0.22499999999999998,
+              0.2375
+            ],
+            [
+              0.2375,
+              0.24999999999999997
+            ],
+            [
+              0.24999999999999997,
+              0.2625
+            ],
+            [
+              0.2625,
+              0.27499999999999997
+            ],
+            [
+              0.27499999999999997,
+              0.2875
+            ],
+            [
+              0.2875,
+              0.3
+            ]
+          ],
+          "radius_roundoff_margin_m": 1.724532192688076e-14,
+          "tightening_iterations_total": 48,
+          "surface_certification": "Each clipped triangle polygon is enclosed by a ball checked against all its collected vertices, with a floating-point roundoff margin.",
+          "coverage_scope": "clipped triangle surfaces with floating-point clipping tolerance",
+          "geometric_assumptions": "One PCA axis for the whole mesh; all branches of a slice share a ball, which may bridge disconnected geometry or a hole. No watertightness is required.",
+          "triangle_surface_coverage_certified": true,
+          "bounded_solid_coverage_conditional": true,
+          "solid_coverage_assumption": "Input triangle surface is the complete boundary of a bounded solid; floating-point clipping and outward radius margin, not interval arithmetic.",
+          "self_intersection_checked": false
+        },
+        "refined/cpu": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 192,
+          "surface_sample_count": 6000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.007868310732467023,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.0062499999999999995,
+          "voxel_count": 11809,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cpu",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 2048,
+            "interior": 2048,
+            "exterior": 2048
+          },
+          "optimization_initial_loss": 0.0006826070062054278,
+          "optimization_final_loss": 4.968214815263066e-06,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.0009374999999999999,
+          "voxel_center_coverage": 0.9995765941231264
+        }
+      }
+    },
+    "sphere": {
+      "triangles": 1280,
+      "mesh_sha256": "02f9b280e9d97bab78e89cef40dd38b4d124f2a7900e1de7119aeb727498752e",
+      "timing": {
+        "cover-tight/cpu": {
+          "first_call_s": 0.017683392972685397,
+          "warm_times_s": [
+            0.016970686032436788,
+            0.016891254927031696,
+            0.016830659937113523
+          ],
+          "warm_median_s": 0.016891254927031696
+        },
+        "cover-opt/cpu": {
+          "first_call_s": 0.036892627947963774,
+          "warm_times_s": [
+            0.037063663941808045,
+            0.03705566900316626,
+            0.03710929094813764
+          ],
+          "warm_median_s": 0.037063663941808045
+        },
+        "slab/cpu": {
+          "first_call_s": 0.025306198047474027,
+          "warm_times_s": [
+            0.025498745031654835,
+            0.025115857017226517,
+            0.02521319210063666
+          ],
+          "warm_median_s": 0.02521319210063666
+        },
+        "refined/cpu": {
+          "first_call_s": 0.11109837493859231,
+          "warm_times_s": [
+            0.11197558406274766,
+            0.11129524908028543,
+            0.11063822905998677
+          ],
+          "warm_median_s": 0.11129524908028543
+        }
+      },
+      "quality": {
+        "cover-tight/cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.014202831346367507,
+          "sphere_count": 24,
+          "evaluation_seed": 77079,
+          "evaluation_domain_m": [
+            [
+              -0.149778764293186,
+              -0.14148020008883763,
+              -0.14569848908946612
+            ],
+            [
+              0.14977876429317968,
+              0.14148020008962248,
+              0.145698488958351
+            ]
+          ],
+          "evaluation_surface_samples": 10000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9465060240963855,
+          "outside_volume_over_mesh": 1.1972289156626506,
+          "sphere_precision": 0.4415219468330242,
+          "volume_iou": 0.43077260514338983,
+          "validation_interior_points": 8300,
+          "validation_true_positive": 7856,
+          "validation_false_negative": 444,
+          "validation_false_positive": 9937,
+          "evaluation_volume_samples": 50000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "cover-opt/cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.013693927949452017,
+          "sphere_count": 24,
+          "evaluation_seed": 77079,
+          "evaluation_domain_m": [
+            [
+              -0.149778764293186,
+              -0.14148020008883763,
+              -0.14569848908946612
+            ],
+            [
+              0.14977876429317968,
+              0.14148020008962248,
+              0.145698488958351
+            ]
+          ],
+          "evaluation_surface_samples": 10000,
+          "self_intersection_checked": false,
+          "volume_coverage": 0.9413253012048193,
+          "outside_volume_over_mesh": 1.1714457831325302,
+          "sphere_precision": 0.44554060218978103,
+          "volume_iou": 0.43350163679742554,
+          "validation_interior_points": 8300,
+          "validation_true_positive": 7813,
+          "validation_false_negative": 487,
+          "validation_false_positive": 9723,
+          "evaluation_volume_samples": 50000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "slab/cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.06987578714471333,
+          "sphere_count": 24,
+          "evaluation_seed": 77079,
+          "evaluation_domain_m": [
+            [
+              -0.149778764293186,
+              -0.14148020008883763,
+              -0.14569848908946612
+            ],
+            [
+              0.14977876429317968,
+              0.14148020008962248,
+              0.145698488958351
+            ]
+          ],
+          "evaluation_surface_samples": 10000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.5593975903614458,
+          "sphere_precision": 0.6412732751294136,
+          "volume_iou": 0.6412732751294136,
+          "validation_interior_points": 8300,
+          "validation_true_positive": 8300,
+          "validation_false_negative": 0,
+          "validation_false_positive": 4643,
+          "evaluation_volume_samples": 50000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.0054224941305517325,
+          "sphere_count": 24,
+          "evaluation_seed": 77079,
+          "evaluation_domain_m": [
+            [
+              -0.149778764293186,
+              -0.14148020008883763,
+              -0.14569848908946612
+            ],
+            [
+              0.14977876429317968,
+              0.14148020008962248,
+              0.145698488958351
+            ]
+          ],
+          "evaluation_surface_samples": 10000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.25349397590361444,
+          "sphere_precision": 0.7977700884275278,
+          "volume_iou": 0.7977700884275278,
+          "validation_interior_points": 8300,
+          "validation_true_positive": 8300,
+          "validation_false_negative": 0,
+          "validation_false_positive": 2104,
+          "evaluation_volume_samples": 50000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        }
+      },
+      "fit_reports": {
+        "cover-tight/cpu": {
+          "requested_method": "cover-tight",
+          "effective_method": "cover-tight",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 1280,
+          "surface_sample_count": 6000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.014202831346367507,
+          "warnings": [
+            "Triangle boundary is enclosed; solid interior coverage is not certified"
+          ],
+          "triangle_surface_coverage_certified": true
+        },
+        "cover-opt/cpu": {
+          "requested_method": "cover-opt",
+          "effective_method": "cover-opt",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 1280,
+          "surface_sample_count": 6000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.013693927949452017,
+          "warnings": [
+            "Triangle boundary is enclosed; solid interior coverage is not certified"
+          ],
+          "triangle_surface_coverage_certified": true
+        },
+        "slab/cpu": {
+          "requested_method": "slab",
+          "effective_method": "slab",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 1280,
+          "surface_sample_count": 6000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.06987578714471333,
+          "warnings": [
+            "Parallel-slab balls enclose the surface and, assuming a complete bounded-solid boundary, its interior; transverse branches/holes may be over-enclosed"
+          ],
+          "slab_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "axis_selection": "PCA axis with largest projected vertex span",
+          "projection_origin_m": [
+            -0.052573111211913326,
+            0.08506508083520403,
+            0.0
+          ],
+          "slab_count_requested": 24,
+          "slab_count_nonempty": 24,
+          "slab_point_counts": [
+            73,
+            144,
+            152,
+            160,
+            196,
+            210,
+            248,
+            266,
+            232,
+            224,
+            248,
+            188,
+            182,
+            246,
+            228,
+            224,
+            226,
+            216,
+            198,
+            184,
+            168,
+            156,
+            136,
+            69
+          ],
+          "slab_intervals_relative_m": [
+            [
+              -0.04742688878808668,
+              -0.03909355545475334
+            ],
+            [
+              -0.03909355545475334,
+              -0.030760222121420006
+            ],
+            [
+              -0.030760222121420006,
+              -0.022426888788086675
+            ],
+            [
+              -0.022426888788086675,
+              -0.014093555454753342
+            ],
+            [
+              -0.014093555454753342,
+              -0.005760222121420006
+            ],
+            [
+              -0.005760222121420006,
+              0.002573111211913325
+            ],
+            [
+              0.002573111211913325,
+              0.010906444545246665
+            ],
+            [
+              0.010906444545246665,
+              0.019239777878579997
+            ],
+            [
+              0.019239777878579997,
+              0.027573111211913325
+            ],
+            [
+              0.027573111211913325,
+              0.03590644454524667
+            ],
+            [
+              0.03590644454524667,
+              0.044239777878579994
+            ],
+            [
+              0.044239777878579994,
+              0.052573111211913326
+            ],
+            [
+              0.052573111211913326,
+              0.06090644454524667
+            ],
+            [
+              0.06090644454524667,
+              0.06923977787858
+            ],
+            [
+              0.06923977787858,
+              0.07757311121191333
+            ],
+            [
+              0.07757311121191333,
+              0.08590644454524667
+            ],
+            [
+              0.08590644454524667,
+              0.09423977787858001
+            ],
+            [
+              0.09423977787858001,
+              0.10257311121191333
+            ],
+            [
+              0.10257311121191333,
+              0.11090644454524667
+            ],
+            [
+              0.11090644454524667,
+              0.11923977787858
+            ],
+            [
+              0.11923977787858,
+              0.12757311121191334
+            ],
+            [
+              0.12757311121191334,
+              0.13590644454524667
+            ],
+            [
+              0.13590644454524667,
+              0.14423977787858
+            ],
+            [
+              0.14423977787858,
+              0.15257311121191333
+            ]
+          ],
+          "radius_roundoff_margin_m": 1.0615880040743975e-14,
+          "tightening_iterations_total": 233,
+          "surface_certification": "Each clipped triangle polygon is enclosed by a ball checked against all its collected vertices, with a floating-point roundoff margin.",
+          "coverage_scope": "clipped triangle surfaces with floating-point clipping tolerance",
+          "geometric_assumptions": "One PCA axis for the whole mesh; all branches of a slice share a ball, which may bridge disconnected geometry or a hole. No watertightness is required.",
+          "triangle_surface_coverage_certified": true,
+          "bounded_solid_coverage_conditional": true,
+          "solid_coverage_assumption": "Input triangle surface is the complete boundary of a bounded solid; floating-point clipping and outward radius margin, not interval arithmetic.",
+          "self_intersection_checked": false
+        },
+        "refined/cpu": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 1280,
+          "surface_sample_count": 6000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.0054224941305517325,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.004166666666666667,
+          "voxel_count": 62129,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cpu",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 2048,
+            "interior": 2048,
+            "exterior": 2048
+          },
+          "optimization_initial_loss": 5.360768073482067e-05,
+          "optimization_final_loss": 1.2244135655231997e-05,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.000625,
+          "voxel_center_coverage": 1.0
+        }
+      }
+    },
+    "torus": {
+      "triangles": 2048,
+      "mesh_sha256": "5b0ac50d42dd9fa918172cea11bb882f445dfdab826b2609c265ff5aeb32c01d",
+      "timing": {
+        "cover-tight/cpu": {
+          "first_call_s": 0.02832272893283516,
+          "warm_times_s": [
+            0.027812739019282162,
+            0.02815894701052457,
+            0.027723127976059914
+          ],
+          "warm_median_s": 0.027812739019282162
+        },
+        "cover-opt/cpu": {
+          "first_call_s": 0.0628945300122723,
+          "warm_times_s": [
+            0.0628577210009098,
+            0.06163650704547763,
+            0.060448055039159954
+          ],
+          "warm_median_s": 0.06163650704547763
+        },
+        "slab/cpu": {
+          "first_call_s": 0.019815318984910846,
+          "warm_times_s": [
+            0.020071036065928638,
+            0.019897975958883762,
+            0.019918965990655124
+          ],
+          "warm_median_s": 0.019918965990655124
+        },
+        "refined/cpu": {
+          "first_call_s": 0.1195231470046565,
+          "warm_times_s": [
+            0.11998518591281027,
+            0.11909133405424654,
+            0.11956555803772062
+          ],
+          "warm_median_s": 0.11956555803772062
+        }
+      },
+      "quality": {
+        "cover-tight/cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.00676983243992698,
+          "sphere_count": 24,
+          "evaluation_seed": 77079,
+          "evaluation_domain_m": [
+            [
+              -0.13871208762703247,
+              -0.17139263034057076,
+              -0.12459202438956328
+            ],
+            [
+              0.13781202703398412,
+              0.17139263038100197,
+              0.12459202436026211
+            ]
+          ],
+          "evaluation_surface_samples": 10000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 2.4290687554395127,
+          "sphere_precision": 0.2916243654822335,
+          "volume_iou": 0.2916243654822335,
+          "validation_interior_points": 2298,
+          "validation_true_positive": 2298,
+          "validation_false_negative": 0,
+          "validation_false_positive": 5582,
+          "evaluation_volume_samples": 50000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "cover-opt/cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.0052228873267401365,
+          "sphere_count": 24,
+          "evaluation_seed": 77079,
+          "evaluation_domain_m": [
+            [
+              -0.13871208762703247,
+              -0.17139263034057076,
+              -0.12459202438956328
+            ],
+            [
+              0.13781202703398412,
+              0.17139263038100197,
+              0.12459202436026211
+            ]
+          ],
+          "evaluation_surface_samples": 10000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 1.4926022628372497,
+          "sphere_precision": 0.40118715083798884,
+          "volume_iou": 0.40118715083798884,
+          "validation_interior_points": 2298,
+          "validation_true_positive": 2298,
+          "validation_false_negative": 0,
+          "validation_false_positive": 3430,
+          "evaluation_volume_samples": 50000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "slab/cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.10393353531769058,
+          "sphere_count": 24,
+          "evaluation_seed": 77079,
+          "evaluation_domain_m": [
+            [
+              -0.13871208762703247,
+              -0.17139263034057076,
+              -0.12459202438956328
+            ],
+            [
+              0.13781202703398412,
+              0.17139263038100197,
+              0.12459202436026211
+            ]
+          ],
+          "evaluation_surface_samples": 10000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 7.8115752828546565,
+          "sphere_precision": 0.11348708578201393,
+          "volume_iou": 0.11348708578201393,
+          "validation_interior_points": 2298,
+          "validation_true_positive": 2298,
+          "validation_false_negative": 0,
+          "validation_false_positive": 17951,
+          "evaluation_volume_samples": 50000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        },
+        "refined/cpu": {
+          "surface_coverage": 1.0,
+          "surface_gap_p95_m": 0.0,
+          "sphere_volume_sum_m3": 0.003585945318547103,
+          "sphere_count": 24,
+          "evaluation_seed": 77079,
+          "evaluation_domain_m": [
+            [
+              -0.13871208762703247,
+              -0.17139263034057076,
+              -0.12459202438956328
+            ],
+            [
+              0.13781202703398412,
+              0.17139263038100197,
+              0.12459202436026211
+            ]
+          ],
+          "evaluation_surface_samples": 10000,
+          "self_intersection_checked": false,
+          "volume_coverage": 1.0,
+          "outside_volume_over_mesh": 0.7040905134899913,
+          "sphere_precision": 0.5868232890704801,
+          "volume_iou": 0.5868232890704801,
+          "validation_interior_points": 2298,
+          "validation_true_positive": 2298,
+          "validation_false_negative": 0,
+          "validation_false_positive": 1618,
+          "evaluation_volume_samples": 50000,
+          "reference": "original mesh.contains, common domain; Monte Carlo estimate",
+          "solid_policy": "single"
+        }
+      },
+      "fit_reports": {
+        "cover-tight/cpu": {
+          "requested_method": "cover-tight",
+          "effective_method": "cover-tight",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 2048,
+          "surface_sample_count": 6000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.00676983243992698,
+          "warnings": [
+            "Triangle boundary is enclosed; solid interior coverage is not certified"
+          ],
+          "triangle_surface_coverage_certified": true
+        },
+        "cover-opt/cpu": {
+          "requested_method": "cover-opt",
+          "effective_method": "cover-opt",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 2048,
+          "surface_sample_count": 6000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.0052228873267401365,
+          "warnings": [
+            "Triangle boundary is enclosed; solid interior coverage is not certified"
+          ],
+          "triangle_surface_coverage_certified": true
+        },
+        "slab/cpu": {
+          "requested_method": "slab",
+          "effective_method": "slab",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 2048,
+          "surface_sample_count": 6000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.10393353531769058,
+          "warnings": [
+            "Parallel-slab balls enclose the surface and, assuming a complete bounded-solid boundary, its interior; transverse branches/holes may be over-enclosed"
+          ],
+          "slab_axis": [
+            -0.0,
+            1.0,
+            4.328576647939461e-17
+          ],
+          "axis_selection": "PCA axis with largest projected vertex span",
+          "projection_origin_m": [
+            0.11499999999999999,
+            0.0,
+            0.0
+          ],
+          "slab_count_requested": 24,
+          "slab_count_nonempty": 24,
+          "slab_point_counts": [
+            92,
+            163,
+            215,
+            261,
+            310,
+            374,
+            352,
+            360,
+            342,
+            347,
+            379,
+            474,
+            458,
+            366,
+            349,
+            340,
+            355,
+            342,
+            374,
+            307,
+            249,
+            215,
+            167,
+            93
+          ],
+          "slab_intervals_relative_m": [
+            [
+              -0.11499999999999999,
+              -0.10541666666666666
+            ],
+            [
+              -0.10541666666666666,
+              -0.09583333333333333
+            ],
+            [
+              -0.09583333333333333,
+              -0.08625
+            ],
+            [
+              -0.08625,
+              -0.07666666666666667
+            ],
+            [
+              -0.07666666666666667,
+              -0.06708333333333333
+            ],
+            [
+              -0.06708333333333333,
+              -0.057499999999999996
+            ],
+            [
+              -0.057499999999999996,
+              -0.04791666666666667
+            ],
+            [
+              -0.04791666666666667,
+              -0.03833333333333334
+            ],
+            [
+              -0.03833333333333334,
+              -0.028749999999999998
+            ],
+            [
+              -0.028749999999999998,
+              -0.019166666666666672
+            ],
+            [
+              -0.019166666666666672,
+              -0.009583333333333336
+            ],
+            [
+              -0.009583333333333336,
+              0.0
+            ],
+            [
+              0.0,
+              0.009583333333333324
+            ],
+            [
+              0.009583333333333324,
+              0.019166666666666648
+            ],
+            [
+              0.019166666666666648,
+              0.028749999999999998
+            ],
+            [
+              0.028749999999999998,
+              0.03833333333333332
+            ],
+            [
+              0.03833333333333332,
+              0.04791666666666665
+            ],
+            [
+              0.04791666666666665,
+              0.057499999999999996
+            ],
+            [
+              0.057499999999999996,
+              0.06708333333333331
+            ],
+            [
+              0.06708333333333331,
+              0.07666666666666665
+            ],
+            [
+              0.07666666666666665,
+              0.08625
+            ],
+            [
+              0.08625,
+              0.09583333333333331
+            ],
+            [
+              0.09583333333333331,
+              0.10541666666666664
+            ],
+            [
+              0.10541666666666664,
+              0.11499999999999999
+            ]
+          ],
+          "radius_roundoff_margin_m": 1.317013447230502e-14,
+          "tightening_iterations_total": 175,
+          "surface_certification": "Each clipped triangle polygon is enclosed by a ball checked against all its collected vertices, with a floating-point roundoff margin.",
+          "coverage_scope": "clipped triangle surfaces with floating-point clipping tolerance",
+          "geometric_assumptions": "One PCA axis for the whole mesh; all branches of a slice share a ball, which may bridge disconnected geometry or a hole. No watertightness is required.",
+          "triangle_surface_coverage_certified": true,
+          "bounded_solid_coverage_conditional": true,
+          "solid_coverage_assumption": "Input triangle surface is the complete boundary of a bounded solid; floating-point clipping and outward radius margin, not interval arithmetic.",
+          "self_intersection_checked": false
+        },
+        "refined/cpu": {
+          "requested_method": "refined",
+          "effective_method": "refined",
+          "requested_count": 24,
+          "sphere_count": 24,
+          "watertight": true,
+          "triangle_count": 2048,
+          "surface_sample_count": 6000,
+          "surface_coverage": 1.0,
+          "surface_gap_mean_m": 0.0,
+          "surface_gap_p95_m": 0.0,
+          "surface_gap_max_m": 0.0,
+          "sphere_volume_sum_m3": 0.003585945318547103,
+          "warnings": [
+            "Sampled refinement trades coverage against exterior volume; no certificate",
+            "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+          ],
+          "voxel_size_m": 0.004791666666666666,
+          "voxel_count": 12596,
+          "candidate_count": 768,
+          "greedy_device": "cpu",
+          "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+          "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+          "optimization_device": "cpu",
+          "optimization_iterations": 120,
+          "optimization_training_counts": {
+            "surface": 2048,
+            "interior": 2048,
+            "exterior": 2048
+          },
+          "optimization_initial_loss": 0.0003277963066545384,
+          "optimization_final_loss": 4.855803731258601e-06,
+          "optimization_outside_weight": 10.0,
+          "optimization_reference": "filled voxel grid, not exact mesh SDF",
+          "optimization_positive_margin_m": 0.0007187499999999999,
+          "voxel_center_coverage": 0.9999206097173706
+        }
+      }
+    }
+  }
+}

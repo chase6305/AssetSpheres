@@ -18,8 +18,11 @@ from scipy import ndimage
 from scipy.spatial import cKDTree
 
 from .geometry import make_spheres, sphere_gaps
+from .grid_distance import unit_grid_distances
 from .model import FitConfig, Sphere
 from .surface_grid import subdivide_surface_grid
+
+_POINT_TRANSFORM_BATCH_SIZE = 32768
 
 
 @dataclass
@@ -75,18 +78,32 @@ def _prepare_voxel_grid(mesh: trimesh.Trimesh, configuration: FitConfig) -> _Pre
     return _PreparedVoxelGrid(voxel_grid.fill(), voxel_size_m)
 
 
+def _transform_voxel_indices(indices: np.ndarray, transform: np.ndarray) -> np.ndarray:
+    """Bound conversion temporaries while preserving Trimesh's transform semantics."""
+    if len(indices) <= _POINT_TRANSFORM_BATCH_SIZE:
+        return trimesh.transform_points(indices, transform)
+    # Column-major storage keeps subsequent coordinate reductions inexpensive.
+    points = np.empty((len(indices), 3), dtype=np.float64, order="F")
+    for first in range(0, len(indices), _POINT_TRANSFORM_BATCH_SIZE):
+        block = slice(first, first + _POINT_TRANSFORM_BATCH_SIZE)
+        # Keep the library's near-identity shortcut as well as its arithmetic order.
+        points[block] = trimesh.transform_points(indices[block], transform)
+    return points
+
+
 def _prepare_voxel_candidates(mesh: trimesh.Trimesh, configuration: FitConfig) -> _VoxelCandidates:
     prepared_grid = _prepare_voxel_grid(mesh, configuration)
+    backend_details = prepared_grid.backend_details
     voxel_grid = prepared_grid.voxel_grid
     voxel_size_m = prepared_grid.voxel_size_m
     occupied_cells = voxel_grid.matrix
     occupied_indices = np.argwhere(occupied_cells)
     if not len(occupied_indices):
         raise ValueError("Voxelization produced no occupied cells; increase resolution")
-    occupied_points = trimesh.transform_points(occupied_indices, voxel_grid.transform)
+    transform = voxel_grid.transform
     if prepared_grid.clearance_grid_m is None:
         # EDT needs exterior cells even when the mesh fills its entire voxel bounds.
-        distance_grid = ndimage.distance_transform_edt(np.pad(occupied_cells, 1))[1:-1, 1:-1, 1:-1]
+        distance_grid = unit_grid_distances(np.pad(occupied_cells, 1))[1:-1, 1:-1, 1:-1]
         clearance_radii = (
             np.maximum(distance_grid[tuple(occupied_indices.T)] - 0.5, 0.5) * voxel_size_m
         )
@@ -98,13 +115,13 @@ def _prepare_voxel_candidates(mesh: trimesh.Trimesh, configuration: FitConfig) -
     peak_indices = np.flatnonzero(local_maxima[tuple(occupied_indices.T)])
     random_generator = np.random.default_rng(configuration.seed)
     candidate_budget = min(
-        max(configuration.max_candidates, configuration.count), len(occupied_points)
+        max(configuration.max_candidates, configuration.count), len(occupied_indices)
     )
     if len(peak_indices) > candidate_budget // 2:
         peak_indices = random_generator.choice(
             peak_indices, max(1, candidate_budget // 2), replace=False
         )
-    remaining_mask = np.ones(len(occupied_points), dtype=bool)
+    remaining_mask = np.ones(len(occupied_indices), dtype=bool)
     remaining_mask[peak_indices] = False
     remaining_indices = np.flatnonzero(remaining_mask)
     random_indices = random_generator.choice(
@@ -115,9 +132,7 @@ def _prepare_voxel_candidates(mesh: trimesh.Trimesh, configuration: FitConfig) -
     candidate_indices = np.unique(
         np.r_[peak_indices, random_indices, int(np.argmax(clearance_radii))]
     )
-    component_grid_indices = prepared_grid.backend_details.get(
-        "component_representative_grid_indices"
-    )
+    component_grid_indices = backend_details.get("component_representative_grid_indices")
     if component_grid_indices and len(component_grid_indices) > 1:
         # Small disconnected solids can be missed by area/volume-proportional
         # random sampling. Retain at least their deepest interior candidate.
@@ -127,6 +142,11 @@ def _prepare_voxel_candidates(mesh: trimesh.Trimesh, configuration: FitConfig) -
         )
         representative_indices = np.searchsorted(occupied_flat_indices, component_flat_indices)
         candidate_indices = np.unique(np.r_[candidate_indices, representative_indices])
+        del occupied_flat_indices
+    # Release grid workspaces before allocating the occupied point cloud.
+    del prepared_grid, voxel_grid, occupied_cells, distance_grid, local_maxima
+    del remaining_mask, remaining_indices
+    occupied_points = _transform_voxel_indices(occupied_indices, transform)
     coverage_samples = occupied_points
     if len(coverage_samples) > configuration.samples:
         coverage_samples = coverage_samples[
@@ -138,7 +158,7 @@ def _prepare_voxel_candidates(mesh: trimesh.Trimesh, configuration: FitConfig) -
         coverage_samples=coverage_samples,
         occupied_points=occupied_points,
         voxel_size_m=voxel_size_m,
-        backend_details=prepared_grid.backend_details,
+        backend_details=backend_details,
     )
 
 

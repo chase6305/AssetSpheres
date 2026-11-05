@@ -73,8 +73,10 @@ class FitConfig:
             "surface",
             "cover",
             "cover-tight",
+            "cover-opt",
             "slab",
             "refined",
+            "refined-cover",
             "lula",
         }:
             raise ValueError(f"Unknown fitting method: {self.method}")
@@ -102,8 +104,10 @@ class FitConfig:
             raise ValueError("voxel_solid_policy must be single or union-components")
         if self.device not in {"cpu", "cuda"}:
             raise ValueError("device must be cpu or cuda")
-        if self.device == "cuda" and self.method not in {"voxel", "refined"}:
-            raise ValueError("CUDA execution currently supports only voxel and refined methods")
+        if self.device == "cuda" and self.method not in {"voxel", "refined", "refined-cover"}:
+            raise ValueError(
+                "CUDA execution supports only voxel, refined and refined-cover methods"
+            )
         if not isinstance(self.seed, int) or isinstance(self.seed, bool) or self.seed < 0:
             raise ValueError("seed must be a nonnegative integer")
         for name in ("padding", "surface_radius", "outside_weight", "voxel_size"):
