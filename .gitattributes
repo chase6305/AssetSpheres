@@ -1,3 +1,4 @@
 # Generated fitting records stay available without obscuring implementation diffs.
 docs/*cover-opt*.json linguist-generated
 docs/*refined-cover*.json linguist-generated
+docs/fitting-performance.json linguist-generated

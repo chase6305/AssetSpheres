@@ -283,6 +283,7 @@ CUDA 拟合使用一个 GPU 执行者，`--workers` 保持 1；明确请求 CUDA
 | 文档 | 内容 |
 | --- | --- |
 | [命令行](docs/cli.md) | 完整参数、路径、JSON 调用和错误约定 |
+| [拟合性能](docs/fitting-performance.md) | 距离场、包围球内存优化与机械臂耗时对照 |
 | [Python API](docs/api.md) | 从加载到导出的示例、并行与质量评价 |
 | [算法说明](docs/algorithm.md) | 坐标约定、覆盖边界和实现参考 |
 | [性能与优化](docs/optimization.md) | 配对测量、内存口径及性能取舍 |

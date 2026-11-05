@@ -5,6 +5,9 @@
 相对原 `refined`，外扩只会不变或增加；它的用途是把较贴合的采样近似变成三角表面包络，
 不是证明实体内部覆盖。
 
+本页耗时与内存记录对应初轮实现 `1ca2561`；后续改进见
+[内存与拟合性能对照](fitting-performance.md)。已有图示的球参数已用当前实现重新核对一致。
+
 ```bash
 assetspheres fit /path/to/robot.urdf --geometry collision \
   --method refined-cover --count 24 --padding 0.003 -o outputs/repaired
