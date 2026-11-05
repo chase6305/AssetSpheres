@@ -46,3 +46,17 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 
 ```
+
+## Franka Panda
+
+- 上游模型：[frankarobotics/franka_ros](https://github.com/frankarobotics/franka_ros/tree/ddd2fffd9de44b02ad15b4bbb2bfa2cec4d60d98/franka_description)，
+  固定版本 `ddd2fffd9de44b02ad15b4bbb2bfa2cec4d60d98`；这是 Panda，不是 FR3。
+- 本轮输入：工作区 HumanoidAssets/FrankaPanda/arm.urdf，8 个有 collision 几何的 link，不含手爪；
+  采用上游 Gazebo 配置的碰撞 mesh，不是额外膨胀的自碰撞胶囊。
+- 图示使用关节零位，颜色仅区分 link，不提供运动学限位、动力学或实际硬件验证。
+- 上游 [Apache-2.0 LICENSE](franka-panda-LICENSE.txt) 与
+  [NOTICE](franka-panda-NOTICE.txt)原样保留，包括 Franka Robotics GmbH 的版权说明。
+- 仅发布对比图片、球参数和验证记录，不附带原 URDF 或 mesh。输入文件与加载后的网格哈希记录在数据中。
+
+对应图片和球参数：panda-refined-cover.png、panda-refined-cover.json；
+独立对照记录：refined-cover-benchmarks.json。

@@ -50,14 +50,16 @@ assetspheres view outputs/demo/spheres.json
 | `cover-opt` | 重新分组三角形，进一步减小球体积之和 | 可开口 | 保留表面包络，需要额外拟合时间 |
 | `slab` | 沿主轴切片，适合细长 link | 可开口 | 表面包络；满足有界实体边界假设时也覆盖内部 |
 | `refined`（实验） | 从体素球初始化，权衡覆盖与外扩 | 闭合 | 有限样本优化，无连续覆盖保证 |
+| `refined-cover`（实验） | 优化后修补完整三角表面 | 闭合 | 球心不变、半径只增，不证明实体内部覆盖 |
 | `lula` | 调用已安装的原生 Lula 生成器 | 闭合，需 Lula 运行时 | 取决于原生实现和输入拓扑 |
 
 `cover` 的球可能明显突出原网格；`slab` 在多分支、孔洞或宽横截面上也可能外扩较多。
 URDF 的球和圆柱会先三角化，几何保证针对实际参与拟合的三角网格。
 各方法的构造、浮点假设与限制见[算法说明](docs/algorithm.md)。
 
-进一步优化的 [UR5e 对比图与实测](docs/cover-optimization.md)同时比较覆盖、外扩和耗时：
-`cover-opt` 改善了 `cover-tight` 的表面包络；该机械臂若要求实体覆盖，`slab` 更合适。
+进一步优化见 [表面修补与机械臂实测](docs/refined-cover.md)及
+[三角形重分组对比](docs/cover-optimization.md)。修补会增加 `refined` 的外扩；
+要求实体包络时，仍需检查 `slab` 的适用假设与外扩。
 
 可用 `assetspheres methods` 比较方法，或用 `assetspheres fit --help` 查看参数。
 
@@ -235,7 +237,7 @@ assetspheres export outputs/ur5e/spheres.edited.json -o outputs/ur5e-edited
 | --- | --- |
 | `surface_coverage` | 独立面积加权表面样本的覆盖比例 |
 | `surface_gap_p95_m` | 表面正间隙的 95% 分位数，已覆盖样本按零计 |
-| `voxel_center_coverage` | `voxel` / `refined` 对占据体素中心的覆盖比例 |
+| `voxel_center_coverage` | 体素及两种 refined 方法对占据体素中心的覆盖比例 |
 | `sphere_volume_sum_m3` | 各球体积之和，包含重叠部分的重复计算 |
 
 采样覆盖率 100% 不等于连续表面或实体内部都被覆盖。使用前应结合球预算、padding、间隙和外扩量检查模型。
@@ -258,7 +260,7 @@ assetspheres fit /path/to/robot.urdf --method cover-tight \
 | --- | --- | --- |
 | 浏览器编辑 | `python -m pip install -e '.[viewer]'` | `assetspheres view RESULT` |
 | 独立体积评价 / 原网格监督 | `python -m pip install -e '.[quality]'` | 质量评价 API / `--refine-reference mesh` |
-| CUDA 张量计算 | `python -m pip install -e '.[cuda]'` | `--method voxel` 或 `refined` 配合 `--device cuda` |
+| CUDA 张量计算 | `python -m pip install -e '.[cuda]'` | `voxel` / `refined` / `refined-cover` 配合 `--device cuda` |
 | Open3D 网格距离查询 | `python -m pip install -e '.[open3d]'` | `--voxelizer open3d`，使用 CPU |
 | Warp 网格距离查询 | `python -m pip install -e '.[warp]'` | `--voxelizer warp`，可选 CPU / CUDA 查询 |
 
@@ -272,7 +274,8 @@ CUDA 拟合使用一个 GPU 执行者，`--workers` 保持 1；明确请求 CUDA
 但会填实嵌套空腔；薄组件没有内部格点时会报错。选择依据见[后端对比](docs/voxelizer-performance.md)。
 
 `refined` 使用有限样本权衡覆盖和外扩；原网格监督 `--refine-reference mesh` 只支持单个闭合、
-非自交的表面体。原生 `--method lula` 需在可 `import lula` 的 Isaac Sim Python 环境中运行；
+非自交的表面体。`refined-cover` 复用该优化流程，之后在 CPU 修补三角表面，不重复添加 padding。
+原生 `--method lula` 需在可 `import lula` 的 Isaac Sim Python 环境中运行；
 适配器已做接口契约测试，实际原生运行仍需在对应环境验证。AssetSpheres 不会启动 SimulationApp。
 
 ## 文档与开发

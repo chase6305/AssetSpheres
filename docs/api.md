@@ -123,6 +123,20 @@ for link_name, spheres in parallel_result.links.items():
 
 `FitConfig` 不可原地修改。需要派生配置时使用 `dataclasses.replace(configuration, count=32)`，而不是修改 `configuration.count`。
 
+## 优化后修补三角表面
+
+闭合 mesh 可用 `FitConfig(method="refined-cover")` 组合优化与表面修补；球数不增加，
+padding 只添加一次。沿用已有资产：
+
+```python
+repaired_result = fit_asset(asset, FitConfig(method="refined-cover", count=24, padding=0.003))
+```
+
+已有球模型也可单独调用 `assetspheres.surface_cover.repair_surface_cover(mesh, spheres)`，
+返回新球列表和修补诊断，支持开口三角 mesh。它不会移动球心或缩小半径，原 mesh 和球列表不变。
+相对原模型，外扩可能增加；表面包络不等于实体包络。该函数不重新评价调用方保留的旧质量报告。
+详细实验见 [修补说明](refined-cover.md)。
+
 ## 单独拟合一个 mesh
 
 已有 `trimesh.Trimesh` 时可以直接调用 `fit_mesh`：

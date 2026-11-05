@@ -26,7 +26,16 @@ from assetspheres import FitConfig, fit_asset, load_asset
 from assetspheres.geometry import sample_surface, sphere_gaps
 
 METHODS = ("voxel", "cover", "cover-tight", "slab", "refined")
-LINK_COLORS = ("#1496b8", "#ed9b32", "#8672bc", "#4aa78b", "#ce7486", "#5793c5", "#92a64f")
+LINK_COLORS = (
+    "#1496b8",
+    "#ed9b32",
+    "#8672bc",
+    "#4aa78b",
+    "#ce7486",
+    "#5793c5",
+    "#92a64f",
+    "#a6785d",
+)
 BACKGROUND = "#f6f8fc"
 TEXT_COLOR = "#17344b"
 VALIDATION_SAMPLES = 10_000

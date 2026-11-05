@@ -1,6 +1,6 @@
 """Coordinate mesh preparation, fitting methods, and quality reporting.
 
-Method implementations live in surface_fit, voxel_fit, slab, and refine.
+Method implementations live in surface_fit, voxel_fit, slab, refine and surface_cover.
 Shared geometry helpers are re-exported here for existing Python callers.
 """
 

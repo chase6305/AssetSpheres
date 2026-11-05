@@ -63,6 +63,8 @@ assetspheres fit robot.urdf --method slab --workers 4 --executor thread
 
 assetspheres fit robot.urdf --method refined --device cuda \
   --iterations 120 --refine-samples 2048 --outside-weight 10
+
+assetspheres fit robot.urdf --method refined-cover --count 24 --padding 0.003
 ```
 
 `--count` 是每个 link 的球数上限；`--link-count LINK=N` 可重复，为某个 link 单独覆盖。`--padding` 是最终球半径的米制增量。`--link`、`--package-root` 同样可以重复，重复定义同一个键会明确报错。
@@ -72,6 +74,12 @@ assetspheres fit robot.urdf --method refined --device cuda \
 `cover-opt` 在 `cover-tight` 后最多执行两轮完整三角形重分组与包围球缩紧，只接受最终
 球体积之和更小的结果。它支持开口 mesh，仅在 CPU 运行；表面包络不代表实体内部也被覆盖。
 实测和复现命令见 [优化对比](cover-optimization.md)。
+
+`refined-cover` 在相同的 refined 优化和 padding 之后，仅扩大必要的球以包住细分后的
+完整三角形。它不增加球数、不移动球心；相对 `refined`，外扩可能增加，但不会丢掉原来
+已覆盖的点。体素准备仍要求闭合 mesh；开放 link 需显式选择已有的 `--non-watertight cover`
+等回退。`--device cuda` 加速张量阶段，表面修补始终在 CPU。具体限制见
+[修补说明](refined-cover.md)。
 
 体素化相关参数集中在同一组：
 
