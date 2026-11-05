@@ -1,7 +1,7 @@
 # 验证记录
 
-最新复核（2026-11-05）：主环境 **434 passed**，最低依赖 **361 passed / 42 skipped**，
-Python 3.12 / NumPy 2 / Trimesh 5 环境 **376 passed / 36 skipped**。
+最新复核（2026-11-05）：主环境 **436 passed**，最低依赖 **363 passed / 42 skipped**，
+Python 3.12 / NumPy 2 / Trimesh 5 环境 **378 passed / 36 skipped**。
 仅安装核心依赖的 wheel 通过三种方法的进程拟合、导出和报告回读；
 UR5e/Panda 的参数、导出变换和查看器 HTTP 也已复核。
 详情与计时边界见[启动与预览](startup-and-preview.md)，此前的内存优化见[拟合性能](fitting-performance.md)。

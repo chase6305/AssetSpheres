@@ -70,10 +70,9 @@ def main():
     )
     expected, actual = [function(asset, result) for function in functions.values()]
     compare_scenes(expected, actual)
-    reloaded = [
-        trimesh.load_scene(io.BytesIO(scene.export(file_type="glb")), file_type="glb")
-        for scene in (expected, actual)
-    ]
+    payloads = [scene.export(file_type="glb") for scene in (expected, actual)]
+    assert payloads[0] == payloads[1], "GLB bytes differ"
+    reloaded = [trimesh.load_scene(io.BytesIO(payload), file_type="glb") for payload in payloads]
     compare_scenes(*reloaded)
     records = {
         "python": platform.python_version(),
@@ -99,8 +98,13 @@ def main():
         "links": len(asset.links),
         "spheres": sum(map(len, result.links.values())),
         "config": result.to_dict()["config"],
-        "timing_scope": "warm construction and optional GLB serialization; no loading/fitting/writing",
+        "timing_scope": (
+            "warm preview construction and optional GLB serialization; "
+            "no loading, fitting or file writes"
+        ),
         "exact_scenes_and_reloaded_glbs": True,
+        "exact_glb_bytes": True,
+        "glb_sha256": hashlib.sha256(payloads[0]).hexdigest(),
         "repeats": args.repeats,
         "cases": {},
     }

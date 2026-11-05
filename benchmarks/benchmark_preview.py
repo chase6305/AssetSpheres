@@ -126,10 +126,11 @@ def main():
             )
             expected, actual = [function(asset, result) for function in functions.values()]
             compare_scenes(expected, actual, np)
-            # Compare round-tripped GLBs too: serialization can omit unsupported attributes.
+            payloads = [scene.export(file_type="glb") for scene in (expected, actual)]
+            assert payloads[0] == payloads[1], "GLB bytes differ"
+            # Read back the GLBs as well, checking the consumer's view of the scene.
             reloaded = [
-                trimesh.load_scene(io.BytesIO(scene.export(file_type="glb")), file_type="glb")
-                for scene in (expected, actual)
+                trimesh.load_scene(io.BytesIO(payload), file_type="glb") for payload in payloads
             ]
             compare_scenes(*reloaded, np)
             for scene in (expected, actual):
@@ -179,6 +180,8 @@ def main():
             label = f"{material_kind}/image{width}"
             records["cases"][label] = {
                 "exact_scenes_and_reloaded_glbs": True,
+                "exact_glb_bytes": True,
+                "glb_sha256": hashlib.sha256(payloads[0]).hexdigest(),
                 "source_unchanged": True,
                 "independent_geometry_attributes": True,
                 "image_copy_calls": copies,
