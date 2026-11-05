@@ -12,12 +12,11 @@ import shlex
 import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from .asset import Asset, load_asset
-from .export import check_output_paths, load_result_asset, read_result, write_outputs
-from .fit import fit_asset
-from .model import FitConfig, FitResult
+if TYPE_CHECKING:
+    from .asset import Asset
+    from .model import FitConfig, FitResult
 
 
 class CommandHelpFormatter(
@@ -336,6 +335,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def _load_input_asset(arguments: argparse.Namespace) -> Asset:
+    from .asset import load_asset
+
     return load_asset(
         arguments.input,
         geometry=arguments.geometry,
@@ -346,6 +347,8 @@ def _load_input_asset(arguments: argparse.Namespace) -> Asset:
 
 
 def _build_fit_configuration(arguments: argparse.Namespace) -> FitConfig:
+    from .model import FitConfig
+
     return FitConfig(
         method=arguments.method,
         count=arguments.count,
@@ -373,6 +376,9 @@ def _print_next_commands(result_path: Path) -> None:
 
 def _run_fit_command(arguments: argparse.Namespace) -> None:
     configuration = _build_fit_configuration(arguments)
+    from .export import check_output_paths, write_outputs
+    from .fit import fit_asset
+
     asset = _load_input_asset(arguments)
     output_directory = getattr(arguments, "output", Path("outputs") / arguments.input.stem)
     check_output_paths(
@@ -471,6 +477,8 @@ def _run_methods_command(arguments: argparse.Namespace) -> None:
 
 
 def _run_report_command(arguments: argparse.Namespace) -> None:
+    from .result_io import read_result
+
     result = read_result(arguments.result)
     if arguments.json:
         print(json.dumps(result.reports, ensure_ascii=False, indent=2, allow_nan=False))
@@ -479,12 +487,16 @@ def _run_report_command(arguments: argparse.Namespace) -> None:
 
 
 def _load_saved_asset(arguments: argparse.Namespace, result: FitResult) -> Asset:
+    from .export import load_result_asset
+
     return load_result_asset(
         result, path=arguments.asset, package_roots=_parse_overrides(arguments.package_root)
     )
 
 
 def _run_export_command(arguments: argparse.Namespace) -> None:
+    from .export import read_result, write_outputs
+
     result = read_result(arguments.result)
     output_paths = write_outputs(
         _load_saved_asset(arguments, result),
@@ -498,6 +510,7 @@ def _run_export_command(arguments: argparse.Namespace) -> None:
 
 
 def _run_view_command(arguments: argparse.Namespace) -> None:
+    from .export import read_result
     from .viewer import serve
 
     result = read_result(arguments.result)

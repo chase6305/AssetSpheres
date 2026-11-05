@@ -47,11 +47,11 @@ def test_force_cannot_overwrite_mesh_referenced_only_by_replaced_collisions(tmp_
 
 
 def test_cli_rejects_existing_outputs_before_fitting(monkeypatch, tmp_path, capsys):
-    from assetspheres import cli
+    from assetspheres import fit
 
     source = Path(__file__).resolve().parents[1] / "examples" / "two_link.urdf"
     (tmp_path / "spheres.json").write_text("keep me")
-    monkeypatch.setattr(cli, "fit_asset", lambda *args, **kwargs: pytest.fail("Must fail first"))
+    monkeypatch.setattr(fit, "fit_asset", lambda *args, **kwargs: pytest.fail("Must fail first"))
     assert main(["fit", str(source), "-o", str(tmp_path)]) == 2
     assert "already exist" in capsys.readouterr().err
     assert (tmp_path / "spheres.json").read_text() == "keep me"

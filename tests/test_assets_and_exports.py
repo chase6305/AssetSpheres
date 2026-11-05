@@ -1,3 +1,4 @@
+from io import BytesIO
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
@@ -9,7 +10,7 @@ import yaml
 from assetspheres import FitConfig, fit_asset, load_asset
 from assetspheres.asset import load_mesh, resolve_mesh
 from assetspheres.cli import main
-from assetspheres.export import load_result_asset, read_result, write_outputs
+from assetspheres.export import load_result_asset, make_scene, read_result, write_outputs
 
 EXAMPLE = Path(__file__).resolve().parents[1] / "examples" / "two_link.urdf"
 
@@ -105,6 +106,45 @@ def test_exports_roundtrip_and_preserve_urdf(tmp_path):
             assert np.allclose(np.linalg.norm(transform[:3, :3], axis=0), sphere.radius)
     with pytest.raises(ValueError, match="already exist"):
         write_outputs(asset, result, tmp_path / "output")
+
+
+def test_preview_skips_discarded_textures_and_keeps_independent_geometry_attributes(monkeypatch):
+    image_module = pytest.importorskip("PIL.Image")
+    asset = load_asset(EXAMPLE, link_names=["base"])
+    result = fit_asset(asset, FitConfig(method="cover", count=2, samples=64))
+    source = asset.links["base"].mesh
+    vertices = source.vertices.copy()
+    features = np.arange(len(vertices) * 3, dtype=np.float32).reshape(-1, 3)
+    labels = np.arange(len(source.faces))
+    source.vertex_attributes["_FEATURES"] = features.copy()
+    source.face_attributes["labels"] = labels.copy()
+    image = image_module.new("RGBA", (16, 16), (60, 120, 180, 255))
+    visual = trimesh.visual.texture.TextureVisuals(
+        uv=np.zeros((len(vertices), 2)),
+        material=trimesh.visual.material.PBRMaterial(baseColorTexture=image),
+    )
+    source.visual = visual
+    monkeypatch.setattr(image, "copy", lambda: pytest.fail("Preview discards the source texture"))
+
+    scene = make_scene(asset, result)
+    _, geometry_name = scene.graph["mesh/0"]
+    preview = scene.geometry[geometry_name]
+    np.testing.assert_array_equal(preview.vertices, vertices)
+    np.testing.assert_array_equal(preview.vertex_attributes["_FEATURES"], features)
+    np.testing.assert_array_equal(preview.face_attributes["labels"], labels)
+    assert isinstance(preview.visual, trimesh.visual.ColorVisuals)
+    np.testing.assert_array_equal(preview.visual.face_colors[0], [165, 178, 191, 120])
+    restored = trimesh.load(BytesIO(scene.export(file_type="glb")), file_type="glb", force="scene")
+    assert set(restored.graph.nodes_geometry) == set(scene.graph.nodes_geometry)
+
+    preview.vertices[0, 0] += 1
+    preview.vertex_attributes["_FEATURES"][0, 0] = -1
+    preview.face_attributes["labels"][0] = -1
+    np.testing.assert_array_equal(source.vertices, vertices)
+    np.testing.assert_array_equal(source.vertex_attributes["_FEATURES"], features)
+    np.testing.assert_array_equal(source.face_attributes["labels"], labels)
+    assert source.visual is visual
+    assert image.getpixel((0, 0)) == (60, 120, 180, 255)
 
 
 def test_mesh_scaling_survives_export_and_view_reload(tmp_path):
