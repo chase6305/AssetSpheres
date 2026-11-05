@@ -23,11 +23,13 @@ from unittest.mock import patch
 import numpy as np
 import scipy
 import trimesh
+from scipy.spatial.distance import cdist
 
 from assetspheres import FitConfig, Sphere, asset, voxelization
 from assetspheres.fit import sphere_gaps
 from assetspheres.geometry import farthest_point_indices
 from assetspheres.refine import _loss_gradient
+from assetspheres.surface_cover import _triangle_requirements
 from assetspheres.surface_grid import subdivide_surface_grid
 
 
@@ -126,6 +128,25 @@ def reference_gradient(parameters, points, positive, weights, margin):
     gradient[:, 3] += 3 * 0.002 * radii**2 / len(radii)
     loss = float(np.sum(weights * errors**2) + 0.002 * np.mean(radii**3))
     return loss, gradient
+
+
+def reference_triangle_requirements(triangles, centers, radii):
+    """Initial repair kernel: retain distances for every corner in a center block."""
+    best_gaps = np.full(len(triangles), np.inf)
+    best_centers = np.zeros(len(triangles), dtype=np.intp)
+    required_radii = np.zeros(len(triangles))
+    for first_center in range(0, len(centers), 128):
+        center_block = centers[first_center : first_center + 128]
+        distances = cdist(triangles.reshape(-1, 3), center_block)
+        maximum_distances = distances.reshape(len(triangles), 3, -1).max(axis=1)
+        gaps = maximum_distances - radii[first_center : first_center + len(center_block)]
+        nearest = gaps.argmin(axis=1)
+        candidate_gaps = gaps[np.arange(len(triangles)), nearest]
+        improved = candidate_gaps < best_gaps
+        best_gaps[improved] = candidate_gaps[improved]
+        best_centers[improved] = first_center + nearest[improved]
+        required_radii[improved] = maximum_distances[np.flatnonzero(improved), nearest[improved]]
+    return best_gaps, best_centers, required_radii
 
 
 def compare(reference, optimized, equal, repeats, *, allocations=True):
@@ -264,6 +285,20 @@ def main():
             args.repeats,
         ),
     )
+    for triangle_count, sphere_count in [(32, 24), (2048, 24), (2048, 128), (2048, 257)]:
+        triangles = random.normal(size=(triangle_count, 3, 3))
+        centers = random.normal(size=(sphere_count, 3))
+        radii = random.uniform(0.01, 1, sphere_count)
+        inputs = (triangles, centers, radii)
+        save(
+            f"surface-repair/{triangle_count}/{sphere_count}",
+            compare(
+                lambda: reference_triangle_requirements(*inputs),
+                lambda: _triangle_requirements(*inputs),
+                lambda a, b: all(np.array_equal(x, y) for x, y in zip(a, b)),
+                args.repeats,
+            ),
+        )
     for name, mesh, resolution in [
         ("cylinder", trimesh.creation.cylinder(radius=0.05, height=0.3, sections=48), 48),
         ("sphere", trimesh.creation.icosphere(radius=0.1, subdivisions=3), 80),

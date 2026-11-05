@@ -8,7 +8,8 @@ import trimesh
 
 from assetspheres import FitConfig, Sphere, fit_mesh
 from assetspheres.geometry import sample_surface, sphere_gaps
-from assetspheres.surface_cover import repair_surface_cover
+from assetspheres.surface_cover import _triangle_requirements, repair_surface_cover
+from benchmarks.benchmark_hotpaths import reference_triangle_requirements
 
 
 def coarse_triangle():
@@ -20,6 +21,29 @@ def coarse_triangle():
 def assert_grown_only(before, after):
     assert len(before) == len(after)
     assert all(a.center == b.center and a.radius <= b.radius for a, b in zip(before, after))
+
+
+@pytest.mark.parametrize("triangle_count,center_count", [(3, 4), (257, 24), (2048, 257)])
+def test_triangle_distance_reduction_keeps_exact_requirements(triangle_count, center_count):
+    random = np.random.default_rng(371021)
+    triangles = random.uniform(-1, 1, size=(triangle_count, 3, 3))
+    centers = random.uniform(-1, 1, size=(center_count, 3))
+    radii = random.uniform(0.01, 1, center_count)
+    expected = reference_triangle_requirements(triangles, centers, radii)
+    actual = _triangle_requirements(triangles, centers, radii)
+    for before, after in zip(expected, actual):
+        np.testing.assert_array_equal(before, after)
+
+
+def test_cross_block_ties_keep_the_first_ball_until_a_strict_improvement():
+    triangles = np.zeros((3, 3, 3))
+    centers = np.zeros((130, 3))
+    radii = np.full(130, 0.1)
+    _, labels, _ = _triangle_requirements(triangles, centers, radii)
+    assert np.all(labels == 0)
+    radii[-1] = 0.2
+    _, labels, _ = _triangle_requirements(triangles, centers, radii)
+    assert np.all(labels == 129)
 
 
 def test_vertices_in_different_balls_do_not_certify_the_triangle_interior():
@@ -112,6 +136,28 @@ def test_fitting_composes_refinement_and_repair_without_adding_padding_twice():
     padded, _ = fit_mesh(mesh, replace(config, padding=1.0))
     padded_repaired, _ = fit_mesh(mesh, replace(config, method="refined-cover", padding=1.0))
     assert padded_repaired == padded
+
+
+def test_cuda_refinement_can_finish_with_cpu_triangle_repair():
+    torch = pytest.importorskip("torch")
+    if not torch.cuda.is_available():
+        pytest.skip("CUDA is unavailable")
+    mesh = trimesh.creation.box(extents=(0.3, 0.16, 0.1))
+    config = FitConfig(
+        method="refined-cover",
+        device="cuda",
+        count=8,
+        resolution=20,
+        samples=128,
+        refine_samples=128,
+        iterations=20,
+        padding=0.003,
+    )
+    spheres, report = fit_mesh(mesh, config)
+    assert report["optimization_device"] == "cuda"
+    assert report["surface_repair_device"] == "cpu"
+    assert report["surface_coverage"] == 1
+    assert np.max(sphere_gaps(sample_surface(mesh, 20_000, 371023), spheres)) <= 0
 
 
 def test_repair_preserves_mesh_spheres_and_global_rng_and_is_deterministic():

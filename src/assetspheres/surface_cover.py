@@ -22,20 +22,27 @@ def _triangle_requirements(
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Find each triangle's least required radius increase, keeping the first tie."""
     best_gaps = np.full(len(triangles), np.inf)
-    best_centers = np.zeros(len(triangles), dtype=np.intp)
+    best_center_indices = np.zeros(len(triangles), dtype=np.intp)
     required_radii = np.zeros(len(triangles))
     for first_center in range(0, len(centers), CENTERS_PER_BLOCK):
         center_block = centers[first_center : first_center + CENTERS_PER_BLOCK]
-        distances = cdist(triangles.reshape(-1, 3), center_block)
-        maximum_distances = distances.reshape(len(triangles), 3, -1).max(axis=1)
+        # Reduce squared corner distances first: one square root per triangle/ball.
+        maximum_distances = cdist(triangles[:, 0], center_block, metric="sqeuclidean")
+        temporary = np.empty_like(maximum_distances)
+        for corner in (1, 2):
+            cdist(triangles[:, corner], center_block, metric="sqeuclidean", out=temporary)
+            np.maximum(maximum_distances, temporary, out=maximum_distances)
+        del temporary
+        np.sqrt(maximum_distances, out=maximum_distances)
         gaps = maximum_distances - radii[first_center : first_center + len(center_block)]
         nearest = gaps.argmin(axis=1)
         candidate_gaps = gaps[np.arange(len(triangles)), nearest]
         improved = candidate_gaps < best_gaps
         best_gaps[improved] = candidate_gaps[improved]
-        best_centers[improved] = first_center + nearest[improved]
+        best_center_indices[improved] = first_center + nearest[improved]
         required_radii[improved] = maximum_distances[np.flatnonzero(improved), nearest[improved]]
-    return best_gaps, best_centers, required_radii
+        del maximum_distances, gaps
+    return best_gaps, best_center_indices, required_radii
 
 
 def repair_surface_cover(
@@ -96,7 +103,7 @@ def repair_surface_cover(
             triangles, depth = pending.pop()
             visited_count += len(triangles)
             maximum_depth = max(maximum_depth, depth)
-            gaps, nearest_centers, required_radii = _triangle_requirements(
+            gaps, nearest_center_indices, required_radii = _triangle_requirements(
                 triangles, normalized_centers, normalized_radii
             )
             unresolved = gaps > -margin
@@ -118,7 +125,7 @@ def repair_surface_cover(
             # One selected ball encloses each entire leaf, including its interior.
             np.maximum.at(
                 normalized_radii,
-                nearest_centers[repair],
+                nearest_center_indices[repair],
                 np.nextafter(required_radii[repair] + margin, np.inf),
             )
             if not np.any(split):
