@@ -80,6 +80,9 @@ def main():
             )
         },
         "timing_scope": "warm preloaded synthetic inputs; no fitting or loading",
+        "copy_count_scope": (
+            "PIL.Image.Image.copy calls only; SimpleMaterial deepcopy uses image serialization"
+        ),
         "fixture": {"vertices": 642, "faces": 1280, "spheres": 24, "vertex_feature_columns": 3},
         "repeats": args.repeats,
         "cases": {},
@@ -105,8 +108,10 @@ def main():
             )
             mesh.face_attributes["label"] = np.arange(len(mesh.faces))
             source_vertices = mesh.vertices.copy()
+            source_triangles = mesh.faces.copy()
             source_attributes = copy.deepcopy(mesh.vertex_attributes)
             source_faces = copy.deepcopy(mesh.face_attributes)
+            image_digest = hashlib.sha256(image.tobytes()).digest() if image is not None else None
             transform = trimesh.transformations.euler_matrix(0.2, -0.4, 0.7)
             transform[:3, 3] = [0.1, 0.2, 0.3]
             asset = Asset(
@@ -164,12 +169,13 @@ def main():
                     for name, values in times.items()
                 }
             assert np.array_equal(mesh.vertices, source_vertices)
+            assert np.array_equal(mesh.faces, source_triangles)
             for name, values in source_attributes.items():
                 assert np.array_equal(mesh.vertex_attributes[name], values)
             for name, values in source_faces.items():
                 assert np.array_equal(mesh.face_attributes[name], values)
             if image is not None:
-                assert image.getpixel((0, 0)) == (60, 120, 180, 255)
+                assert hashlib.sha256(image.tobytes()).digest() == image_digest
             label = f"{material_kind}/image{width}"
             records["cases"][label] = {
                 "exact_scenes_and_reloaded_glbs": True,
