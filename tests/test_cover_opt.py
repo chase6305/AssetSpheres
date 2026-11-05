@@ -8,7 +8,36 @@ import trimesh
 
 from assetspheres import FitConfig, fit_mesh
 from assetspheres.geometry import sample_surface, sphere_gaps
-from assetspheres.surface_fit import _nearest_triangle_centers, _partition_cover_triangles
+from assetspheres.surface_fit import (
+    _nearest_triangle_centers,
+    _partition_cover_triangles,
+    _weighted_cluster_centers,
+)
+
+
+def test_weighted_centroids_retain_empty_clusters_and_do_not_change_inputs():
+    points = np.array([[1.0, 2, 3], [3, 4, 5], [5, 6, 7]])
+    weights = np.array([1.0, 2, 3])
+    labels = np.array([1, 0, 1])
+    centers = np.array([[10.0, 20, 30], [40, 50, 60], [70, 80, 90]])
+    original = centers.copy()
+    actual = _weighted_cluster_centers(points, weights, labels, centers)
+    np.testing.assert_array_equal(actual, [[3, 4, 5], [4, 5, 6], [70, 80, 90]])
+    np.testing.assert_array_equal(centers, original)
+
+
+def test_weighted_centroids_preserve_numpy_average_with_unequal_weight_scales():
+    points = np.arange(128 * 3, dtype=float).reshape(-1, 3)
+    weights = np.r_[1e16, np.ones(127)]
+    labels = np.zeros(len(points), dtype=int)
+    expected = np.average(points, axis=0, weights=weights)
+    actual = _weighted_cluster_centers(points, weights, labels, np.zeros((1, 3)))
+    np.testing.assert_array_equal(actual[0], expected)
+
+
+def test_nonempty_zero_weight_cluster_is_rejected():
+    with pytest.raises(ZeroDivisionError, match="Weights sum to zero"):
+        _weighted_cluster_centers(np.ones((2, 3)), np.zeros(2), np.array([0, 0]), np.zeros((2, 3)))
 
 
 @pytest.mark.parametrize("count,padding", [(1, 0), (8, 0), (24, 0.003)])

@@ -7,16 +7,50 @@ from typing import Any
 import numpy as np
 from scipy.optimize import minimize
 
+_POINTS_PER_BLOCK = 32768
+
 
 def _certified_radius(points: np.ndarray, center: np.ndarray) -> float:
     """Recheck every original point after center reconstruction and round outward."""
-    delta = points.astype(np.longdouble) - center.astype(np.longdouble)
-    maximum = np.max(np.hypot(np.hypot(delta[:, 0], delta[:, 1]), delta[:, 2]))
+    center = center.astype(np.longdouble)
+    maximum = np.longdouble(0)
+    for first_point in range(0, len(points), _POINTS_PER_BLOCK):
+        delta = points[first_point : first_point + _POINTS_PER_BLOCK].astype(np.longdouble)
+        delta -= center
+        maximum = max(maximum, np.max(np.hypot(np.hypot(delta[:, 0], delta[:, 1]), delta[:, 2])))
     if maximum == 0:
         return 0.0
     if maximum >= np.finfo(float).max:
         raise ValueError("Enclosing radius cannot be represented as a finite float64")
     return float(np.nextafter(float(maximum), np.inf))
+
+
+def _direction_extrema(points: np.ndarray, directions: np.ndarray) -> np.ndarray:
+    """Find the first maximum along each direction with bounded projection storage."""
+    if len(points) <= _POINTS_PER_BLOCK:
+        projections = np.empty((len(points), len(directions)), order="F")
+        np.matmul(points, directions.T, out=projections)
+        return projections.argmax(axis=0)
+    best_projections = np.full(len(directions), -np.inf)
+    best_indices = np.zeros(len(directions), dtype=np.intp)
+    direction_indices = np.arange(len(directions))
+    for first_point in range(0, len(points), _POINTS_PER_BLOCK):
+        point_block = points[first_point : first_point + _POINTS_PER_BLOCK]
+        # Contiguous columns let argmax reduce without copying the projection matrix.
+        projections = np.empty((len(point_block), len(directions)), order="F")
+        np.matmul(point_block, directions.T, out=projections)
+        block_indices = projections.argmax(axis=0)
+        block_maximum = projections[block_indices, direction_indices]
+        improved = block_maximum > best_projections
+        best_projections[improved] = block_maximum[improved]
+        best_indices[improved] = first_point + block_indices[improved]
+    return best_indices
+
+
+def _squared_distances(points: np.ndarray, center: np.ndarray) -> np.ndarray:
+    offsets = points - center
+    np.square(offsets, out=offsets)
+    return offsets.sum(axis=1)
 
 
 def tighten_ball(
@@ -53,8 +87,10 @@ def tighten_ball(
     # Extended precision protects translation subtraction at very large offsets
     # and squared lengths at very small scales. Optimization itself stays float64.
     pivot = points[0].astype(np.longdouble)
-    relative = points.astype(np.longdouble) - pivot
-    scale = np.max(np.abs(relative))
+    relative_bounds = (
+        np.asarray([points.min(axis=0), points.max(axis=0)], dtype=np.longdouble) - pivot
+    )
+    scale = np.max(np.abs(relative_bounds))
     diagnostics: dict[str, Any] = {
         "point_count": len(points),
         "initial_radius_m": original_radius,
@@ -69,30 +105,39 @@ def tighten_ball(
         best_center, best_radius = points[0].copy(), 0.0
         diagnostics["optimizer_status"] = "coincident_points_exact"
     else:
-        normalized = np.asarray(relative / scale, dtype=np.float64)
+        # Preserve the input's array layout and bound extended-precision temporaries.
+        normalized = np.empty_like(points)
+        for first_point in range(0, len(points), _POINTS_PER_BLOCK):
+            block = slice(first_point, first_point + _POINTS_PER_BLOCK)
+            relative = points[block].astype(np.longdouble)
+            relative -= pivot
+            relative /= scale
+            normalized[block] = relative
+        del relative
         lower_center_bounds, upper_center_bounds = normalized.min(axis=0), normalized.max(axis=0)
         initial_center = normalized.mean(axis=0)
-        initial_squared_distances = np.sum((normalized - initial_center) ** 2, axis=1)
-        # Extrema in axis and box-diagonal directions provide a useful small
-        # support set, including both endpoints of collinear point clouds.
-        directions = np.vstack(
-            [
-                np.eye(3),
-                -np.eye(3),
-                np.array([[x, y, z] for x in (-1, 1) for y in (-1, 1) for z in (-1, 1)]),
-            ]
-        )
+        initial_squared_distances = _squared_distances(normalized, initial_center)
         if len(normalized) <= 64:
             support_indices = np.arange(len(normalized))
         else:
+            # Extrema in axis and box-diagonal directions provide a useful small
+            # support set, including both endpoints of collinear point clouds.
+            directions = np.vstack(
+                [
+                    np.eye(3),
+                    -np.eye(3),
+                    np.array([[x, y, z] for x in (-1, 1) for y in (-1, 1) for z in (-1, 1)]),
+                ]
+            )
             support_indices = np.unique(
                 np.r_[
-                    np.argmax(normalized @ directions.T, axis=0),
+                    _direction_extrema(normalized, directions),
                     np.argmax(initial_squared_distances),
                 ]
             )
         # Parameters pack the normalized center and squared radius.
         current_parameters = np.r_[initial_center, initial_squared_distances.max()]
+        del initial_squared_distances
         status = "fallback_original"
         for round_index in range(6):
             support = np.unique(normalized[support_indices], axis=0)
@@ -131,7 +176,7 @@ def tighten_ball(
             if candidate_radius < best_radius:
                 best_center, best_radius = candidate_center, candidate_radius
                 status = "optimized"
-            squared_distances = np.sum((normalized - optimized.x[:3]) ** 2, axis=1)
+            squared_distances = _squared_distances(normalized, optimized.x[:3])
             violations = squared_distances - optimized.x[3]
             if violations.max() <= 1e-10 or len(support_indices) >= 64:
                 break

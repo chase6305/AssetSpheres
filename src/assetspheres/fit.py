@@ -48,7 +48,8 @@ def _prepare_mesh(mesh: trimesh.Trimesh) -> trimesh.Trimesh:
         raise ValueError("Expected a nonempty triangle mesh")
     if not np.all(np.isfinite(mesh.vertices)) or not np.isfinite(mesh.area) or mesh.area <= 0:
         raise ValueError("Mesh must have finite vertices and positive surface area")
-    prepared_mesh = mesh.copy()
+    # Fitting uses geometry only; retain the source's visuals on the original asset.
+    prepared_mesh = mesh.copy(include_visual=False)
     prepared_mesh.update_faces(prepared_mesh.nondegenerate_faces())
     prepared_mesh.remove_unreferenced_vertices()
     if not len(prepared_mesh.faces) or prepared_mesh.area <= 0:

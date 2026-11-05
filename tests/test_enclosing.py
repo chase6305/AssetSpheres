@@ -113,6 +113,44 @@ def test_full_support_still_rechecks_an_undersized_optimizer_radius(monkeypatch)
     assert diagnostic["support_points"] == 64
 
 
+def test_direction_extrema_keep_first_ties_across_blocks(monkeypatch):
+    import assetspheres.enclosing as module
+
+    monkeypatch.setattr(module, "_POINTS_PER_BLOCK", 4)
+    points = np.zeros((11, 3))
+    points[1] = points[8] = [2, 0, 0]
+    points[10] = [0, 3, 0]
+    directions = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    np.testing.assert_array_equal(module._direction_extrema(points, directions), [1, 10, 0])
+
+
+def test_blocked_radius_recheck_includes_an_outlier_in_the_last_short_block(monkeypatch):
+    from types import SimpleNamespace
+
+    import assetspheres.enclosing as module
+
+    monkeypatch.setattr(module, "_POINTS_PER_BLOCK", 16)
+    monkeypatch.setattr(
+        module,
+        "minimize",
+        lambda *args, **kwargs: SimpleNamespace(success=True, x=np.zeros(4), nit=1),
+    )
+    points = np.zeros((67, 3))
+    points[-1] = [3, 4, 0]
+    center, radius, _ = assert_certified_improvement(points, np.array([20.0, 0, 0]))
+    np.testing.assert_array_equal(center, np.zeros(3))
+    assert radius == np.nextafter(5.0, np.inf)
+
+
+@pytest.mark.parametrize("order", ["C", "F"])
+def test_large_duplicate_cloud_preserves_box_enclosure(order):
+    corners = np.array([[x, y, z] for x in (-1, 1) for y in (-2, 2) for z in (-3, 3)])
+    points = np.array(np.tile(corners, (4097, 1)), order=order)
+    center, radius, _ = assert_certified_improvement(points, np.array([1.0, 2.0, 3.0]))
+    assert np.allclose(center, 0, atol=1e-8)
+    assert radius == pytest.approx(np.sqrt(14), rel=1e-8)
+
+
 @pytest.mark.parametrize(
     "points, center",
     [

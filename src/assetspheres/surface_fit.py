@@ -20,6 +20,31 @@ def _cluster_indices(labels: np.ndarray, cluster_count: int) -> list[np.ndarray]
     return np.split(ordered_indices, boundaries)
 
 
+def _weighted_cluster_centers(
+    triangle_centers: np.ndarray,
+    triangle_area_weights: np.ndarray,
+    cluster_labels: np.ndarray,
+    cluster_centers: np.ndarray,
+) -> np.ndarray:
+    groups = _cluster_indices(cluster_labels, len(cluster_centers))
+    # Keep NumPy's per-group weight sums: bincount would change pairwise rounding.
+    weight_sums = np.array([triangle_area_weights[indices].sum() for indices in groups])
+    occupied_clusters = np.array([len(indices) > 0 for indices in groups])
+    if np.any(weight_sums[occupied_clusters] == 0):
+        raise ZeroDivisionError("Weights sum to zero, can't be normalized")
+    updated_centers = cluster_centers.copy()
+    for axis in range(3):
+        coordinate_sums = np.bincount(
+            cluster_labels,
+            weights=triangle_centers[:, axis] * triangle_area_weights,
+            minlength=len(cluster_centers),
+        )
+        updated_centers[occupied_clusters, axis] = (
+            coordinate_sums[occupied_clusters] / weight_sums[occupied_clusters]
+        )
+    return updated_centers
+
+
 def fit_surface_spheres(mesh: trimesh.Trimesh, configuration: FitConfig) -> list[Sphere]:
     candidate_points = sample_surface(
         mesh, max(configuration.samples, configuration.count * 4), configuration.seed
@@ -58,16 +83,9 @@ def _partition_cover_triangles(
     ].copy()
     for _ in range(12):
         cluster_labels = cKDTree(cluster_centers).query(triangle_centers)[1]
-        updated_centers = cluster_centers.copy()
-        for cluster_index, indices in enumerate(
-            _cluster_indices(cluster_labels, len(cluster_centers))
-        ):
-            if len(indices):
-                updated_centers[cluster_index] = np.average(
-                    triangle_centers[indices],
-                    axis=0,
-                    weights=triangle_area_weights[indices],
-                )
+        updated_centers = _weighted_cluster_centers(
+            triangle_centers, triangle_area_weights, cluster_labels, cluster_centers
+        )
         if np.allclose(updated_centers, cluster_centers, rtol=0, atol=target_edge_length * 1e-6):
             break
         cluster_centers = updated_centers
