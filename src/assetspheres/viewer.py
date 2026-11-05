@@ -245,6 +245,7 @@ def create_viewer(
             report.pop("triangle_surface_coverage_certified", None)
             report.pop("bounded_solid_coverage_conditional", None)
             report.pop("surface_certification", None)
+            report.pop("surface_repair_certification", None)
             status.content = (
                 "Edited. Saved coverage metrics are now stale. Save JSON to keep changes."
             )

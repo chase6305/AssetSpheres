@@ -86,10 +86,12 @@ class OfflineScene:
         return add
 
 
-@pytest.mark.parametrize("method", ["cover", "slab"])
+@pytest.mark.parametrize("method", ["cover", "slab", "refined-cover"])
 def test_viewer_frames_manual_edit_and_save(monkeypatch, tmp_path, method):
     asset = load_asset(Path(__file__).resolve().parents[1] / "examples" / "two_link.urdf")
     result = fit_asset(asset, FitConfig(method=method, count=4, samples=128))
+    if method == "refined-cover":
+        assert result.reports["arm"]["surface_repair_certification"]
     server = SimpleNamespace(
         gui=OfflineGui(),
         scene=OfflineScene(),
@@ -147,6 +149,7 @@ def test_viewer_frames_manual_edit_and_save(monkeypatch, tmp_path, method):
     assert result.reports["arm"]["quality_metrics_stale"] is True
     assert "triangle_surface_coverage_certified" not in result.reports["arm"]
     assert "bounded_solid_coverage_conditional" not in result.reports["arm"]
+    assert "surface_repair_certification" not in result.reports["arm"]
     assert "quality_metrics_stale" not in result.reports["base"]
     for handle in server.scene.handles.values():
         handle.updated_fields.clear()
