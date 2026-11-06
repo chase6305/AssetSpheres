@@ -1,10 +1,10 @@
 # 验证记录
 
-最新复核（2026-11-05）：主环境 **436 passed**，最低依赖 **363 passed / 42 skipped**，
-Python 3.12 / NumPy 2 / Trimesh 5 环境 **378 passed / 36 skipped**。
+最新复核（2026-11-06）：主环境 **460 passed**，最低依赖 **387 passed / 42 skipped**，
+Python 3.12 / NumPy 2 / Trimesh 5 环境 **402 passed / 36 skipped**。
 仅安装核心依赖的 wheel 通过三种方法的进程拟合、导出和报告回读；
 UR5e/Panda 的参数、导出变换和查看器 HTTP 也已复核。
-详情与计时边界见[启动与预览](startup-and-preview.md)，此前的内存优化见[拟合性能](fitting-performance.md)。
+详情与计时边界见[拟合流水线](fitting-pipeline.md)，此前的[启动与预览](startup-and-preview.md)及[拟合内存](fitting-performance.md)记录单独保留。
 
 以下保留各版本的历史记录，测试数量和环境限制以对应阶段为准。
 
@@ -14,11 +14,11 @@ UR5e/Panda 的参数、导出变换和查看器 HTTP 也已复核。
 
 以下首先保留 v0.1 初始化阶段的记录；该阶段的 socket 权限限制属于历史环境。
 
-## 环境
+### 环境
 
 Python 3.10.0，NumPy 1.26.4，SciPy 1.15.3，trimesh 4.12.2，PyYAML 6.0.3，defusedxml 0.7.1，Viser 1.1.0，pytest 9.1.1。使用仓库内独立虚拟环境，复用宿主已安装依赖。宿主 ROS 的全局 pytest 插件存在版本冲突，因此本地测试通过 `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` 关闭第三方插件自动加载。
 
-## 自动验证
+### 自动验证
 
 - 31 项测试通过，覆盖三种 CPU 算法、球数预算、确定性、全局随机状态隔离、开口 mesh 显式回退和体素网格预算预检。
 - 在开口的细长三角形上，`cover` 对独立生成的 20,000 个表面点均无正间隙。
@@ -28,7 +28,7 @@ Python 3.10.0，NumPy 1.26.4，SciPy 1.15.3，trimesh 4.12.2，PyYAML 6.0.3，de
 - 验证 Lula 适配器的公开调用契约、顶点和索引类型。使用接口替身，未运行实际 Lula。
 - Ruff lint 与格式检查通过；wheel 和源码分发包构建通过。
 
-## 资产验证
+### 资产验证
 
 | 输入 | 参数 | 结果 |
 | --- | --- | --- |
@@ -40,7 +40,7 @@ Python 3.10.0，NumPy 1.26.4，SciPy 1.15.3，trimesh 4.12.2，PyYAML 6.0.3，de
 
 第三方机器人资产及其生成结果没有加入版本控制。运行结果保存在本地 `outputs/` 下，并由 `.gitignore` 排除。
 
-## 尚未验证
+### 尚未验证
 
 - 当前执行环境禁止创建监听 socket，因此未启动 Viser HTTP/WebSocket 服务，也未进行真实浏览器交互验证。离线 GUI 测试不能替代此项检查。
 - 当前解释器没有 Isaac Sim 的原生 `lula`，因此未进行原生球化运行测试。
