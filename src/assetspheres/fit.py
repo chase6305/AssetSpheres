@@ -129,7 +129,7 @@ def _fit_with_method(
 
         spheres, details = slab_spheres(mesh, configuration)
         details["triangle_surface_coverage_certified"] = True
-        details["bounded_solid_coverage_conditional"] = bool(mesh.is_watertight)
+        details["bounded_solid_coverage_conditional"] = _has_closed_triangle_edges(mesh)
         details["solid_coverage_assumption"] = (
             "Input triangle surface is the complete boundary of a bounded solid; "
             "floating-point clipping and outward radius margin, not interval arithmetic."
@@ -172,8 +172,10 @@ def _quality_report(
     surface_samples = sample_surface(mesh, requested.samples, requested.seed + 1)
     surface_gaps = _evaluate_sphere_gaps(surface_samples, spheres, effective.device)
     positive_gaps = np.maximum(surface_gaps, 0)
-    # Volume methods and slab already populate Trimesh's topology cache.
-    if requested.method in {"surface", "cover", "cover-tight", "cover-opt"}:
+    # Slab already checked closure; volume methods populate Trimesh's topology cache.
+    if effective.method == "slab":
+        watertight = details["bounded_solid_coverage_conditional"]
+    elif requested.method in {"surface", "cover", "cover-tight", "cover-opt"}:
         watertight = _has_closed_triangle_edges(mesh)
     else:
         watertight = bool(mesh.is_watertight)

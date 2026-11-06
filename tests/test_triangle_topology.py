@@ -68,8 +68,17 @@ def test_empty_geometry_and_custom_mesh_property_keep_native_behavior():
 
 
 @pytest.mark.parametrize("method", ["surface", "cover", "cover-tight", "cover-opt", "slab"])
-def test_full_reports_preserve_watertight_meaning_after_cleanup(method):
+@pytest.mark.parametrize("kind", ["closed", "open", "reversed", "doubled"])
+def test_full_reports_preserve_watertight_meaning_after_cleanup(method, kind):
     mesh = trimesh.creation.box()
-    mesh.faces[0] = mesh.faces[0, ::-1]
+    if kind == "open":
+        mesh.update_faces(np.arange(len(mesh.faces) - 1))
+    elif kind == "reversed":
+        mesh.faces[0] = mesh.faces[0, ::-1]
+    elif kind == "doubled":
+        mesh.faces = np.vstack((mesh.faces, mesh.faces))
+    expected = bool(mesh.is_watertight)
     _, report = fit_mesh(mesh, FitConfig(method=method, count=4, samples=128))
-    assert report["watertight"] is True
+    assert report["watertight"] is expected
+    if method == "slab":
+        assert report["bounded_solid_coverage_conditional"] is expected
