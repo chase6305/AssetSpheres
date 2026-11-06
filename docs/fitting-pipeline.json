@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "recorded_utc": "2026-11-06T06:03:50.293679+00:00",
+  "recorded_utc": "2026-11-06T06:25:12.776533+00:00",
   "baseline_commit": "83c4df61d95e0c6d469bb8befeae59bb39ae43d2",
   "implementation_commit": "276bc4c76d96a102507631dc5524777d3ee9a804",
   "host": {
@@ -6951,6 +6951,44 @@
           "weak_references_checked": 960,
           "all_collectible": true
         }
+      }
+    },
+    "browser_review": {
+      "ur5e": {
+        "method": "cover",
+        "links": 7,
+        "spheres": 168,
+        "actual_chrome_webgl": true,
+        "frame_model": true,
+        "visibility_changed_scene_pixels": {
+          "Show spheres": 73432,
+          "Show source geometry": 9593
+        },
+        "radius_edit_and_save": true,
+        "other_spheres_and_center_unchanged": true,
+        "stale_metrics_and_certification_removed": true,
+        "javascript_exceptions": [],
+        "all_source_files_unchanged": true,
+        "source_files_checked": 15,
+        "renderer_mode": "Chrome SwiftShader software WebGL"
+      },
+      "panda": {
+        "method": "slab",
+        "links": 8,
+        "spheres": 192,
+        "actual_chrome_webgl": true,
+        "frame_model": true,
+        "visibility_changed_scene_pixels": {
+          "Show spheres": 37886,
+          "Show source geometry": 8445
+        },
+        "radius_edit_and_save": true,
+        "other_spheres_and_center_unchanged": true,
+        "stale_metrics_and_certification_removed": true,
+        "javascript_exceptions": [],
+        "all_source_files_unchanged": true,
+        "source_files_checked": 17,
+        "renderer_mode": "Chrome SwiftShader software WebGL"
       }
     }
   }

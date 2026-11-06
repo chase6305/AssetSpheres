@@ -83,7 +83,9 @@ Python 3.12、NumPy 2、Trimesh 5 环境 **438 passed / 36 skipped**。
 120 组准备对照含 40 组一致的拒绝结果，115 次完整拟合对照相同。
 另对 UR5e、Panda、G1、R1、T1 的 collision/visual 共 215 份 link 几何完成 1,290 次完整拟合对照，
 涵盖 surface/cover/voxel 和三种球预算的 slab；20 批次串行/进程整资产结果一致。
-UR5e/Panda 的 CLI、五种导出、线程/进程结果、GLB 变换及查看器 HTTP 通过复核，已有图示参数保持一致。
+UR5e/Panda 的 CLI、五种导出、线程/进程结果及 GLB 变换通过复核，已有图示参数保持一致。
+真实 Chrome 验证了进程拟合后的取景、显隐、半径编辑和保存；其他球参数保持精确不变，旧质量指标标为失效。
+浏览器使用 SwiftShader 软件 WebGL，这项流程检查不代表 GPU 渲染性能。
 仅安装核心依赖的独立 wheel 也通过四种方法的 spawn 拟合、导出和报告回读。
 线程/进程各 20 次正常及 20 次失败调用后，源网格、纹理、metadata 和属性数组均可回收。
 
