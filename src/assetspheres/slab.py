@@ -11,6 +11,28 @@ from .enclosing import tighten_ball
 from .model import FitConfig, Sphere
 
 
+def _unique_points(points: np.ndarray) -> np.ndarray:
+    """Return the same sorted float64 rows as np.unique with less comparison work."""
+    if len(points) < 1024 or points.dtype != np.float64 or not np.isfinite(points).all():
+        return np.unique(points, axis=0)
+    order = np.lexsort((points[:, 2], points[:, 1], points[:, 0]))
+    keep = np.ones(len(points), dtype=bool)
+    # Bound temporary row gathers independently of the size of a clipped slab.
+    chunk_size = 32768
+    for first in range(1, len(points), chunk_size):
+        last = min(first + chunk_size, len(points))
+        left = points[order[first - 1 : last - 1]]
+        right = points[order[first:last]]
+        different = np.any(left != right, axis=1)
+        different_bits = np.any(left.view(np.uint64) != right.view(np.uint64), axis=1)
+        # Preserve NumPy's representative for equal rows with different bits,
+        # including signed zeros and subnormals on flush-to-zero runtimes.
+        if np.any(different_bits & ~different):
+            return np.unique(points, axis=0)
+        keep[first:last] = different
+    return points[order[keep]]
+
+
 def slab_spheres(mesh: trimesh.Trimesh, config: FitConfig) -> tuple[list[Sphere], dict[str, Any]]:
     """Enclose each nonempty clipped surface slab in one tightened ball.
 
@@ -110,7 +132,7 @@ def slab_spheres(mesh: trimesh.Trimesh, config: FitConfig) -> tuple[list[Sphere]
             first = edge_points[:, :, 0, :][crosses].astype(np.longdouble)
             last = edge_points[:, :, 1, :][crosses].astype(np.longdouble)
             pieces.append(np.asarray(first + fraction[:, None] * (last - first), dtype=np.float64))
-        points = np.unique(np.concatenate(pieces, axis=0), axis=0)
+        points = _unique_points(np.concatenate(pieces, axis=0))
         if not len(points):
             # With positive-width slabs a real intersection has a retained vertex
             # or an edge crossing. Treat a numerical violation as an error, not

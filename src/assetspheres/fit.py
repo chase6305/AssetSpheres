@@ -14,7 +14,7 @@ import numpy as np
 import trimesh
 
 from .asset import Asset
-from .geometry import sample_surface, sphere_gaps
+from .geometry import _has_closed_triangle_edges, sample_surface, sphere_gaps
 from .model import FitConfig, FitResult, Sphere
 from .surface_fit import fit_surface_spheres, fit_triangle_cover
 from .voxel_fit import fit_voxel_spheres
@@ -46,10 +46,12 @@ def _fit_lula_spheres(mesh: trimesh.Trimesh, configuration: FitConfig) -> list[S
 def _prepare_mesh(mesh: trimesh.Trimesh) -> trimesh.Trimesh:
     if not isinstance(mesh, trimesh.Trimesh) or not len(mesh.faces):
         raise ValueError("Expected a nonempty triangle mesh")
-    if not np.all(np.isfinite(mesh.vertices)) or not np.isfinite(mesh.area) or mesh.area <= 0:
+    if not np.all(np.isfinite(mesh.vertices)):
         raise ValueError("Mesh must have finite vertices and positive surface area")
-    # Fitting uses geometry only; retain the source's visuals on the original asset.
+    # Keep source visuals/attributes intact and reuse the copy's area cache in cleanup.
     prepared_mesh = mesh.copy(include_visual=False)
+    if not np.isfinite(prepared_mesh.area) or prepared_mesh.area <= 0:
+        raise ValueError("Mesh must have finite vertices and positive surface area")
     prepared_mesh.update_faces(prepared_mesh.nondegenerate_faces())
     prepared_mesh.remove_unreferenced_vertices()
     if not len(prepared_mesh.faces) or prepared_mesh.area <= 0:
@@ -127,7 +129,7 @@ def _fit_with_method(
 
         spheres, details = slab_spheres(mesh, configuration)
         details["triangle_surface_coverage_certified"] = True
-        details["bounded_solid_coverage_conditional"] = bool(mesh.is_watertight)
+        details["bounded_solid_coverage_conditional"] = _has_closed_triangle_edges(mesh)
         details["solid_coverage_assumption"] = (
             "Input triangle surface is the complete boundary of a bounded solid; "
             "floating-point clipping and outward radius margin, not interval arithmetic."
@@ -170,12 +172,19 @@ def _quality_report(
     surface_samples = sample_surface(mesh, requested.samples, requested.seed + 1)
     surface_gaps = _evaluate_sphere_gaps(surface_samples, spheres, effective.device)
     positive_gaps = np.maximum(surface_gaps, 0)
+    # Slab already checked closure; volume methods populate Trimesh's topology cache.
+    if effective.method == "slab":
+        watertight = details["bounded_solid_coverage_conditional"]
+    elif requested.method in {"surface", "cover", "cover-tight", "cover-opt"}:
+        watertight = _has_closed_triangle_edges(mesh)
+    else:
+        watertight = bool(mesh.is_watertight)
     report = {
         "requested_method": requested.method,
         "effective_method": effective.method,
         "requested_count": requested.count,
         "sphere_count": len(spheres),
-        "watertight": bool(mesh.is_watertight),
+        "watertight": watertight,
         "triangle_count": len(mesh.faces),
         "surface_sample_count": len(surface_samples),
         "surface_coverage": float(np.mean(surface_gaps <= mesh.extents.max() * 1e-9)),

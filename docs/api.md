@@ -105,7 +105,14 @@ for link_name, spheres in parallel_result.links.items():
     print(link_name, len(spheres))
 ```
 
-`link_counts` 只覆盖对应 link 的球数上限；键必须是已加载的 link。`workers=1` 为默认串行执行，线程和进程均保持结果的 link 顺序；小资产不一定因增加 worker 而变快。`executor="process"` 使用 spawn，需要在正常的 `.py` 脚本中调用，并将入口放在 `if __name__ == "__main__":` 下。
+`link_counts` 只覆盖对应 link 的球数上限；键必须是已加载的 link。
+`workers=1` 为默认串行执行，线程和进程均保持结果的 link 顺序；小资产不一定因增加 worker 而变快。
+
+`executor="process"` 使用 spawn，需要在正常的 `.py` 脚本中调用，
+并将入口放在 `if __name__ == "__main__":` 下。
+
+进程模式对普通 Trimesh 只发送顶点、面索引和 metadata，源视觉与自定义属性留在父进程。
+自定义网格子类沿用原对象传输路径。完整生命周期成本与适用范围见[拟合流水线实测](fitting-pipeline.md)。
 
 | 配置 | 默认值 | 作用 |
 | --- | ---: | --- |

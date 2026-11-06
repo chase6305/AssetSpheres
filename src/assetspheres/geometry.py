@@ -1,4 +1,4 @@
-"""Shared sampling and ball-union distances in the input coordinate frame.
+"""Shared triangle topology, sampling and ball-union distances.
 
 These helpers do not select a fitting method or import optional runtimes.
 """
@@ -10,6 +10,31 @@ import trimesh
 from scipy.spatial.distance import cdist
 
 from .model import Sphere
+
+
+def _has_closed_triangle_edges(mesh: trimesh.Trimesh) -> bool:
+    """Match Trimesh's watertight edge-count criterion without computing winding."""
+    if type(mesh) is not trimesh.Trimesh or mesh.is_empty:
+        return bool(mesh.is_watertight)
+    faces = mesh.faces
+    if not len(faces) or faces.dtype.kind not in "iu" or faces.min() < 0 or faces.max() >= 2**32:
+        return bool(mesh.is_watertight)
+    if len(faces) % 2:
+        return False
+    # Two 32-bit indices identify each undirected edge without hash collisions.
+    edge_keys = np.empty((len(faces), 3), dtype=np.uint64)
+    for edge, (first, last) in enumerate(((0, 1), (1, 2), (2, 0))):
+        lower = np.minimum(faces[:, first], faces[:, last]).astype(np.uint64)
+        upper = np.maximum(faces[:, first], faces[:, last]).astype(np.uint64)
+        np.left_shift(lower, 32, out=lower)
+        np.bitwise_or(lower, upper, out=edge_keys[:, edge])
+        del lower, upper
+    edge_keys = edge_keys.ravel()
+    edge_keys.sort()
+    # Pair equality alone would also accept edges repeated four or more times.
+    return bool(
+        np.all(edge_keys[::2] == edge_keys[1::2]) and np.all(edge_keys[1:-1:2] != edge_keys[2::2])
+    )
 
 
 def sample_surface(mesh: trimesh.Trimesh, count: int, seed: int) -> np.ndarray:

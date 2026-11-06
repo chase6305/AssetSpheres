@@ -3,3 +3,4 @@ docs/*cover-opt*.json linguist-generated
 docs/*refined-cover*.json linguist-generated
 docs/fitting-performance.json linguist-generated
 docs/startup-and-preview.json linguist-generated
+docs/fitting-pipeline.json linguist-generated

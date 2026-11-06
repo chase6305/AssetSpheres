@@ -9,24 +9,43 @@ from __future__ import annotations
 import multiprocessing
 from collections.abc import Iterable
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 if TYPE_CHECKING:
+    import numpy as np
     import trimesh
 
     from .model import FitConfig, Sphere
 
+
+class _MeshPayload(NamedTuple):
+    """Process inputs without visuals, custom attributes, or runtime caches."""
+
+    vertices: np.ndarray
+    faces: np.ndarray
+    metadata: dict[str, Any]
+
+
+if TYPE_CHECKING:
     FitTask = tuple[str, trimesh.Trimesh, FitConfig]
+    _WorkerTask = tuple[str, trimesh.Trimesh | _MeshPayload, FitConfig]
     LinkResult = tuple[str, list[Sphere], dict[str, Any]]
 
 
-def _fit_link(task: FitTask) -> LinkResult:
+def _fit_link(task: _WorkerTask) -> LinkResult:
     # Keep this worker at module scope for spawn pickling, and defer imports to
     # avoid an import cycle when fit_asset delegates to fit_links.
     from .fit import fit_mesh
 
     name, mesh, config = task
     try:
+        if isinstance(mesh, _MeshPayload):
+            import trimesh
+
+            # Preserve input order; fit_mesh performs cleanup on its own copy.
+            geometry = trimesh.Trimesh(vertices=mesh.vertices, faces=mesh.faces, process=False)
+            geometry.metadata = mesh.metadata
+            mesh = geometry
         spheres, report = fit_mesh(mesh, config)
     except Exception as exc:
         raise ValueError(f"Link {name!r}: {exc}") from exc
@@ -71,14 +90,25 @@ def fit_links(
         return [_fit_link(task) for task in prepared]
     if any(config.device == "cuda" for _, _, config in prepared):
         raise ValueError("CUDA fitting uses one GPU owner; use workers=1")
+    worker_tasks: Iterable[_WorkerTask] = prepared
     if executor == "thread":
         pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="assetspheres")
     else:
+        import trimesh
+
+        # Keep references until serialization, avoiding a geometry copy in the parent.
+        # Custom mesh subclasses retain their existing worker-side behavior.
+        worker_tasks = [
+            (name, _MeshPayload(mesh.vertices, mesh.faces, mesh.metadata), config)
+            if type(mesh) is trimesh.Trimesh
+            else (name, mesh, config)
+            for name, mesh, config in prepared
+        ]
         pool = ProcessPoolExecutor(
             max_workers=workers, mp_context=multiprocessing.get_context("spawn")
         )
     try:
         # Executor.map yields in input order, independently of completion order.
-        return list(pool.map(_fit_link, prepared))
+        return list(pool.map(_fit_link, worker_tasks))
     finally:
         pool.shutdown(wait=True, cancel_futures=True)
