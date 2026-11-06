@@ -14,7 +14,7 @@ import numpy as np
 import trimesh
 
 from .asset import Asset
-from .geometry import sample_surface, sphere_gaps
+from .geometry import _has_closed_triangle_edges, sample_surface, sphere_gaps
 from .model import FitConfig, FitResult, Sphere
 from .surface_fit import fit_surface_spheres, fit_triangle_cover
 from .voxel_fit import fit_voxel_spheres
@@ -172,12 +172,17 @@ def _quality_report(
     surface_samples = sample_surface(mesh, requested.samples, requested.seed + 1)
     surface_gaps = _evaluate_sphere_gaps(surface_samples, spheres, effective.device)
     positive_gaps = np.maximum(surface_gaps, 0)
+    # Volume methods and slab already populate Trimesh's topology cache.
+    if requested.method in {"surface", "cover", "cover-tight", "cover-opt"}:
+        watertight = _has_closed_triangle_edges(mesh)
+    else:
+        watertight = bool(mesh.is_watertight)
     report = {
         "requested_method": requested.method,
         "effective_method": effective.method,
         "requested_count": requested.count,
         "sphere_count": len(spheres),
-        "watertight": bool(mesh.is_watertight),
+        "watertight": watertight,
         "triangle_count": len(mesh.faces),
         "surface_sample_count": len(surface_samples),
         "surface_coverage": float(np.mean(surface_gaps <= mesh.extents.max() * 1e-9)),
