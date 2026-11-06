@@ -58,6 +58,7 @@ def test_index_range_and_native_fallback_match_trimesh(base):
 def test_empty_geometry_and_custom_mesh_property_keep_native_behavior():
     for vertices, faces in (
         (np.empty((0, 3)), np.zeros((2, 3))),
+        (np.empty((0, 3)), [[0, 1, 2], [0, 1, 2]]),
         (np.eye(3), np.empty((0, 3))),
         (np.empty((0, 3)), np.empty((0, 3))),
     ):

@@ -14,7 +14,7 @@ from .model import Sphere
 
 def _has_closed_triangle_edges(mesh: trimesh.Trimesh) -> bool:
     """Match Trimesh's watertight edge-count criterion without computing winding."""
-    if type(mesh) is not trimesh.Trimesh:
+    if type(mesh) is not trimesh.Trimesh or mesh.is_empty:
         return bool(mesh.is_watertight)
     faces = mesh.faces
     if not len(faces) or faces.dtype.kind not in "iu" or faces.min() < 0 or faces.max() >= 2**32:
