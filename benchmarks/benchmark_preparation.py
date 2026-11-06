@@ -4,7 +4,7 @@ Each call receives a restored input outside the timer. Cold cases start without
 area caches; warm cases preserve a precomputed area cache. Reference and current
 calls alternate, and their complete outputs must match. Allocation peaks are
 measured separately with tracemalloc, not RSS or native runtime memory.
-The previous fit.py imports current shared method implementations.
+The reference package is loaded under a separate name, including its methods.
 """
 
 from __future__ import annotations
@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import gc
 import hashlib
+import importlib
 import importlib.util
 import json
 import os
@@ -104,24 +105,27 @@ def main():
     )
     parser.add_argument("--repeats", type=int, default=9)
     parser.add_argument("--full-fit", action="store_true", help="also compare complete fits")
-    parser.add_argument("--method", choices=("cover", "surface"), default="cover")
+    parser.add_argument("--method", choices=("cover", "surface", "slab"), default="cover")
     parser.add_argument("--count", type=int, default=24)
     parser.add_argument("--samples", type=int, default=6000)
     parser.add_argument("--output", type=Path, default=Path("outputs/benchmark-preparation.json"))
     args = parser.parse_args()
     if args.repeats < 1 or any(level < 0 or level > 7 for level in args.subdivisions or []):
         parser.error("repeats must be positive; subdivisions must be between 0 and 7")
-    if not args.reference.is_file():
-        parser.error("--reference must point to a previous fit.py")
+    if not args.reference.is_file() or not (args.reference.parent / "__init__.py").is_file():
+        parser.error("--reference must point to fit.py inside a previous assetspheres package")
     configuration = FitConfig(
         method=args.method, count=args.count, samples=args.samples, padding=0.003
     )
     spec = importlib.util.spec_from_file_location(
-        "assetspheres._preparation_reference", args.reference
+        "_assetspheres_preparation_reference",
+        args.reference.parent / "__init__.py",
+        submodule_search_locations=[str(args.reference.parent)],
     )
-    reference = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = reference
-    spec.loader.exec_module(reference)
+    reference_package = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = reference_package
+    spec.loader.exec_module(reference_package)
+    reference = importlib.import_module(f"{spec.name}.fit")
     records = {
         "python": platform.python_version(),
         "platform": platform.platform(),
@@ -141,6 +145,10 @@ def main():
             for name, path in (("reference", args.reference), ("optimized", Path(fitting.__file__)))
         },
         "benchmark_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "reference_package_sha256": {
+            path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in sorted(args.reference.parent.glob("*.py"))
+        },
         "shared_sources_sha256": {
             path.name: hashlib.sha256(path.read_bytes()).hexdigest()
             for path in sorted(Path(fitting.__file__).parent.glob("*.py"))

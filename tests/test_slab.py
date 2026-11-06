@@ -1,10 +1,58 @@
+import json
+
 import numpy as np
 import pytest
 import trimesh
 
+import assetspheres.slab as slab
 from assetspheres import FitConfig
 from assetspheres.fit import sample_surface, sphere_gaps
 from assetspheres.slab import slab_spheres
+
+
+@pytest.mark.parametrize("size", [0, 100, 1024, 32769, 65538])
+@pytest.mark.parametrize("kind", ["duplicates", "signed-zero", "subnormal", "nonfinite"])
+def test_unique_points_preserves_sorted_rows_and_representative_bits(size, kind):
+    rng = np.random.default_rng(110651)
+    points = rng.normal(size=(size, 3))
+    if kind == "duplicates" and size:
+        points = points[rng.integers(size, size=size)]
+    elif kind == "signed-zero":
+        points[:, 1] = 0.0
+        opposite = points.copy()
+        opposite[:, 1] = -0.0
+        points = np.vstack((points, opposite))
+        rng.shuffle(points)
+    elif kind == "subnormal":
+        points *= 1e-310
+    elif kind == "nonfinite":
+        points[::7, 0] = np.nan
+        points[::11, 1] = np.inf
+    original = points.tobytes()
+    expected = np.unique(points, axis=0)
+    actual = slab._unique_points(points)
+    assert actual.shape == expected.shape
+    assert actual.dtype == expected.dtype
+    assert actual.tobytes() == expected.tobytes()
+    assert points.tobytes() == original
+
+
+def test_slab_deduplication_preserves_complete_result(monkeypatch):
+    mesh = trimesh.creation.icosphere(subdivisions=4, radius=0.1)
+    configuration = config(count=4)
+    actual_spheres, actual_details = slab_spheres(mesh, configuration)
+    monkeypatch.setattr(slab, "_unique_points", lambda points: np.unique(points, axis=0))
+    expected_spheres, expected_details = slab_spheres(mesh, configuration)
+
+    # JSON also distinguishes signed zeros that ordinary float equality hides.
+    def encoded(spheres, details):
+        return json.dumps(
+            {"spheres": [sphere.to_dict() for sphere in spheres], "details": details},
+            sort_keys=True,
+            allow_nan=False,
+        )
+
+    assert encoded(actual_spheres, actual_details) == encoded(expected_spheres, expected_details)
 
 
 def config(count=8, padding=0.0):
