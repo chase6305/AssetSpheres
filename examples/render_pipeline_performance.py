@@ -33,7 +33,8 @@ def main():
     parser.add_argument("--output", type=Path, default=ROOT / "docs/fitting-pipeline.png")
     args = parser.parse_args()
     data = json.loads((ROOT / "docs/fitting-pipeline.json").read_text())
-    figure, axes = plt.subplots(1, 3, figsize=(15, 4.8))
+    figure, panels = plt.subplots(2, 2, figsize=(12, 8))
+    axes = panels.ravel()
     rows = [
         data["preparation_cover"]["cases"]["ico7/cold/fit"],
         data["preparation_surface"]["cases"]["ico7/cold/fit"],
@@ -55,14 +56,23 @@ def main():
         "Complete surface fit, budget 24",
         "Elapsed time (ms)",
     )
+    rows = [data["preparation_slab"]["cases"][f"ico{level}/cold/fit"] for level in (6, 7)]
+    draw_panel(
+        axes[2],
+        ["81,920 triangles", "327,680 triangles"],
+        [row["reference"]["median_s"] * 1000 for row in rows],
+        [row["optimized"]["median_s"] * 1000 for row in rows],
+        "Complete slab fit, budget 24",
+        "Elapsed time (ms)",
+    )
     cases = data["process_fits"]["synthetic"]["cases"]
     rows = [cases[label] for label in ("bare", "texture512", "texture4096")]
     draw_panel(
-        axes[2],
+        axes[3],
         ["No texture", "512px PBR", "4096px PBR"],
         [row["reference"]["median_s"] * 1000 for row in rows],
         [row["optimized"]["median_s"] * 1000 for row in rows],
-        "Four complete jobs, two spawn workers",
+        "Four cover jobs, two spawn workers",
         "Elapsed time (ms)",
     )
     figure.suptitle("AssetSpheres: measured fitting-pipeline costs", fontsize=16)
@@ -70,20 +80,21 @@ def main():
         [plt.Rectangle((0, 0), 1, 1, color=color) for color in COLORS],
         ["Before (83c4df6)", "After"],
         loc="upper center",
-        bbox_to_anchor=(0.5, 0.93),
+        bbox_to_anchor=(0.5, 0.95),
         ncol=2,
         frameon=False,
     )
     figure.text(
         0.5,
         0.02,
-        "11 alternating pairs; nonexclusive host. Mesh inputs have no precomputed area cache. "
-        "Allocation peaks are not RSS. Loading/export excluded.",
+        "11 alternating pairs; budget 24, 6,000 samples; nonexclusive host.\n"
+        "Mesh inputs have no precomputed area cache. Allocation peaks are not RSS. "
+        "Loading/export excluded.",
         ha="center",
         fontsize=9,
         color="#526477",
     )
-    figure.tight_layout(rect=(0, 0.06, 1, 0.86), w_pad=2)
+    figure.tight_layout(rect=(0, 0.07, 1, 0.9), w_pad=2, h_pad=3)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     figure.savefig(args.output, dpi=160, bbox_inches="tight", facecolor="white")
     plt.close(figure)
