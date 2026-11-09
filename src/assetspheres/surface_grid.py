@@ -69,15 +69,21 @@ def subdivide_surface_grid(
             )
         selected = current[needs_subdivision]
         midpoints = (selected + selected[:, [1, 2, 0]]) * 0.5
-        children = np.stack(
-            [
-                np.stack((selected[:, 0], midpoints[:, 0], midpoints[:, 2]), axis=1),
-                np.stack((midpoints[:, 0], selected[:, 1], midpoints[:, 1]), axis=1),
-                np.stack((midpoints[:, 2], midpoints[:, 1], selected[:, 2]), axis=1),
-                midpoints,
-            ],
-            axis=1,
-        ).reshape(-1, 3, 3)
+        # Fill the final child buffer directly; nested stacks retain four extra
+        # triangle arrays while allocating the same-sized combined output.
+        children = np.empty((len(selected), 4, 3, 3), dtype=selected.dtype)
+        children[:, 0, 0] = selected[:, 0]
+        children[:, 0, 1] = midpoints[:, 0]
+        children[:, 0, 2] = midpoints[:, 2]
+        children[:, 1, 0] = midpoints[:, 0]
+        children[:, 1, 1] = selected[:, 1]
+        children[:, 1, 2] = midpoints[:, 1]
+        children[:, 2, 0] = midpoints[:, 2]
+        children[:, 2, 1] = midpoints[:, 1]
+        children[:, 2, 2] = selected[:, 2]
+        children[:, 3] = midpoints
+        children = children.reshape(-1, 3, 3)
+        del selected, midpoints
         pending.extend(
             (children[first : first + _TRIANGLE_BATCH_SIZE], depth + 1)
             for first in range(0, len(children), _TRIANGLE_BATCH_SIZE)

@@ -53,3 +53,22 @@ def test_excessive_subdivision_depth_has_an_actionable_error(monkeypatch):
     monkeypatch.setattr(surface_grid, "_MAX_SUBDIVISIONS", 1)
     with pytest.raises(ValueError, match="subdivision rounds.*voxel-size"):
         surface_grid.subdivide_surface_grid(trimesh.creation.box(), 0.01, 2_000_000)
+
+
+@pytest.mark.parametrize("batch_size", [1, 7, 8192])
+def test_mixed_subdivision_depths_preserve_surface_and_fill(monkeypatch, batch_size):
+    generator = np.random.default_rng(831)
+    # Unequal components exercise completed and subdivided triangles in one batch.
+    components = []
+    for size in (0.005, 0.05, 0.3):
+        mesh = trimesh.creation.box(extents=(size, size * 0.7, size * 0.3))
+        mesh.apply_transform(trimesh.transformations.euler_matrix(*generator.uniform(size=3)))
+        mesh.apply_translation(generator.uniform(-0.2, 0.2, size=3))
+        components.append(mesh)
+    mesh = trimesh.util.concatenate(components)
+    monkeypatch.setattr(surface_grid, "_TRIANGLE_BATCH_SIZE", batch_size)
+    expected = reference_surface_grid(mesh, 0.025)
+    actual = surface_grid.subdivide_surface_grid(mesh, 0.025, 2_000_000)
+    np.testing.assert_array_equal(actual.transform, expected.transform)
+    np.testing.assert_array_equal(actual.matrix, expected.matrix)
+    np.testing.assert_array_equal(actual.fill().matrix, expected.fill().matrix)
