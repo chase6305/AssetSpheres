@@ -1,11 +1,13 @@
 # 拟合计算的临时工作区
 
-本轮针对点球距离、体素距离重建、体素坐标转换和三角表面修补的临时数组，复用或分块分配工作区。
+本轮针对点球距离、表面采样、体素距离重建、体素坐标转换和三角表面修补的临时数组，复用或分块分配工作区。
 拟合配置、球参数、报告格式、采样种子和覆盖含义沿用既有约定，没有新增依赖。
 
 - **点球距离。** 保留每块最多 2,048 点、128 球，首块由 SciPy 决定浮点类型，随后复用其连续缓冲。
   点和球两个维度的短尾块都取缓冲前缀再重塑，避免不连续 `out`。
   每块仍减去半径、取最近球，并写回 float64 输出；保留 longdouble 输入的扩展精度距离和原舍入顺序。
+- **表面采样。** 普通原生 float64 ndarray 复用两个插值向量，保持减法、乘法及两次顶点相加的顺序和左右操作数。
+  RNG、采样批次和偏移反射不变；其他 dtype 与数组子类保留原表达式及类型提升。
 - **体素距离。** SciPy 的最近背景格索引保持原样；平方距离按原轴序累加。
   offset 缓冲仅容纳最多 32,768 个格，或一个首轴切片（取较大者）；每轴还需长度随该轴增长的坐标向量。
   输出和最近格索引仍随整个网格增长；单切片已占满首轴的输入没有这项内存收益。
@@ -20,7 +22,7 @@
 
 ## 实测口径
 
-基线 `15ecb68`，实现 `bf4c5d8`。下表为 11 次交替配对的 warm call，
+基线 `15ecb68`，实现 `af986a6`。下表为 11 次交替配对的 warm call，
 导入和输入创建不计时；计时与内存测量分开。
 所有计时在同一台共享主机上完成，数值库单线程。分配峰值用 tracemalloc，MB 为十进制，
 不代表 RSS、第三方原生内存、显存或整个程序的上限。不能把阶段收益外推到所有完整拟合。
@@ -28,12 +30,13 @@
 
 | 隔离对照范围 / 输入 | CPU 时长：之前 → 之后 | 分配峰值：之前 → 之后 |
 | --- | ---: | ---: |
-| 点球距离，6,000 点 × 128 球 | 1.66 → 1.66 ms | 4.25 → 2.23 MB |
-| 仅替换距离函数的完整 cover，128 球、6,000 样本 | 7.84 → 7.79 ms | 4.61 → 2.60 MB |
-| 距离重建，114³ 格 | 84.52 → 85.72 ms | 41.62 → 29.97 MB |
-| 仅替换体素准备的完整 voxel，cube112、32 球 | 587.72 → 588.31 ms | 83.71 → 71.40 MB |
-| 仅替换体素准备的完整 refined，cube112、32 球 | 735.19 → 730.87 ms | 83.71 → 74.09 MB |
-| 完整表面修补，327,680 面、1 个已包络球 | 48.47 → 46.67 ms | 19.66 → 7.93 MB |
+| 点球距离，6,000 点 × 128 球 | 1.66 → 1.65 ms | 4.25 → 2.23 MB |
+| 仅替换距离函数的完整 cover，128 球、6,000 样本 | 8.25 → 8.08 ms | 4.61 → 2.60 MB |
+| 表面采样，100,000 点 | 11.39 → 10.07 ms | 8.54 → 7.82 MB |
+| 距离重建，114³ 格 | 84.17 → 86.03 ms | 41.62 → 29.97 MB |
+| 仅替换体素准备的完整 voxel，cube112、32 球 | 588.22 → 585.61 ms | 83.71 → 71.40 MB |
+| 仅替换体素准备的完整 refined，cube112、32 球 | 743.20 → 742.44 ms | 83.71 → 74.09 MB |
+| 完整表面修补，327,680 面、1 个已包络球 | 48.74 → 47.11 ms | 19.66 → 7.93 MB |
 
 cube112 有 1,442,897 个占据点，完整 voxel 调用峰值实际减少约 12.31 MB；
 复用点缓冲的收益仍受其他阶段限制。表面修补一行只衡量修补阶段，初始化不在测量内。
@@ -41,7 +44,8 @@ cube112 有 1,442,897 个占据点，完整 voxel 调用峰值实际减少约 12
 
 小输入及其他瓶颈案例也保留在原始记录中：128 点 × 16 球的距离峰值约 0.037 MB，
 单切片 1 × 256 × 256 距离重建约 1.97 MB，cube24 完整拟合约 8.88 MB，均基本不变。
-100,000 样本的完整 surface / cover 峰值仍约 8.76 MB，采样阶段会主导峰值。
+100,000 样本的完整 surface / cover 峰值约 8.04 / 8.04 MB，采样阶段仍主导峰值。
+距离函数的隔离对照在两侧都使用更新后的采样实现，不能用该行衡量采样改动。
 耗时总体接近，包含略慢的案例；隔离完整拟合的旧路径还包括 patch 上下文开销，
 微小时间或几 KB 的差别不作为算法收益。
 
@@ -54,14 +58,14 @@ UR5e collision 对照使用独立旧包及其全部拟合实现：每 link 24 �
 
 | link / 方法 / 分辨率 | CPU 时长：之前 → 之后 | 分配峰值：之前 → 之后 |
 | --- | ---: | ---: |
-| shoulder / voxel / 48 | 237.82 → 239.09 ms | 13.91 → 13.91 MB |
-| shoulder / refined-cover / 48 | 327.54 → 323.29 ms | 13.91 → 13.91 MB |
-| shoulder / voxel / 96 | 929.65 → 930.70 ms | 41.81 → 35.07 MB |
-| shoulder / refined-cover / 96 | 1,058.88 → 1,053.46 ms | 47.22 → 39.02 MB |
-| forearm / voxel / 48 | 161.17 → 160.75 ms | 12.60 → 12.60 MB |
-| forearm / refined-cover / 48 | 241.22 → 241.16 ms | 12.60 → 12.60 MB |
-| forearm / voxel / 96 | 629.44 → 618.51 ms | 14.78 → 14.78 MB |
-| forearm / refined-cover / 96 | 703.38 → 704.36 ms | 14.78 → 14.78 MB |
+| shoulder / voxel / 48 | 236.65 → 237.02 ms | 13.91 → 13.91 MB |
+| shoulder / refined-cover / 48 | 320.10 → 320.49 ms | 13.91 → 13.91 MB |
+| shoulder / voxel / 96 | 924.61 → 921.63 ms | 41.81 → 35.07 MB |
+| shoulder / refined-cover / 96 | 1,051.88 → 1,038.23 ms | 47.22 → 39.02 MB |
+| forearm / voxel / 48 | 159.52 → 160.00 ms | 12.60 → 12.60 MB |
+| forearm / refined-cover / 48 | 240.19 → 239.01 ms | 12.60 → 12.59 MB |
+| forearm / voxel / 96 | 615.53 → 612.64 ms | 14.78 → 14.78 MB |
+| forearm / refined-cover / 96 | 698.44 → 699.09 ms | 14.78 → 14.78 MB |
 
 res96 的 shoulder 有 818,583 个格、632,965 个占据点；forearm 有 51,313 个格、
 35,265 个占据点。后者即使触发大点云缓冲复用，完整峰值也基本不变，其他阶段仍可主导分配。
@@ -69,13 +73,13 @@ res96 的 shoulder 有 818,583 个格、632,965 个占据点；forearm 有 51,31
 
 Panda 的开口 visual `panda_link6` 有 59,934 顶点、21,619 面。
 以同一 visual 的固定 24 球 cover 结果初始化，11 次配对的**完整修补阶段**为
-8.74 → 8.06 ms、7.19 → 3.28 MB；初始化在测量外。
+8.66 → 8.02 ms、7.19 → 3.28 MB；初始化在测量外。
 源资产和许可见[第三方资产说明](third-party-assets.md)，仓库不附带其 URDF 或 mesh。
 
 ## 验证
 
-冻结源码在主环境为 **652 passed**，最低依赖为 **579 passed / 42 skipped**，
-Python 3.12 / NumPy 2 / Trimesh 5 为 **580 passed / 41 skipped**。
+冻结源码在主环境为 **659 passed**，最低依赖为 **586 passed / 42 skipped**，
+Python 3.12 / NumPy 2 / Trimesh 5 为 **587 passed / 41 skipped**。
 最低依赖保留两条原有 SLSQP 路径的试探步裁剪警告。
 新增检查涵盖分块边界、短尾、只读与非连续数组、longdouble、带符号零、次正规数、
 极端坐标，以及完整球参数、报告和源 mesh 不变的对照。
@@ -118,6 +122,9 @@ python benchmarks/benchmark_voxel_memory.py --reference "$baseline/voxel_fit.py"
 python benchmarks/benchmark_repair_workspace.py --baseline "$baseline/surface_cover.py" \
   --repeats 11 --output outputs/repair-workspace.json
 
+python benchmarks/benchmark_surface_sampling.py --baseline "$baseline/geometry.py" \
+  --repeats 11 --output outputs/sampling-workspace.json
+
 python benchmarks/benchmark_robot_workspaces.py --reference "$baseline" \
   --input /path/to/ur5e/robot.urdf --geometry collision \
   --link shoulder_link --link forearm_link --resolution 48 --resolution 96 \
@@ -132,7 +139,7 @@ python benchmarks/validate_workspaces.py --reference "$baseline" \
   --input /path/to/robot.urdf --geometry collision --output outputs/workspace-audit.json
 ```
 
-前四个脚本只替换对应的基线模块或函数，以隔离单项改动；其他步骤使用当前实现。
+前五个脚本只替换对应的基线模块或函数，以隔离单项改动；其他步骤使用当前实现。
 机器人脚本加载独立旧包的全部实现，评价完整组合或指定的独立修补阶段。
 `validate_workspaces.py` 运行有界正确性审计，不做性能测量。
 孤立基准的峰值差不能相加。
