@@ -5540,6 +5540,139 @@
           "report_matches_saved_result": true
         }
       ]
+    },
+    "installed_optimized_branch_checks": {
+      "completed": true,
+      "script_sha256": "377f4d5d3c8381fa3ad26b2e013cf8603ca9a8eb9e49f311660904fcf8b3910d",
+      "raw_sha256": "891b7271d4a6245077950dd05a9cdd4481eca01eb4fee2357389c6682fee7b24",
+      "record": {
+        "package": "/tmp/assetspheres-20261112-wheel/lib/python3.12/site-packages/assetspheres",
+        "numpy": "2.5.4",
+        "trimesh": "5.2.0",
+        "scipy": "1.18.1",
+        "cases": [
+          {
+            "case": "large-occupied-cloud",
+            "configuration": {
+              "count": 8,
+              "samples": 256,
+              "refine_samples": 128,
+              "iterations": 10,
+              "method": "voxel",
+              "resolution": 40
+            },
+            "mesh_sha256": "c2beea8f652894f302871f10bdb32670de89b2ff1d04b5c088e95716afbbdd74",
+            "exact_output_sha256": "fad62e191fe42c743cb06188eddf11156755f0d7fe0e460970fd3da3289fe2db",
+            "report": {
+              "requested_method": "voxel",
+              "effective_method": "voxel",
+              "requested_count": 8,
+              "sphere_count": 8,
+              "watertight": true,
+              "triangle_count": 12,
+              "surface_sample_count": 256,
+              "surface_coverage": 0.09375,
+              "surface_gap_mean_m": 0.025785130532544324,
+              "surface_gap_p95_m": 0.06020197028462329,
+              "surface_gap_max_m": 0.09896728889638962,
+              "sphere_volume_sum_m3": 0.04192155963165783,
+              "warnings": [
+                "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+              ],
+              "voxel_size_m": 0.0075,
+              "voxel_count": 68921,
+              "candidate_count": 768,
+              "greedy_device": "cpu",
+              "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+              "voxel_center_coverage": 0.6338416447817066
+            }
+          },
+          {
+            "case": "large-repair-vertices",
+            "configuration": {
+              "count": 8,
+              "samples": 256,
+              "refine_samples": 128,
+              "iterations": 10,
+              "method": "refined-cover",
+              "resolution": 24
+            },
+            "mesh_sha256": "2158686074f17d9668f723120eaac53e0afc6f05584efb85af224aa16845dceb",
+            "exact_output_sha256": "fcdd5dd529b145faf335ff4158eeae862a9cd871d1a605327e76104522057ca1",
+            "report": {
+              "requested_method": "refined-cover",
+              "effective_method": "refined-cover",
+              "requested_count": 8,
+              "sphere_count": 8,
+              "watertight": true,
+              "triangle_count": 81920,
+              "surface_sample_count": 256,
+              "surface_coverage": 1.0,
+              "surface_gap_mean_m": 0.0,
+              "surface_gap_p95_m": 0.0,
+              "surface_gap_max_m": 0.0,
+              "sphere_volume_sum_m3": 0.007823389961533624,
+              "warnings": [
+                "Triangle leaves are enclosed after repair; solid interiors are not certified",
+                "Voxel spheres approximate volume and can leave gaps; inspect coverage"
+              ],
+              "voxel_size_m": 0.008333333333333333,
+              "voxel_count": 8529,
+              "candidate_count": 768,
+              "greedy_device": "cpu",
+              "radius_model": "voxel EDT minus half a voxel; approximate, not exact mesh SDF",
+              "optimizer": "Adam, sampled coverage/exterior classification; independent implementation",
+              "optimization_device": "cpu",
+              "optimization_iterations": 10,
+              "optimization_training_counts": {
+                "surface": 128,
+                "interior": 128,
+                "exterior": 128
+              },
+              "optimization_initial_loss": 0.00012290976011101277,
+              "optimization_final_loss": 5.836890917313811e-05,
+              "optimization_outside_weight": 10.0,
+              "optimization_reference": "filled voxel grid, not exact mesh SDF",
+              "optimization_positive_margin_m": 0.00125,
+              "surface_repair_input_triangles": 81920,
+              "surface_repair_visited_triangles": 81920,
+              "surface_repair_triangle_splits": 0,
+              "surface_repair_leaf_triangles": 81920,
+              "surface_repair_maximum_depth": 0,
+              "surface_repair_coarse_leaves": 0,
+              "surface_repair_grown_spheres": 0,
+              "surface_repair_maximum_radius_increase_m": 0.0,
+              "surface_repair_roundoff_margin_m": 1.0712028175063152e-14,
+              "surface_repair_certification": "Every triangle leaf is enclosed by one ball, with a floating-point subdivision/distance margin; not interval arithmetic or solid-volume certification.",
+              "triangle_surface_coverage_certified": true,
+              "surface_repair_device": "cpu",
+              "optimization_scope": "before user padding and surface repair",
+              "voxel_center_coverage": 0.9991792707234143
+            }
+          }
+        ],
+        "consuming_calls": [
+          {
+            "points": 68921,
+            "shares_memory": true,
+            "column_major": true,
+            "dtype": "float64"
+          },
+          {
+            "points": 8529,
+            "shares_memory": false,
+            "column_major": true,
+            "dtype": "float64"
+          }
+        ],
+        "normalization_calls": [
+          {
+            "vertices": 40962,
+            "large_branch": true
+          }
+        ],
+        "scope": "two bounded installed-core-package branch checks; no performance claims"
+      }
     }
   },
   "robot_comparisons": {
