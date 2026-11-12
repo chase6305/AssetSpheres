@@ -29,7 +29,14 @@ def _normalize_repair_geometry(
         # Subtraction is monotone: coordinate bounds contain the same largest
         # absolute translated value as the full vertex array, including rounding.
         relative_vertices = (
-            np.asarray([vertices.min(axis=0), vertices.max(axis=0)], dtype=np.longdouble) - origin
+            np.asarray(
+                [
+                    [vertices[:, axis].min() for axis in range(3)],
+                    [vertices[:, axis].max() for axis in range(3)],
+                ],
+                dtype=np.longdouble,
+            )
+            - origin
         )
     relative_centers = centers.astype(np.longdouble) - origin
     scale = max(
