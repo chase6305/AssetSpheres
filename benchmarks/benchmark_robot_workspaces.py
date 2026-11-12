@@ -3,11 +3,12 @@
 Load URDF geometry before timing; retain the same immutable input for both
 packages. Every warm-up, timed and allocation-measured output must have identical
 sphere parameters and reports. Allocation peaks use tracemalloc, not process RSS
-or native runtime memory. Each link/resolution also receives one untimed current
+or native runtime memory. Volumetric scenarios also receive one untimed current
 grid preparation for actual lattice dimensions and occupied-cell counts.
 
 Use --repair-only to freeze one current refined initialization per link and
 resolution, then compare complete old/new repair calls on those same spheres.
+Select --repair-initial-method cover for surface initialization on open meshes.
 """
 
 from __future__ import annotations
@@ -151,12 +152,15 @@ def main():
     parser.add_argument("--method", choices=("voxel", "refined-cover"), action="append")
     parser.add_argument("--repeats", type=int, default=5)
     parser.add_argument("--repair-only", action="store_true")
+    parser.add_argument("--repair-initial-method", choices=("refined", "cover"), default="refined")
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
     if args.repeats < 1 or any(value < 4 for value in args.resolution or []):
         parser.error("repeats must be positive; resolutions must be at least four")
     if args.repair_only and args.method:
         parser.error("--method selects complete fits; omit it with --repair-only")
+    if not args.repair_only and args.repair_initial_method != "refined":
+        parser.error("--repair-initial-method cover requires --repair-only")
     reference_root = args.reference.expanduser().resolve()
     current_root = Path(assetspheres.__file__).resolve().parent
     if not (reference_root / "__init__.py").is_file():
@@ -192,7 +196,8 @@ def main():
         "source_after_sha256": source_after,
         "reference_scope": "independent previous package, including every fitting helper",
         "timing_scope": (
-            "complete warm repair calls after one current refined initialization"
+            f"complete warm repair calls after one current {args.repair_initial_method} "
+            "initialization on the same link mesh; excludes initialization and complete fits"
             if args.repair_only
             else "complete warm fit_mesh calls on preloaded link geometry"
         ),
@@ -223,10 +228,17 @@ def main():
         }
         for resolution in dict.fromkeys(args.resolution or [48]):
             configuration = FitConfig(count=24, resolution=resolution, padding=0.003)
-            grid = grid_statistics(mesh, configuration)
+            grid = (
+                grid_statistics(mesh, configuration)
+                if not args.repair_only or args.repair_initial_method == "refined"
+                else None
+            )
             if args.repair_only:
                 initialization_config = FitConfig(
-                    method="refined", count=24, resolution=resolution, padding=0.003
+                    method=args.repair_initial_method,
+                    count=24,
+                    resolution=resolution,
+                    padding=0.003,
                 )
                 started = time.perf_counter()
                 initial_spheres, initial_report = fit_mesh(mesh, initialization_config)
@@ -249,11 +261,13 @@ def main():
                 )
                 assert [sphere.to_dict() for sphere in initial_spheres] == input_spheres
                 assert [sphere.to_dict() for sphere in previous_spheres] == input_spheres
-                assert initial_report["voxel_count"] == grid["occupied_count"]
+                if args.repair_initial_method == "refined":
+                    assert initial_report["voxel_count"] == grid["occupied_count"]
                 row.update(
                     mesh=mesh_record,
                     grid=grid,
                     initialization={
+                        "method": args.repair_initial_method,
                         "configuration": asdict(initialization_config),
                         "seconds_excluded_from_measurements": initialization_seconds,
                         "spheres": input_spheres,
