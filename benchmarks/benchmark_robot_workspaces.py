@@ -151,12 +151,15 @@ def main():
     parser.add_argument("--resolution", type=int, action="append", help="Default: 48; repeatable")
     parser.add_argument("--method", choices=("voxel", "refined-cover"), action="append")
     parser.add_argument("--repeats", type=int, default=5)
+    parser.add_argument("--samples", type=int, default=6000, help="Evaluation/coverage samples")
     parser.add_argument("--repair-only", action="store_true")
     parser.add_argument("--repair-initial-method", choices=("refined", "cover"), default="refined")
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
     if args.repeats < 1 or any(value < 4 for value in args.resolution or []):
         parser.error("repeats must be positive; resolutions must be at least four")
+    if args.samples < 32:
+        parser.error("--samples must be at least 32")
     if args.repair_only and args.method:
         parser.error("--method selects complete fits; omit it with --repair-only")
     if not args.repair_only and args.repair_initial_method != "refined":
@@ -227,7 +230,9 @@ def main():
             "sha256": input_mesh_hash,
         }
         for resolution in dict.fromkeys(args.resolution or [48]):
-            configuration = FitConfig(count=24, resolution=resolution, padding=0.003)
+            configuration = FitConfig(
+                count=24, resolution=resolution, padding=0.003, samples=args.samples
+            )
             grid = (
                 grid_statistics(mesh, configuration)
                 if not args.repair_only or args.repair_initial_method == "refined"
@@ -239,6 +244,7 @@ def main():
                     count=24,
                     resolution=resolution,
                     padding=0.003,
+                    samples=args.samples,
                 )
                 started = time.perf_counter()
                 initial_spheres, initial_report = fit_mesh(mesh, initialization_config)
@@ -290,7 +296,11 @@ def main():
             else:
                 for method in dict.fromkeys(args.method or ["voxel", "refined-cover"]):
                     configuration = FitConfig(
-                        method=method, count=24, resolution=resolution, padding=0.003
+                        method=method,
+                        count=24,
+                        resolution=resolution,
+                        padding=0.003,
+                        samples=args.samples,
                     )
                     previous_configuration = reference.FitConfig(**asdict(configuration))
                     row = paired(

@@ -7,8 +7,25 @@ import math
 import numpy as np
 import trimesh
 
-_TRIANGLE_BATCH_SIZE = 8192
+_TRIANGLE_BATCH_SIZE = 4096
 _MAX_SUBDIVISIONS = 10
+
+
+def _midpoint_children(selected: np.ndarray) -> np.ndarray:
+    """Build ordered child triangles directly into one final buffer."""
+    midpoints = (selected + selected[:, [1, 2, 0]]) * 0.5
+    children = np.empty((len(selected), 4, 3, 3), dtype=selected.dtype)
+    children[:, 0, 0] = selected[:, 0]
+    children[:, 0, 1] = midpoints[:, 0]
+    children[:, 0, 2] = midpoints[:, 2]
+    children[:, 1, 0] = midpoints[:, 0]
+    children[:, 1, 1] = selected[:, 1]
+    children[:, 1, 2] = midpoints[:, 1]
+    children[:, 2, 0] = midpoints[:, 2]
+    children[:, 2, 1] = midpoints[:, 1]
+    children[:, 2, 2] = selected[:, 2]
+    children[:, 3] = midpoints
+    return children.reshape(-1, 3, 3)
 
 
 def subdivide_surface_grid(
@@ -23,10 +40,12 @@ def subdivide_surface_grid(
     identical, and boolean occupancy removes duplicate hits. No subdivided mesh
     connectivity or original-face index array is retained.
 
-    Work proceeds depth first in bounded triangle batches. The input triangles
-    and final boolean grid are linear storage; temporary triangle arrays depend
-    on the batch size and the fixed subdivision-depth limit, rather than the
-    total number of subdivided faces. The grid is a surface shell, NOT a solid.
+    Work proceeds depth first in bounded triangle batches. Default child batches
+    have independent storage, so completed siblings no longer retain each other.
+    The input triangles and final boolean grid are linear storage; temporary
+    triangle arrays depend on the batch size and the fixed subdivision-depth
+    limit, rather than the total number of subdivided faces. The grid is a
+    surface shell, NOT a solid.
     Callers must validate the input mesh, pitch and coordinate precision first.
     """
     with np.errstate(over="ignore", invalid="ignore"):
@@ -60,34 +79,43 @@ def subdivide_surface_grid(
             hits = np.round(completed.reshape(-1, 3) / voxel_size_m).astype(np.int64)
             hits -= origin_index
             occupied_cells[tuple(hits.T)] = True
+            del hits
+        del completed
         if not has_subdivision:
+            del current, needs_subdivision
             continue
         if depth >= _MAX_SUBDIVISIONS:
             raise ValueError(
                 f"Surface voxelization exceeds {_MAX_SUBDIVISIONS} subdivision rounds; "
                 "increase --voxel-size or use --voxelizer open3d/warp"
             )
-        selected = current[needs_subdivision]
-        midpoints = (selected + selected[:, [1, 2, 0]]) * 0.5
-        # Fill the final child buffer directly; nested stacks retain four extra
-        # triangle arrays while allocating the same-sized combined output.
-        children = np.empty((len(selected), 4, 3, 3), dtype=selected.dtype)
-        children[:, 0, 0] = selected[:, 0]
-        children[:, 0, 1] = midpoints[:, 0]
-        children[:, 0, 2] = midpoints[:, 2]
-        children[:, 1, 0] = midpoints[:, 0]
-        children[:, 1, 1] = selected[:, 1]
-        children[:, 1, 2] = midpoints[:, 1]
-        children[:, 2, 0] = midpoints[:, 2]
-        children[:, 2, 1] = midpoints[:, 1]
-        children[:, 2, 2] = selected[:, 2]
-        children[:, 3] = midpoints
-        children = children.reshape(-1, 3, 3)
-        del selected, midpoints
-        pending.extend(
-            (children[first : first + _TRIANGLE_BATCH_SIZE], depth + 1)
-            for first in range(0, len(children), _TRIANGLE_BATCH_SIZE)
+        selected = (
+            current
+            if type(current) is np.ndarray
+            and current.dtype == np.dtype(np.float64)
+            and current.flags.c_contiguous
+            and bool(needs_subdivision.all())
+            else current[needs_subdivision]
         )
+        del current, needs_subdivision
+        if _TRIANGLE_BATCH_SIZE % 4:
+            # Retain the old chunk boundaries for widths not divisible by four.
+            children = _midpoint_children(selected)
+            pending.extend(
+                (children[first : first + _TRIANGLE_BATCH_SIZE], depth + 1)
+                for first in range(0, len(children), _TRIANGLE_BATCH_SIZE)
+            )
+            del children
+        else:
+            # Four children per parent: these boundaries match the old flattened
+            # 4N buffer slices, but each queued block now has its own allocation.
+            parents_per_block = _TRIANGLE_BATCH_SIZE // 4
+            for first_parent in range(0, len(selected), parents_per_block):
+                parent_block = selected[first_parent : first_parent + parents_per_block]
+                children = _midpoint_children(parent_block)
+                pending.append((children, depth + 1))
+                del parent_block, children
+        del selected
     transform = trimesh.transformations.scale_and_translate(
         scale=voxel_size_m, translate=origin_index * voxel_size_m
     )
