@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import heapq
 import math
+import sys
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -23,6 +24,9 @@ from .model import FitConfig, Sphere
 from .surface_grid import subdivide_surface_grid
 
 _POINT_TRANSFORM_BATCH_SIZE = 32768
+_PACKED_COVER_LIMIT_BYTES = 32 * 1024**2
+_PACKED_COVER_MIN_SAMPLES = 32768
+_CPYTHON_INT_SIZES = sys.implementation.name == "cpython"
 
 
 @dataclass
@@ -187,7 +191,7 @@ def _prepare_voxel_candidates(mesh: trimesh.Trimesh, configuration: FitConfig) -
     )
 
 
-def _greedy_cover_cpu(
+def _greedy_cover_array_cpu(
     point_samples: np.ndarray,
     candidate_centers: np.ndarray,
     candidate_radii: np.ndarray,
@@ -217,6 +221,121 @@ def _greedy_cover_cpu(
             continue
         selected_indices.append(candidate_index)
         covered_mask[candidate_samples] = True
+    return selected_indices
+
+
+def _packed_cover_state_bytes(sample_count: int, candidate_count: int) -> int:
+    """Estimate neighborhoods, heap entries and packed-mask workspaces.
+
+    Exclude the tree, query lists and temporary input/index conversions.
+    CPython limbs and headers are used only behind the implementation guard.
+    This is an activation budget, not a complete-call or RSS memory limit.
+    """
+    digits = max(1, (sample_count + sys.int_info.bits_per_digit - 1) // sys.int_info.bits_per_digit)
+    integer_bytes = sys.getsizeof(0) + digits * sys.int_info.sizeof_digit
+    priority_bytes = sys.getsizeof((0, 0))
+    component_bytes = sys.getsizeof(sample_count) + sys.getsizeof(candidate_count)
+    return (
+        candidate_count * (integer_bytes + priority_bytes + component_bytes + 24)
+        + 4 * integer_bytes
+        + 3 * sample_count
+        + 2 * ((sample_count + 7) // 8)
+        + 2 * sys.getsizeof([])
+    )
+
+
+def _can_pack_cover_neighborhoods(samples, centers, radii) -> bool:
+    if not _CPYTHON_INT_SIZES:
+        return False
+    values = (samples, centers, radii)
+    if any(type(value) is not np.ndarray for value in values):
+        return False
+    if any(value.dtype != np.dtype(np.float64) or not value.dtype.isnative for value in values):
+        return False
+    if samples.ndim != 2 or centers.ndim != 2 or radii.ndim != 1:
+        return False
+    sample_count, candidate_count = samples.shape[0], centers.shape[0]
+    if samples.shape[1] == 0 or samples.shape[1] != centers.shape[1]:
+        return False
+    if radii.shape[0] != candidate_count or sample_count < _PACKED_COVER_MIN_SAMPLES:
+        return False
+    if candidate_count <= 1:
+        return False
+    if _packed_cover_state_bytes(sample_count, candidate_count) > _PACKED_COVER_LIMIT_BYTES:
+        return False
+    return all(np.isfinite(value).all() for value in values) and bool(np.all(radii >= 0))
+
+
+def _pack_cover_indices(indices, scratch) -> int:
+    scratch.fill(0)
+    scratch[indices] = 1
+    return int.from_bytes(np.packbits(scratch, bitorder="little").tobytes(), "little")
+
+
+def _greedy_cover_cpu(
+    point_samples: np.ndarray,
+    candidate_centers: np.ndarray,
+    candidate_radii: np.ndarray,
+    sphere_count: int,
+) -> list[int]:
+    if not _can_pack_cover_neighborhoods(point_samples, candidate_centers, candidate_radii):
+        return _greedy_cover_array_cpu(
+            point_samples, candidate_centers, candidate_radii, sphere_count
+        )
+    sample_tree = cKDTree(point_samples)
+    sample_count = len(point_samples)
+    digits = max(1, (sample_count + sys.int_info.bits_per_digit - 1) // sys.int_info.bits_per_digit)
+    integer_bytes = sys.getsizeof(0) + digits * sys.int_info.sizeof_digit
+    array_header_bytes = sys.getsizeof(np.empty(0, dtype=np.intp))
+    scratch = None
+    neighborhoods, priorities = [], []
+    has_packed = False
+    # Retain the original scalar query and its floating-point boundary behavior.
+    for candidate_index, (center, radius) in enumerate(zip(candidate_centers, candidate_radii)):
+        indices = sample_tree.query_ball_point(center, radius)
+        if array_header_bytes + len(indices) * np.dtype(np.intp).itemsize >= integer_bytes:
+            if scratch is None:
+                scratch = np.empty(sample_count, dtype=np.uint8)
+            neighborhoods.append(_pack_cover_indices(indices, scratch))
+            has_packed = True
+        else:
+            neighborhoods.append(np.asarray(indices, dtype=int))
+        priorities.append((-len(indices), candidate_index))
+        del indices
+    covered_array = np.zeros(sample_count, dtype=bool)
+    covered_bits = 0
+    covered_array_fresh = True
+    byte_count = (sample_count + 7) // 8
+    heapq.heapify(priorities)
+    selected_indices = []
+    while priorities and len(selected_indices) < sphere_count:
+        _, candidate_index = heapq.heappop(priorities)
+        neighborhood = neighborhoods[candidate_index]
+        is_packed = isinstance(neighborhood, int)
+        if is_packed:
+            uncovered_count = (neighborhood & ~covered_bits).bit_count()
+        else:
+            if not covered_array_fresh:
+                covered_array[:] = np.unpackbits(
+                    np.frombuffer(covered_bits.to_bytes(byte_count, "little"), dtype=np.uint8),
+                    bitorder="little",
+                    count=sample_count,
+                )
+                covered_array_fresh = True
+            uncovered_count = int(np.count_nonzero(~covered_array[neighborhood]))
+        if uncovered_count == 0:
+            continue
+        if priorities and (-uncovered_count, candidate_index) > priorities[0]:
+            heapq.heappush(priorities, (-uncovered_count, candidate_index))
+            continue
+        selected_indices.append(candidate_index)
+        if is_packed:
+            covered_bits |= neighborhood
+            covered_array_fresh = False
+        else:
+            covered_array[neighborhood] = True
+            if has_packed:
+                covered_bits |= _pack_cover_indices(neighborhood, scratch)
     return selected_indices
 
 
