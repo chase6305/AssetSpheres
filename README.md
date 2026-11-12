@@ -285,6 +285,7 @@ CUDA 拟合使用一个 GPU 执行者，`--workers` 保持 1；明确请求 CUDA
 | [命令行](docs/cli.md) | 完整参数、路径、JSON 调用和错误约定 |
 | [拟合性能](docs/fitting-performance.md) | 距离场、包围球内存优化与机械臂耗时对照 |
 | [拟合流水线](docs/fitting-pipeline.md) | 准备缓存、分层去重、闭合性报告和进程传输的实测 |
+| [拟合工作区](docs/fitting-workspaces.md) | 点球距离、体素坐标和表面修补的临时内存对照 |
 | [表面体素化内存](docs/surface-workspace.md) | 子三角形临时数组优化、逐对测量与一致性验证 |
 | [表面采样内存](docs/surface-sampling-memory.md) | 大样本分批插值的内存实测与固定种子一致性 |
 | [启动与预览](docs/startup-and-preview.md) | CLI 延迟加载、材质复制优化与可复现实测 |

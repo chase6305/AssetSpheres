@@ -64,12 +64,21 @@ def _sample_surface_block(
     offsets = random_generator.random((len(triangles), 2))
     outside_triangle = offsets.sum(axis=1) > 1
     offsets[outside_triangle] = 1 - offsets[outside_triangle]
-    # Keep the arithmetic order, including the two successive vertex additions.
-    return (
-        triangles[:, 0]
-        + offsets[:, :1] * (triangles[:, 1] - triangles[:, 0])
-        + offsets[:, 1:] * (triangles[:, 2] - triangles[:, 0])
-    )
+    if type(triangles) is not np.ndarray or triangles.dtype != np.dtype(np.float64):
+        # Preserve dtype promotion and array subclass dispatch on the original path.
+        return (
+            triangles[:, 0]
+            + offsets[:, :1] * (triangles[:, 1] - triangles[:, 0])
+            + offsets[:, 1:] * (triangles[:, 2] - triangles[:, 0])
+        )
+    # Reuse two private vectors, keeping each operation and its operand order.
+    first = triangles[:, 1] - triangles[:, 0]
+    np.multiply(offsets[:, :1], first, out=first)
+    np.add(triangles[:, 0], first, out=first)
+    second = triangles[:, 2] - triangles[:, 0]
+    np.multiply(offsets[:, 1:], second, out=second)
+    np.add(first, second, out=first)
+    return first
 
 
 def sphere_gaps(points: np.ndarray, spheres: list[Sphere]) -> np.ndarray:
@@ -79,18 +88,27 @@ def sphere_gaps(points: np.ndarray, spheres: list[Sphere]) -> np.ndarray:
     sphere_centers = np.asarray([sphere.center for sphere in spheres])
     sphere_radii = np.asarray([sphere.radius for sphere in spheres])
     minimum_gaps = np.full(len(points), np.inf)
+    workspace = None
     for first_point in range(0, len(points), 2048):
-        last_point = first_point + 2048
+        point_block = points[first_point : first_point + 2048]
+        point_gaps = minimum_gaps[first_point : first_point + 2048]
         for first_sphere in range(0, len(spheres), 128):
+            center_block = sphere_centers[first_sphere : first_sphere + 128]
             # cdist computes distances directly in C without an (N, M, 3)
             # difference array or its equally large squared temporary.
-            block_gaps = cdist(
-                points[first_point:last_point], sphere_centers[first_sphere : first_sphere + 128]
-            )
+            if workspace is None or not isinstance(points, np.ndarray):
+                # Let SciPy choose the result dtype, including extended precision.
+                # Array-like inputs may even change dtype between point blocks.
+                block_gaps = cdist(point_block, center_block)
+                workspace = block_gaps.reshape(-1)
+            else:
+                # A used prefix keeps short point/sphere tails C contiguous.
+                block_gaps = workspace[: len(point_block) * len(center_block)].reshape(
+                    len(point_block), len(center_block)
+                )
+                cdist(point_block, center_block, out=block_gaps)
             block_gaps -= sphere_radii[None, first_sphere : first_sphere + 128]
-            minimum_gaps[first_point:last_point] = np.minimum(
-                minimum_gaps[first_point:last_point], block_gaps.min(axis=1)
-            )
+            np.minimum(point_gaps, block_gaps.min(axis=1), out=point_gaps)
     return minimum_gaps
 
 
