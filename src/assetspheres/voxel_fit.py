@@ -134,8 +134,11 @@ def _prepare_voxel_candidates(mesh: trimesh.Trimesh, configuration: FitConfig) -
         # Distance-query backends supply metric radii from the original mesh.
         distance_grid = prepared_grid.clearance_grid_m
         clearance_radii = distance_grid[tuple(occupied_indices.T)]
+    grid_shape = occupied_cells.shape
+    del prepared_grid, voxel_grid, occupied_cells
     local_maxima = distance_grid >= ndimage.maximum_filter(distance_grid, size=3)
     peak_indices = np.flatnonzero(local_maxima[tuple(occupied_indices.T)])
+    del distance_grid, local_maxima
     random_generator = np.random.default_rng(configuration.seed)
     candidate_budget = min(
         max(configuration.max_candidates, configuration.count), len(occupied_indices)
@@ -159,16 +162,14 @@ def _prepare_voxel_candidates(mesh: trimesh.Trimesh, configuration: FitConfig) -
     if component_grid_indices and len(component_grid_indices) > 1:
         # Small disconnected solids can be missed by area/volume-proportional
         # random sampling. Retain at least their deepest interior candidate.
-        occupied_flat_indices = np.ravel_multi_index(occupied_indices.T, occupied_cells.shape)
+        occupied_flat_indices = np.ravel_multi_index(occupied_indices.T, grid_shape)
         component_flat_indices = np.ravel_multi_index(
-            np.asarray(component_grid_indices).T, occupied_cells.shape
+            np.asarray(component_grid_indices).T, grid_shape
         )
         representative_indices = np.searchsorted(occupied_flat_indices, component_flat_indices)
         candidate_indices = np.unique(np.r_[candidate_indices, representative_indices])
         del occupied_flat_indices
-    # Release grid workspaces before converting the occupied point cloud. The
-    # argwhere buffer belongs only to this call and is no longer used as indices.
-    del prepared_grid, voxel_grid, occupied_cells, distance_grid, local_maxima
+    # The argwhere buffer belongs only to this call and is no longer used as indices.
     del remaining_mask, remaining_indices
     occupied_points = _consume_voxel_indices(occupied_indices, transform)
     coverage_samples = occupied_points
