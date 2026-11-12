@@ -72,3 +72,25 @@ def test_mixed_subdivision_depths_preserve_surface_and_fill(monkeypatch, batch_s
     np.testing.assert_array_equal(actual.transform, expected.transform)
     np.testing.assert_array_equal(actual.matrix, expected.matrix)
     np.testing.assert_array_equal(actual.fill().matrix, expected.fill().matrix)
+
+
+@pytest.mark.parametrize("parent_count", [2047, 2048, 2049])
+def test_independent_child_batch_tails_preserve_lattice_and_readonly_source(parent_count):
+    # One subdivision yields 4N children, crossing the default 8192-child boundary.
+    # Repeated faces make the expected lattice independent of the parent count.
+    mesh = trimesh.Trimesh(
+        vertices=[[0, 0, 0], [1, 0, 0], [0, 1, 0]],
+        faces=np.tile([[0, 1, 2]], (parent_count, 1)),
+        process=False,
+    )
+    vertices, faces, triangles = mesh.vertices.copy(), mesh.faces.copy(), mesh.triangles.copy()
+    mesh.triangles.flags.writeable = False
+    expected = reference_surface_grid(mesh, 1.5)
+    actual = surface_grid.subdivide_surface_grid(mesh, 1.5, 2_000_000)
+    np.testing.assert_array_equal(actual.transform, expected.transform)
+    np.testing.assert_array_equal(actual.matrix, expected.matrix)
+    np.testing.assert_array_equal(actual.fill().matrix, expected.fill().matrix)
+    np.testing.assert_array_equal(mesh.vertices, vertices)
+    np.testing.assert_array_equal(mesh.faces, faces)
+    np.testing.assert_array_equal(mesh.triangles, triangles)
+    assert not mesh.triangles.flags.writeable
