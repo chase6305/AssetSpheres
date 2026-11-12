@@ -1,0 +1,2238 @@
+{
+  "schema_version": 1,
+  "recorded_utc": "2026-11-12T12:07:30.846789+00:00",
+  "baseline_commit": "15ecb68",
+  "implementation_commit": "5c8d35f",
+  "benchmark_git_head": "9d9c5e33227f62aca71d09065d4c7b1ec2704c84",
+  "host": {
+    "cpu_model": "AMD Ryzen 9 9950X 16-Core Processor",
+    "shared_host": true,
+    "logical_cpu_for_benchmarks": 4,
+    "numerical_threads": 1
+  },
+  "measurement_scope": "Paired warm calls. Each isolated comparison replaces only its named baseline function/module; all other helpers use the frozen current package. tracemalloc allocation peaks in bytes; neither RSS nor device/native runtime totals. Independent-package robot comparisons and audit evidence will be published separately.",
+  "source_sha256": {
+    "__init__.py": "f6b646d66b6952cec369f8a531e3807daa903a9fac43cecb81f0cc49853eaa0e",
+    "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "asset.py": "8f39e59f179171fcb8ddd0b594d5210f676af2e13dddeef4dceb8b251fe19941",
+    "cli.py": "e18efea729e06afb152a8b5c73c8917eb2bf1eb12b84c899cd30aed2f82c9712",
+    "enclosing.py": "1c0ee8c22ba1f289572077362b9e8ea70e9dc8c48d714194feff00bff8eb1d77",
+    "export.py": "52ad49335902fe7d39d49e5601e199398a5ce7947fc97e729d3087712e0ed89f",
+    "fit.py": "e29418c586e65928cef63435117b0a5203125e0dc10494db2f94c5dd88459972",
+    "geometry.py": "ce71a91219d2b79828fcd8457ad8393da9d221db51ccda355b86b860b66aef1b",
+    "grid_distance.py": "1281b9522314408ad0758b5fa1dde5b7a7647901517209498f125cb59442afa6",
+    "model.py": "a6be7646b3fd8944b9df58ba4640b86ace691f938d13292c2bf5373e1af1bb9b",
+    "parallel.py": "d0ae2af2235bfc794fd4dd19825de30d25e49e7db510f82d0a099dc2c46e13f8",
+    "quality.py": "8e173ced80b6c36e54e910a5b711565b3e6ca912e97f12b5e1635976270badd6",
+    "refine.py": "eac1efa70884b42fd6ada89daad06da42f75ec55ce8b510bf2e74c3dd05112e7",
+    "result_io.py": "87c5038c484dacb2fa3234fba68c99d3455c126e16aad5456ed07c43f68e8197",
+    "slab.py": "bf06a90c21d59402dbeb445fbb1c52c1eb873aea814ce222d2e204e87e616171",
+    "surface_cover.py": "4e83e80c01861cd2d371665ee61a0568a9a1cecb3a63f13d34410da0fd228a72",
+    "surface_fit.py": "3e73b45dbffa20d230ca08bdbcdda587ae947ac77e0fc8bbdc7b26e7ab0524df",
+    "surface_grid.py": "9026a1947854541da4d26dc54475a280d4b8a2b9644363e97657903f98d4934b",
+    "tensor_backend.py": "532acd3985e3491a7a16db7089ab4a69ee84e6576e05704a9efde7d07f4b5374",
+    "viewer.py": "cb2174a1c667121527cf6e56b07cd2981c9a58c7c2b45e9bb8cd8bdfb1ec2702",
+    "voxel_fit.py": "ec40a94201513c7846894ca9bde976c1b324391650b33201d8962dbd98bba0be",
+    "voxelization.py": "97e82ec8436b8c78c59ac2781ea8b32808effb766bd4fc7c677fa5da084d0f59",
+    "warp_queries.py": "38665fcfae9b6e2d8ce3582a8cf9f22cea7a1bc0b0cd1c73663128b2a48fd887"
+  },
+  "reference_source_sha256": {
+    "__init__.py": "f6b646d66b6952cec369f8a531e3807daa903a9fac43cecb81f0cc49853eaa0e",
+    "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "asset.py": "8f39e59f179171fcb8ddd0b594d5210f676af2e13dddeef4dceb8b251fe19941",
+    "cli.py": "e18efea729e06afb152a8b5c73c8917eb2bf1eb12b84c899cd30aed2f82c9712",
+    "enclosing.py": "1c0ee8c22ba1f289572077362b9e8ea70e9dc8c48d714194feff00bff8eb1d77",
+    "export.py": "52ad49335902fe7d39d49e5601e199398a5ce7947fc97e729d3087712e0ed89f",
+    "fit.py": "e29418c586e65928cef63435117b0a5203125e0dc10494db2f94c5dd88459972",
+    "geometry.py": "fe4e3fa6633a9250e0fa1ab648f48e08cf4288edb6114a528a352875ffc5288e",
+    "grid_distance.py": "30b973f7d39fc59385f2bc7a450e34f26180f0f3e07506ac996c57f6bf2504bc",
+    "model.py": "a6be7646b3fd8944b9df58ba4640b86ace691f938d13292c2bf5373e1af1bb9b",
+    "parallel.py": "d0ae2af2235bfc794fd4dd19825de30d25e49e7db510f82d0a099dc2c46e13f8",
+    "quality.py": "8e173ced80b6c36e54e910a5b711565b3e6ca912e97f12b5e1635976270badd6",
+    "refine.py": "eac1efa70884b42fd6ada89daad06da42f75ec55ce8b510bf2e74c3dd05112e7",
+    "result_io.py": "87c5038c484dacb2fa3234fba68c99d3455c126e16aad5456ed07c43f68e8197",
+    "slab.py": "bf06a90c21d59402dbeb445fbb1c52c1eb873aea814ce222d2e204e87e616171",
+    "surface_cover.py": "53b5fd606cc47ea3cf4917236bf4634b5db88fa06f68f179a589113c3f51154b",
+    "surface_fit.py": "3e73b45dbffa20d230ca08bdbcdda587ae947ac77e0fc8bbdc7b26e7ab0524df",
+    "surface_grid.py": "9026a1947854541da4d26dc54475a280d4b8a2b9644363e97657903f98d4934b",
+    "tensor_backend.py": "532acd3985e3491a7a16db7089ab4a69ee84e6576e05704a9efde7d07f4b5374",
+    "viewer.py": "cb2174a1c667121527cf6e56b07cd2981c9a58c7c2b45e9bb8cd8bdfb1ec2702",
+    "voxel_fit.py": "4ea2c14722a5c501b1360fcbf95ac1ce560a9f256f283d52290a133068ff6cd7",
+    "voxelization.py": "97e82ec8436b8c78c59ac2781ea8b32808effb766bd4fc7c677fa5da084d0f59",
+    "warp_queries.py": "38665fcfae9b6e2d8ce3582a8cf9f22cea7a1bc0b0cd1c73663128b2a48fd887"
+  },
+  "benchmark_sha256": {
+    "benchmark_gap_workspace.py": "834eaa4518254e410f3cb0bc2eea216b3fd08d16d1e7acf09258dec5fed29294",
+    "benchmark_grid_workspace.py": "346940601340b053a2c8d9c6b2f0e3e8017916c4017fb4aed22e84b156be0c11",
+    "benchmark_voxel_memory.py": "e89d8e066b8e95f98fb584bc420d0d1aaf18db3812abca510f60ee09cd810514",
+    "benchmark_repair_workspace.py": "191c099cacb2e8e818d0a332ba897d15df09f2b5450dea702d0374f0e39977e0"
+  },
+  "benchmarks": {
+    "gaps-final": {
+      "python": "3.10.0",
+      "platform": "Linux-6.8.0-106-generic-x86_64-with-glibc2.35",
+      "numpy": "1.26.4",
+      "scipy": "1.15.3",
+      "trimesh": "4.12.2",
+      "cpu_affinity": [
+        4
+      ],
+      "threads": {
+        "OPENBLAS_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1"
+      },
+      "reference_sha256": "fe4e3fa6633a9250e0fa1ab648f48e08cf4288edb6114a528a352875ffc5288e",
+      "optimized_sha256": "ce71a91219d2b79828fcd8457ad8393da9d221db51ccda355b86b860b66aef1b",
+      "seed": 20261112,
+      "repeats": 11,
+      "timing_scope": "warm paired complete calls, alternating order; imports/inputs excluded",
+      "memory_scope": "tracemalloc allocation peaks, not RSS or native runtime memory",
+      "cases": {
+        "gaps/128/16": {
+          "exact_output_match": true,
+          "output_sha256": "1ae6ac2fef61ed7506de6132ee0b36e6bb4f387a5ce67d747a770e10df6b6579",
+          "reference": {
+            "times_s": [
+              1.9677001546369866e-05,
+              1.664099909248762e-05,
+              1.6691999917384237e-05,
+              1.645099837332964e-05,
+              1.6221001715166494e-05,
+              1.6981997760012746e-05,
+              1.6059999325079843e-05,
+              1.6251000488409773e-05,
+              1.803399936761707e-05,
+              1.6030997358029708e-05,
+              1.601999974809587e-05
+            ],
+            "median_s": 1.645099837332964e-05,
+            "traced_allocation_peak_bytes": 37044
+          },
+          "optimized": {
+            "times_s": [
+              1.8003996956394985e-05,
+              1.6882000636542216e-05,
+              1.6250000044237822e-05,
+              1.6421003238065168e-05,
+              1.6360998415620998e-05,
+              1.609000173630193e-05,
+              1.611000334378332e-05,
+              1.978699947358109e-05,
+              1.5991001419024542e-05,
+              1.5910001820884645e-05,
+              1.604100179974921e-05
+            ],
+            "median_s": 1.6250000044237822e-05,
+            "traced_allocation_peak_bytes": 37304
+          },
+          "points": 128,
+          "spheres": 16,
+          "point_layout": "strided"
+        },
+        "gaps/6000/24": {
+          "exact_output_match": true,
+          "output_sha256": "592230966c0ac2cf043d23c045a7520e9f955b08da1c2c7a5b8a61f2d18208d5",
+          "reference": {
+            "times_s": [
+              0.0005857270007254556,
+              0.0005426360003184527,
+              0.000544378999620676,
+              0.0005424950031738263,
+              0.0005430569981399458,
+              0.0005424650007626042,
+              0.000541063000127906,
+              0.0005440880013338756,
+              0.0005545980020542629,
+              0.0005409330005932134,
+              0.0005428459990071133
+            ],
+            "median_s": 0.0005428459990071133,
+            "traced_allocation_peak_bytes": 836446
+          },
+          "optimized": {
+            "times_s": [
+              0.0005502099993464071,
+              0.0005431270001281518,
+              0.0005421539972303435,
+              0.0005444490016088821,
+              0.0005392290004238021,
+              0.0005362240008253139,
+              0.0005429970005934592,
+              0.00054110299970489,
+              0.0005405819974839687,
+              0.0005395299995143432,
+              0.0005386279990489129
+            ],
+            "median_s": 0.00054110299970489,
+            "traced_allocation_peak_bytes": 526108
+          },
+          "points": 6000,
+          "spheres": 24,
+          "point_layout": "strided"
+        },
+        "gaps/100000/24": {
+          "exact_output_match": true,
+          "output_sha256": "ffcb335810d84679dd0ca45431ff13a63996b5ac5b3d434d86ff2e2f1c338af3",
+          "reference": {
+            "times_s": [
+              0.009511968997685472,
+              0.009434362000320107,
+              0.009154061997833196,
+              0.010196953000559006,
+              0.009645111000281759,
+              0.009270361999369925,
+              0.01027433999843197,
+              0.009818889000598574,
+              0.008987768000224605,
+              0.010300079000444384,
+              0.009695216002000961
+            ],
+            "median_s": 0.009645111000281759,
+            "traced_allocation_peak_bytes": 1588614
+          },
+          "optimized": {
+            "times_s": [
+              0.009105750999879092,
+              0.009003518000099575,
+              0.010655480000423267,
+              0.009019178000016836,
+              0.009665568999480456,
+              0.010451154001202667,
+              0.00946288599880063,
+              0.009658254999521887,
+              0.010304646999429679,
+              0.00922414500018931,
+              0.009179130000120495
+            ],
+            "median_s": 0.00946288599880063,
+            "traced_allocation_peak_bytes": 1278108
+          },
+          "points": 100000,
+          "spheres": 24,
+          "point_layout": "strided"
+        },
+        "gaps/6000/128": {
+          "exact_output_match": true,
+          "output_sha256": "3e7fd24461ba2cb86ad3ab19e76d131b9b0d46487092cd8e541fe6b544f03dd2",
+          "reference": {
+            "times_s": [
+              0.0018030179999186657,
+              0.001726634000078775,
+              0.0019139079995511565,
+              0.002315396999620134,
+              0.002265131002786802,
+              0.001791646998754004,
+              0.0016723109984013718,
+              0.0016770500005804934,
+              0.001682481000898406,
+              0.0016763389976404142,
+              0.0016786119995231275
+            ],
+            "median_s": 0.001726634000078775,
+            "traced_allocation_peak_bytes": 4247646
+          },
+          "optimized": {
+            "times_s": [
+              0.0017636630000197329,
+              0.0017445280027459376,
+              0.00170630600041477,
+              0.0018103809998137876,
+              0.0018887400001403876,
+              0.0017130479973275214,
+              0.0016686840026522987,
+              0.0016781120029918384,
+              0.0016750860013416968,
+              0.001671008998528123,
+              0.0016639150016999338
+            ],
+            "median_s": 0.00170630600041477,
+            "traced_allocation_peak_bytes": 2233372
+          },
+          "points": 6000,
+          "spheres": 128,
+          "point_layout": "strided"
+        },
+        "gaps/100000/128": {
+          "exact_output_match": true,
+          "output_sha256": "0d4364a1f6e86c2c7593ac2dbca78480c22449c553913046fb5526670af1876a",
+          "reference": {
+            "times_s": [
+              0.029397785998298787,
+              0.03087211300226045,
+              0.028288469002291095,
+              0.028624694001337048,
+              0.028093008997529978,
+              0.028013227998599177,
+              0.027925402999244398,
+              0.028792843000701396,
+              0.028057352999894647,
+              0.028622030000406085,
+              0.027598255001066718
+            ],
+            "median_s": 0.028288469002291095,
+            "traced_allocation_peak_bytes": 4999814
+          },
+          "optimized": {
+            "times_s": [
+              0.028592063001269707,
+              0.029159475001506507,
+              0.028099561997805722,
+              0.027652848002617247,
+              0.02792335800040746,
+              0.027769006999733392,
+              0.027732978996937163,
+              0.02803372699781903,
+              0.028121012001065537,
+              0.028048084997863043,
+              0.02801684599762666
+            ],
+            "median_s": 0.02803372699781903,
+            "traced_allocation_peak_bytes": 2985372
+          },
+          "points": 100000,
+          "spheres": 128,
+          "point_layout": "strided"
+        },
+        "gaps/20000/256": {
+          "exact_output_match": true,
+          "output_sha256": "e5c0f1a688f752c5bee39c928bc7dbc373b60ba11c90194ba8cfe0ccaec23aad",
+          "reference": {
+            "times_s": [
+              0.01142972399975406,
+              0.01176039900019532,
+              0.011582553001062479,
+              0.011464389997854596,
+              0.011680698000418488,
+              0.0115829729984398,
+              0.01140784300150699,
+              0.011412380998081062,
+              0.011695034998410847,
+              0.011554729997442337,
+              0.01133297099659103
+            ],
+            "median_s": 0.011554729997442337,
+            "traced_allocation_peak_bytes": 4363910
+          },
+          "optimized": {
+            "times_s": [
+              0.011372456003300613,
+              0.01149807299952954,
+              0.011659597999823745,
+              0.01148241299961228,
+              0.01141147900125361,
+              0.01133699900310603,
+              0.011587552002310986,
+              0.01153520300067612,
+              0.01144469200153253,
+              0.011485569997603307,
+              0.011468327000329737
+            ],
+            "median_s": 0.01148241299961228,
+            "traced_allocation_peak_bytes": 2349468
+          },
+          "points": 20000,
+          "spheres": 256,
+          "point_layout": "strided"
+        },
+        "gaps/100003/257": {
+          "exact_output_match": true,
+          "output_sha256": "4c5cf419ccd9b4967d0ce56958fa2449adbf16efa5578f6e103cb27fedffd08f",
+          "reference": {
+            "times_s": [
+              0.06047174999912386,
+              0.05761600299956626,
+              0.057572379999328405,
+              0.06187750800017966,
+              0.05745543000011821,
+              0.05872750400158111,
+              0.06858359300167649,
+              0.05768058499961626,
+              0.05842715600010706,
+              0.06945066199841676,
+              0.06898876000195742
+            ],
+            "median_s": 0.05872750400158111,
+            "traced_allocation_peak_bytes": 5003966
+          },
+          "optimized": {
+            "times_s": [
+              0.057883428002242,
+              0.058682918999693356,
+              0.05753548099892214,
+              0.05740885100021842,
+              0.05715476099794614,
+              0.057820448997517815,
+              0.06927795600131503,
+              0.06752921000224887,
+              0.060553977000381565,
+              0.06433758699859027,
+              0.0665304729991476
+            ],
+            "median_s": 0.058682918999693356,
+            "traced_allocation_peak_bytes": 2989524
+          },
+          "points": 100003,
+          "spheres": 257,
+          "point_layout": "strided"
+        },
+        "fit/icosphere3/surface/S6000": {
+          "exact_output_match": true,
+          "output_sha256": "207b44abd753449f04868ea7cced89311382640562abb91eab5ceedfd884ccb8",
+          "reference": {
+            "times_s": [
+              0.009005982999951812,
+              0.008906243998353602,
+              0.009053794001374627,
+              0.008454490998701658,
+              0.008281482998427236,
+              0.008647925998957362,
+              0.008361814998352202,
+              0.00904350400014664,
+              0.008686809997016098,
+              0.009221701002388727,
+              0.00871524299873272
+            ],
+            "median_s": 0.00871524299873272,
+            "traced_allocation_peak_bytes": 4612091
+          },
+          "optimized": {
+            "times_s": [
+              0.008818037000310142,
+              0.008790735999355093,
+              0.008583945000282256,
+              0.008950778999860631,
+              0.008406048000324517,
+              0.008674867000081576,
+              0.008203665998735232,
+              0.008208123999793315,
+              0.009203196001180913,
+              0.00866737300020759,
+              0.008858503999363165
+            ],
+            "median_s": 0.008674867000081576,
+            "traced_allocation_peak_bytes": 2595039
+          },
+          "configuration": {
+            "method": "surface",
+            "count": 128,
+            "resolution": 48,
+            "voxel_size": null,
+            "padding": 0.003,
+            "surface_radius": 0.01,
+            "samples": 6000,
+            "seed": 0,
+            "max_grid_cells": 2000000,
+            "max_candidates": 768,
+            "non_watertight": "error",
+            "device": "cpu",
+            "iterations": 120,
+            "refine_samples": 2048,
+            "outside_weight": 10.0,
+            "refine_reference": "voxel",
+            "voxelizer": "subdivide",
+            "voxel_solid_policy": "single"
+          },
+          "triangles": 1280,
+          "vertices": 642,
+          "mesh_sha256": "02f9b280e9d97bab78e89cef40dd38b4d124f2a7900e1de7119aeb727498752e",
+          "reference_scope": "only sphere_gaps replaced; other helpers use current code"
+        },
+        "fit/icosphere3/surface/S100000": {
+          "exact_output_match": true,
+          "output_sha256": "53545103b21231bf69e8543fbb35aebeb3ac8be8a2bdd20d5f99317429a03763",
+          "reference": {
+            "times_s": [
+              0.14162356200176873,
+              0.1516985759990348,
+              0.1522261329992034,
+              0.12185781099833548,
+              0.12283558099807124,
+              0.12114778099930845,
+              0.12359302299955743,
+              0.12106517400025041,
+              0.12452753000252414,
+              0.1220612080032879,
+              0.12187179000102333
+            ],
+            "median_s": 0.12283558099807124,
+            "traced_allocation_peak_bytes": 8764428
+          },
+          "optimized": {
+            "times_s": [
+              0.14391657600208418,
+              0.16164750100142555,
+              0.14528045400220435,
+              0.12093727200044668,
+              0.12388812999779475,
+              0.12106426299942541,
+              0.12072695499955444,
+              0.12091511100152275,
+              0.12154239699884783,
+              0.121000623999862,
+              0.12104282300060731
+            ],
+            "median_s": 0.12106426299942541,
+            "traced_allocation_peak_bytes": 8761868
+          },
+          "configuration": {
+            "method": "surface",
+            "count": 128,
+            "resolution": 48,
+            "voxel_size": null,
+            "padding": 0.003,
+            "surface_radius": 0.01,
+            "samples": 100000,
+            "seed": 0,
+            "max_grid_cells": 2000000,
+            "max_candidates": 768,
+            "non_watertight": "error",
+            "device": "cpu",
+            "iterations": 120,
+            "refine_samples": 2048,
+            "outside_weight": 10.0,
+            "refine_reference": "voxel",
+            "voxelizer": "subdivide",
+            "voxel_solid_policy": "single"
+          },
+          "triangles": 1280,
+          "vertices": 642,
+          "mesh_sha256": "02f9b280e9d97bab78e89cef40dd38b4d124f2a7900e1de7119aeb727498752e",
+          "reference_scope": "only sphere_gaps replaced; other helpers use current code"
+        },
+        "fit/icosphere3/cover/S6000": {
+          "exact_output_match": true,
+          "output_sha256": "e0f20aee823d534260cf1544f0771c8d59774d0c6429a028b91d355d7b25dd5e",
+          "reference": {
+            "times_s": [
+              0.008180933000403456,
+              0.008965174998593284,
+              0.008172015997843118,
+              0.009336047001852421,
+              0.008297422999021364,
+              0.012189519999083132,
+              0.009107093999773497,
+              0.008679055001266534,
+              0.009646593000070425,
+              0.0083015809977951,
+              0.00887920400055009
+            ],
+            "median_s": 0.00887920400055009,
+            "traced_allocation_peak_bytes": 4614329
+          },
+          "optimized": {
+            "times_s": [
+              0.008517288999428274,
+              0.008223925000493182,
+              0.00862712699745316,
+              0.008340003998455359,
+              0.009052891000465024,
+              0.01010893799684709,
+              0.00841818199842237,
+              0.00906439300160855,
+              0.008550481998099713,
+              0.008761311000853311,
+              0.00837092300207587
+            ],
+            "median_s": 0.008550481998099713,
+            "traced_allocation_peak_bytes": 2597169
+          },
+          "configuration": {
+            "method": "cover",
+            "count": 128,
+            "resolution": 48,
+            "voxel_size": null,
+            "padding": 0.003,
+            "surface_radius": 0.01,
+            "samples": 6000,
+            "seed": 0,
+            "max_grid_cells": 2000000,
+            "max_candidates": 768,
+            "non_watertight": "error",
+            "device": "cpu",
+            "iterations": 120,
+            "refine_samples": 2048,
+            "outside_weight": 10.0,
+            "refine_reference": "voxel",
+            "voxelizer": "subdivide",
+            "voxel_solid_policy": "single"
+          },
+          "triangles": 1280,
+          "vertices": 642,
+          "mesh_sha256": "02f9b280e9d97bab78e89cef40dd38b4d124f2a7900e1de7119aeb727498752e",
+          "reference_scope": "only sphere_gaps replaced; other helpers use current code"
+        },
+        "fit/icosphere3/cover/S100000": {
+          "exact_output_match": true,
+          "output_sha256": "6d1eb64c674e33ca4ac8863482a2d003569b45f9c8ff5a5b192beb99761d0fc6",
+          "reference": {
+            "times_s": [
+              0.045930127002066,
+              0.046575145999668166,
+              0.046003044000826776,
+              0.0492939750001824,
+              0.045704559997830074,
+              0.047067947998584714,
+              0.046751670000958256,
+              0.04621052700167638,
+              0.04552679500193335,
+              0.04715040399969439,
+              0.04590092199941864
+            ],
+            "median_s": 0.04621052700167638,
+            "traced_allocation_peak_bytes": 8766996
+          },
+          "optimized": {
+            "times_s": [
+              0.04569547299979604,
+              0.04553315600060159,
+              0.04538032799973735,
+              0.04599364699970465,
+              0.046645468999486184,
+              0.04553553100049612,
+              0.04652533199987374,
+              0.045711784001468914,
+              0.04646427700208733,
+              0.046354147998499684,
+              0.045781136002915446
+            ],
+            "median_s": 0.045781136002915446,
+            "traced_allocation_peak_bytes": 8763903
+          },
+          "configuration": {
+            "method": "cover",
+            "count": 128,
+            "resolution": 48,
+            "voxel_size": null,
+            "padding": 0.003,
+            "surface_radius": 0.01,
+            "samples": 100000,
+            "seed": 0,
+            "max_grid_cells": 2000000,
+            "max_candidates": 768,
+            "non_watertight": "error",
+            "device": "cpu",
+            "iterations": 120,
+            "refine_samples": 2048,
+            "outside_weight": 10.0,
+            "refine_reference": "voxel",
+            "voxelizer": "subdivide",
+            "voxel_solid_policy": "single"
+          },
+          "triangles": 1280,
+          "vertices": 642,
+          "mesh_sha256": "02f9b280e9d97bab78e89cef40dd38b4d124f2a7900e1de7119aeb727498752e",
+          "reference_scope": "only sphere_gaps replaced; other helpers use current code"
+        },
+        "fit/icosphere3/voxel/S6000": {
+          "exact_output_match": true,
+          "output_sha256": "ce76a01363660bc3572ba69f4575e9543954b1cea22ef4429fb49160eee1e7a7",
+          "reference": {
+            "times_s": [
+              0.03597767500104965,
+              0.04008568999779527,
+              0.03900253300162149,
+              0.04153910800232552,
+              0.03924819699750515,
+              0.03986328999963007,
+              0.0405620599995018,
+              0.03947262200017576,
+              0.042052769000292756,
+              0.03898170400134404,
+              0.04481136300091748
+            ],
+            "median_s": 0.03986328999963007,
+            "traced_allocation_peak_bytes": 8431532
+          },
+          "optimized": {
+            "times_s": [
+              0.039217169000039576,
+              0.04105238700140035,
+              0.03820856099991943,
+              0.039275078001082875,
+              0.04199621099905926,
+              0.0407850720002898,
+              0.04163244400115218,
+              0.04010845299853827,
+              0.04222107699752087,
+              0.03837154999928316,
+              0.05168185899674427
+            ],
+            "median_s": 0.0407850720002898,
+            "traced_allocation_peak_bytes": 8428907
+          },
+          "configuration": {
+            "method": "voxel",
+            "count": 128,
+            "resolution": 48,
+            "voxel_size": null,
+            "padding": 0.003,
+            "surface_radius": 0.01,
+            "samples": 6000,
+            "seed": 0,
+            "max_grid_cells": 2000000,
+            "max_candidates": 768,
+            "non_watertight": "error",
+            "device": "cpu",
+            "iterations": 120,
+            "refine_samples": 2048,
+            "outside_weight": 10.0,
+            "refine_reference": "voxel",
+            "voxelizer": "subdivide",
+            "voxel_solid_policy": "single"
+          },
+          "triangles": 1280,
+          "vertices": 642,
+          "mesh_sha256": "02f9b280e9d97bab78e89cef40dd38b4d124f2a7900e1de7119aeb727498752e",
+          "reference_scope": "only sphere_gaps replaced; other helpers use current code"
+        },
+        "fit/icosphere3/voxel/S100000": {
+          "exact_output_match": true,
+          "output_sha256": "e63bf7be9edcd717bf81b33d0f8cebd994160a830209b496bd5afc97542b26f3",
+          "reference": {
+            "times_s": [
+              0.12594893999994383,
+              0.1600710689999687,
+              0.15931054099928588,
+              0.12729855200086604,
+              0.12967848100015544,
+              0.1342322989985405,
+              0.12318408600185649,
+              0.14505745100177592,
+              0.18126257800031453,
+              0.13195304200053215,
+              0.12978885099801118
+            ],
+            "median_s": 0.13195304200053215,
+            "traced_allocation_peak_bytes": 23165202
+          },
+          "optimized": {
+            "times_s": [
+              0.12507805399945937,
+              0.12698289500258397,
+              0.16544435600008,
+              0.17334792600013316,
+              0.12601198099946487,
+              0.1281835059999139,
+              0.12428040799932205,
+              0.12845833499886794,
+              0.13355505999788875,
+              0.13521559899891145,
+              0.13470629600124084
+            ],
+            "median_s": 0.12845833499886794,
+            "traced_allocation_peak_bytes": 23162159
+          },
+          "configuration": {
+            "method": "voxel",
+            "count": 128,
+            "resolution": 48,
+            "voxel_size": null,
+            "padding": 0.003,
+            "surface_radius": 0.01,
+            "samples": 100000,
+            "seed": 0,
+            "max_grid_cells": 2000000,
+            "max_candidates": 768,
+            "non_watertight": "error",
+            "device": "cpu",
+            "iterations": 120,
+            "refine_samples": 2048,
+            "outside_weight": 10.0,
+            "refine_reference": "voxel",
+            "voxelizer": "subdivide",
+            "voxel_solid_policy": "single"
+          },
+          "triangles": 1280,
+          "vertices": 642,
+          "mesh_sha256": "02f9b280e9d97bab78e89cef40dd38b4d124f2a7900e1de7119aeb727498752e",
+          "reference_scope": "only sphere_gaps replaced; other helpers use current code"
+        }
+      }
+    },
+    "grid-final": {
+      "python": "3.10.0",
+      "numpy": "1.26.4",
+      "scipy": "1.15.3",
+      "trimesh": "4.12.2",
+      "baseline_sha256": "30b973f7d39fc59385f2bc7a450e34f26180f0f3e07506ac996c57f6bf2504bc",
+      "candidate_sha256": "1281b9522314408ad0758b5fa1dde5b7a7647901517209498f125cb59442afa6",
+      "threads": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1"
+      },
+      "memory_scope": "tracemalloc allocation peak, not RSS, native runtime or device memory",
+      "timing_scope": "alternating warm calls, mesh creation and imports excluded",
+      "cases": {
+        "grid/(24, 24, 24)": {
+          "exact_output_match": true,
+          "output_sha256": "562bac1c3bbcb2ca669e5cd8269b9e896057657bae33ae81b7cb7e61b5bfc4af",
+          "seconds_pairs": [
+            {
+              "before": 0.0007275460011442192,
+              "after": 0.0007008449974819086
+            },
+            {
+              "after": 0.0007082080010150094,
+              "before": 0.0006922079992364161
+            },
+            {
+              "before": 0.0006968470006540883,
+              "after": 0.0007019260010565631
+            },
+            {
+              "after": 0.000690724999003578,
+              "before": 0.0006955850003578234
+            },
+            {
+              "before": 0.0006954849995963741,
+              "after": 0.000698499999998603
+            },
+            {
+              "after": 0.0006940519997442607,
+              "before": 0.0007142000031308271
+            },
+            {
+              "before": 0.0007021780002105515,
+              "after": 0.0007190090000221971
+            },
+            {
+              "after": 0.0006952139992790762,
+              "before": 0.0006826000026194379
+            },
+            {
+              "before": 0.0006994119976297952,
+              "after": 0.000751571002183482
+            },
+            {
+              "after": 0.000899370999832172,
+              "before": 0.0009184859991364647
+            },
+            {
+              "before": 0.0008074960023805033,
+              "after": 0.0007251009992614854
+            }
+          ],
+          "seconds_median": {
+            "before": 0.0006994119976297952,
+            "after": 0.0007019260010565631
+          },
+          "peak_allocated_bytes": {
+            "before": 520056,
+            "after": 520056
+          }
+        },
+        "grid/(48, 48, 48)": {
+          "exact_output_match": true,
+          "output_sha256": "f2856cfdef1001ab93fdcb0f3e92118698428d497ce694cca7e0ac3051fd7856",
+          "seconds_pairs": [
+            {
+              "before": 0.006559108001965797,
+              "after": 0.0077092620012990665
+            },
+            {
+              "after": 0.006566461997863371,
+              "before": 0.006887038001877954
+            },
+            {
+              "before": 0.006564628998603439,
+              "after": 0.00634066500060726
+            },
+            {
+              "after": 0.007372166001005098,
+              "before": 0.006396790999133373
+            },
+            {
+              "before": 0.0074229410020052455,
+              "after": 0.0063103979991865344
+            },
+            {
+              "after": 0.006163611000374658,
+              "before": 0.006690887999866391
+            },
+            {
+              "before": 0.006440474000555696,
+              "after": 0.0065145439984917175
+            },
+            {
+              "after": 0.006348180002532899,
+              "before": 0.006760128999303561
+            },
+            {
+              "before": 0.006734751001204131,
+              "after": 0.006200940999406157
+            },
+            {
+              "after": 0.007046689999697264,
+              "before": 0.006583334001334151
+            },
+            {
+              "before": 0.00724787000217475,
+              "after": 0.006831904000137001
+            }
+          ],
+          "seconds_median": {
+            "before": 0.006690887999866391,
+            "after": 0.0065145439984917175
+          },
+          "peak_allocated_bytes": {
+            "before": 3229752,
+            "after": 2603360
+          }
+        },
+        "grid/(114, 114, 114)": {
+          "exact_output_match": true,
+          "output_sha256": "5b091a46b4e331242fe491e74c939281771926c37c4249653efc84193a279c92",
+          "seconds_pairs": [
+            {
+              "before": 0.08915254000021378,
+              "after": 0.09748116400078288
+            },
+            {
+              "after": 0.09800029500183882,
+              "before": 0.09488996599975508
+            },
+            {
+              "before": 0.10130140600085724,
+              "after": 0.09992410199993174
+            },
+            {
+              "after": 0.0989151049980137,
+              "before": 0.09457630399992922
+            },
+            {
+              "before": 0.10103866899953573,
+              "after": 0.10254145900034928
+            },
+            {
+              "after": 0.09515025899963803,
+              "before": 0.0920547469977464
+            },
+            {
+              "before": 0.10136533699915162,
+              "after": 0.10226388499722816
+            },
+            {
+              "after": 0.09417944500091835,
+              "before": 0.09867648500221549
+            },
+            {
+              "before": 0.09705282600043574,
+              "after": 0.09840365000127349
+            },
+            {
+              "after": 0.09736651899947901,
+              "before": 0.09688174199982313
+            },
+            {
+              "before": 0.10123442999974941,
+              "after": 0.11385838299975148
+            }
+          ],
+          "seconds_median": {
+            "before": 0.09705282600043574,
+            "after": 0.09840365000127349
+          },
+          "peak_allocated_bytes": {
+            "before": 41616936,
+            "after": 29972816
+          }
+        },
+        "grid/(16, 256, 256)": {
+          "exact_output_match": true,
+          "output_sha256": "24579fe2f73a6e3aaad20e869e03a6393871dd56ab8d4dd93b889bb3e949374a",
+          "seconds_pairs": [
+            {
+              "before": 0.07909736500005238,
+              "after": 0.07850497600156814
+            },
+            {
+              "after": 0.08287830299741472,
+              "before": 0.08284982899931492
+            },
+            {
+              "before": 0.0787622329989972,
+              "after": 0.07893747400157736
+            },
+            {
+              "after": 0.07819485900108702,
+              "before": 0.07874985899979947
+            },
+            {
+              "before": 0.07990816900201025,
+              "after": 0.08094028000050457
+            },
+            {
+              "after": 0.08147088300029282,
+              "before": 0.08210785700066481
+            },
+            {
+              "before": 0.08161098799973843,
+              "after": 0.08072139599971706
+            },
+            {
+              "after": 0.08584728500136407,
+              "before": 0.09493289999954868
+            },
+            {
+              "before": 0.09376775800046744,
+              "after": 0.09261307500128169
+            },
+            {
+              "after": 0.09146930299903033,
+              "before": 0.08624890500141191
+            },
+            {
+              "before": 0.09701851299905684,
+              "after": 0.09321167699818034
+            }
+          ],
+          "seconds_median": {
+            "before": 0.08210785700066481,
+            "after": 0.08147088300029282
+          },
+          "peak_allocated_bytes": {
+            "before": 29494968,
+            "after": 21630848
+          }
+        },
+        "grid/(1, 256, 256)": {
+          "exact_output_match": true,
+          "output_sha256": "8d6a04ea37069381df700f16121b14d98c39a845175ce3ac1f1d3a3a192821b2",
+          "seconds_pairs": [
+            {
+              "before": 0.0036776010019821115,
+              "after": 0.0033541499979037326
+            },
+            {
+              "after": 0.0032233929996436927,
+              "before": 0.00330356400081655
+            },
+            {
+              "before": 0.003212403000361519,
+              "after": 0.003334152002935298
+            },
+            {
+              "after": 0.003519773999869358,
+              "before": 0.004747783998027444
+            },
+            {
+              "before": 0.004066446999786422,
+              "after": 0.0037383870003395714
+            },
+            {
+              "after": 0.00403320399709628,
+              "before": 0.004682080001657596
+            },
+            {
+              "before": 0.003996964998805197,
+              "after": 0.003676590000395663
+            },
+            {
+              "after": 0.00403281299804803,
+              "before": 0.004850408000493189
+            },
+            {
+              "before": 0.004036550002638251,
+              "after": 0.0036323159984021913
+            },
+            {
+              "after": 0.0040376230026595294,
+              "before": 0.004838035001739627
+            },
+            {
+              "before": 0.004060213999764528,
+              "after": 0.003704662998643471
+            }
+          ],
+          "seconds_median": {
+            "before": 0.004060213999764528,
+            "after": 0.003676590000395663
+          },
+          "peak_allocated_bytes": {
+            "before": 1969848,
+            "after": 1969848
+          }
+        },
+        "cube/24/voxel": {
+          "exact_output_match": true,
+          "output_sha256": "12db35749127ea9d0a99fc085a5a2812d96b1114e51fdb6bda23252ccaadd81d",
+          "seconds_pairs": [
+            {
+              "before": 0.03748591899784515,
+              "after": 0.03875948600034462
+            },
+            {
+              "after": 0.03612613899895223,
+              "before": 0.03812592899703304
+            },
+            {
+              "before": 0.03947130300002755,
+              "after": 0.03855135300182155
+            },
+            {
+              "after": 0.03746304699961911,
+              "before": 0.03929412700017565
+            },
+            {
+              "before": 0.036394245998963015,
+              "after": 0.038312682998366654
+            },
+            {
+              "after": 0.03748845399968559,
+              "before": 0.03492158300286974
+            },
+            {
+              "before": 0.03813901499961503,
+              "after": 0.03807391099689994
+            },
+            {
+              "after": 0.038805144002253655,
+              "before": 0.038578956002311315
+            },
+            {
+              "before": 0.03678155799934757,
+              "after": 0.038391973001125734
+            },
+            {
+              "after": 0.03745304699987173,
+              "before": 0.03795692000130657
+            },
+            {
+              "before": 0.03825713699916378,
+              "after": 0.04743943499852321
+            }
+          ],
+          "seconds_median": {
+            "before": 0.03812592899703304,
+            "after": 0.038312682998366654
+          },
+          "peak_allocated_bytes": {
+            "before": 8883923,
+            "after": 8881865
+          },
+          "configuration": {
+            "method": "voxel",
+            "count": 24,
+            "resolution": 24,
+            "voxel_size": null,
+            "padding": 0.0,
+            "surface_radius": 0.01,
+            "samples": 6000,
+            "seed": 0,
+            "max_grid_cells": 2000000,
+            "max_candidates": 768,
+            "non_watertight": "error",
+            "device": "cpu",
+            "iterations": 120,
+            "refine_samples": 2048,
+            "outside_weight": 10.0,
+            "refine_reference": "voxel",
+            "voxelizer": "subdivide",
+            "voxel_solid_policy": "single"
+          }
+        },
+        "cube/24/refined": {
+          "exact_output_match": true,
+          "output_sha256": "020c50adf64459f97d27b52b479888c73f85f4ec9f81518206bf73ca4270de3a",
+          "seconds_pairs": [
+            {
+              "before": 0.11432393699942622,
+              "after": 0.11500196899942239
+            },
+            {
+              "after": 0.11080298200249672,
+              "before": 0.11376311700223596
+            },
+            {
+              "before": 0.11316654999973252,
+              "after": 0.11284010199960903
+            },
+            {
+              "after": 0.11277607200099737,
+              "before": 0.11310865999985253
+            },
+            {
+              "before": 0.11317094800324412,
+              "after": 0.11108118800257216
+            },
+            {
+              "after": 0.11555889300143463,
+              "before": 0.11178877600104897
+            },
+            {
+              "before": 0.12080376700032502,
+              "after": 0.1270341749986983
+            },
+            {
+              "after": 0.11263248000250314,
+              "before": 0.1112364719992911
+            },
+            {
+              "before": 0.1109276579991274,
+              "after": 0.11414351699932013
+            },
+            {
+              "after": 0.11047676599991973,
+              "before": 0.11371620100180735
+            },
+            {
+              "before": 0.11200265099978424,
+              "after": 0.1073737609985983
+            }
+          ],
+          "seconds_median": {
+            "before": 0.11316654999973252,
+            "after": 0.11277607200099737
+          },
+          "peak_allocated_bytes": {
+            "before": 8883909,
+            "after": 8881855
+          },
+          "configuration": {
+            "method": "refined",
+            "count": 24,
+            "resolution": 24,
+            "voxel_size": null,
+            "padding": 0.0,
+            "surface_radius": 0.01,
+            "samples": 6000,
+            "seed": 0,
+            "max_grid_cells": 2000000,
+            "max_candidates": 768,
+            "non_watertight": "error",
+            "device": "cpu",
+            "iterations": 120,
+            "refine_samples": 2048,
+            "outside_weight": 10.0,
+            "refine_reference": "voxel",
+            "voxelizer": "subdivide",
+            "voxel_solid_policy": "single"
+          }
+        },
+        "cube/24/refined-cover": {
+          "exact_output_match": true,
+          "output_sha256": "71052029551c213fab43f6106c3ebbeea867eff0d806866a69b4322ca30600aa",
+          "seconds_pairs": [
+            {
+              "before": 0.11881559000175912,
+              "after": 0.11950598600014928
+            },
+            {
+              "after": 0.11707639300220762,
+              "before": 0.11580624199996237
+            },
+            {
+              "before": 0.11963971899967873,
+              "after": 0.11817202399834059
+            },
+            {
+              "after": 0.11539207900204929,
+              "before": 0.11849788100153091
+            },
+            {
+              "before": 0.11805625499982852,
+              "after": 0.1160899079986848
+            },
+            {
+              "after": 0.11710440699971514,
+              "before": 0.1159323720021348
+            },
+            {
+              "before": 0.11616229599894723,
+              "after": 0.11747243200079538
+            },
+            {
+              "after": 0.12031516599745373,
+              "before": 0.12140156999885221
+            },
+            {
+              "before": 0.11884431699945708,
+              "after": 0.11697374000141281
+            },
+            {
+              "after": 0.11730794200047967,
+              "before": 0.11732598800153937
+            },
+            {
+              "before": 0.11711135100267711,
+              "after": 0.1185259159974521
+            }
+          ],
+          "seconds_median": {
+            "before": 0.11805625499982852,
+            "after": 0.11730794200047967
+          },
+          "peak_allocated_bytes": {
+            "before": 8884139,
+            "after": 8881970
+          },
+          "configuration": {
+            "method": "refined-cover",
+            "count": 24,
+            "resolution": 24,
+            "voxel_size": null,
+            "padding": 0.0,
+            "surface_radius": 0.01,
+            "samples": 6000,
+            "seed": 0,
+            "max_grid_cells": 2000000,
+            "max_candidates": 768,
+            "non_watertight": "error",
+            "device": "cpu",
+            "iterations": 120,
+            "refine_samples": 2048,
+            "outside_weight": 10.0,
+            "refine_reference": "voxel",
+            "voxelizer": "subdivide",
+            "voxel_solid_policy": "single"
+          }
+        },
+        "cube/112/voxel": {
+          "exact_output_match": true,
+          "output_sha256": "9943af86f11d96a197690be60ff3f24bf454cbfa7ec66f7433e5da3d09b00675",
+          "seconds_pairs": [
+            {
+              "before": 0.673021726001025,
+              "after": 0.6617070299980696
+            },
+            {
+              "after": 0.6549235800011957,
+              "before": 0.6593011490003846
+            },
+            {
+              "before": 0.6596153569989838,
+              "after": 0.6631356940015394
+            },
+            {
+              "after": 0.7873411159998795,
+              "before": 0.6575558049989922
+            },
+            {
+              "before": 0.7748228899981768,
+              "after": 0.7881650970011833
+            },
+            {
+              "after": 0.6696851260021504,
+              "before": 0.6531897250024485
+            },
+            {
+              "before": 0.6745626119991357,
+              "after": 0.6509430760015675
+            },
+            {
+              "after": 0.6491010669997195,
+              "before": 0.7403211259988893
+            },
+            {
+              "before": 0.700856704999751,
+              "after": 0.6717088260011224
+            },
+            {
+              "after": 0.6716877190010564,
+              "before": 0.6601652009994723
+            },
+            {
+              "before": 0.6748963319987524,
+              "after": 0.6687808640017465
+            }
+          ],
+          "seconds_median": {
+            "before": 0.673021726001025,
+            "after": 0.6687808640017465
+          },
+          "peak_allocated_bytes": {
+            "before": 80325487,
+            "after": 74251062
+          },
+          "configuration": {
+            "method": "voxel",
+            "count": 24,
+            "resolution": 112,
+            "voxel_size": null,
+            "padding": 0.0,
+            "surface_radius": 0.01,
+            "samples": 6000,
+            "seed": 0,
+            "max_grid_cells": 2000000,
+            "max_candidates": 768,
+            "non_watertight": "error",
+            "device": "cpu",
+            "iterations": 120,
+            "refine_samples": 2048,
+            "outside_weight": 10.0,
+            "refine_reference": "voxel",
+            "voxelizer": "subdivide",
+            "voxel_solid_policy": "single"
+          }
+        },
+        "cube/112/refined": {
+          "exact_output_match": true,
+          "output_sha256": "e00c54905a01727921872870d67c4acac0811fc9ddf1a145d58fb53739e09666",
+          "seconds_pairs": [
+            {
+              "before": 0.892964225000469,
+              "after": 0.868527983999229
+            },
+            {
+              "after": 0.8289253709990589,
+              "before": 0.8242693540014443
+            },
+            {
+              "before": 0.8187832569965394,
+              "after": 0.8136768379990826
+            },
+            {
+              "after": 0.8126342010000371,
+              "before": 0.9140599279999151
+            },
+            {
+              "before": 0.9046857629982696,
+              "after": 0.8335272090007493
+            },
+            {
+              "after": 0.9192101329972502,
+              "before": 0.9966080769991095
+            },
+            {
+              "before": 0.8502120800003468,
+              "after": 0.8626894250010082
+            },
+            {
+              "after": 0.8226731350005139,
+              "before": 0.81880689999889
+            },
+            {
+              "before": 0.8316294180003752,
+              "after": 0.9166216220000933
+            },
+            {
+              "after": 0.813421755003219,
+              "before": 0.824541172998579
+            },
+            {
+              "before": 0.8521218540008704,
+              "after": 0.8233912089999649
+            }
+          ],
+          "seconds_median": {
+            "before": 0.8502120800003468,
+            "after": 0.8289253709990589
+          },
+          "peak_allocated_bytes": {
+            "before": 88026584,
+            "after": 74251223
+          },
+          "configuration": {
+            "method": "refined",
+            "count": 24,
+            "resolution": 112,
+            "voxel_size": null,
+            "padding": 0.0,
+            "surface_radius": 0.01,
+            "samples": 6000,
+            "seed": 0,
+            "max_grid_cells": 2000000,
+            "max_candidates": 768,
+            "non_watertight": "error",
+            "device": "cpu",
+            "iterations": 120,
+            "refine_samples": 2048,
+            "outside_weight": 10.0,
+            "refine_reference": "voxel",
+            "voxelizer": "subdivide",
+            "voxel_solid_policy": "single"
+          }
+        },
+        "cube/112/refined-cover": {
+          "exact_output_match": true,
+          "output_sha256": "bd033744628007a1ef4d5431e1d6126f6d948181383295c48e23bcadf51e94c5",
+          "seconds_pairs": [
+            {
+              "before": 0.848324918999424,
+              "after": 0.8529982809996
+            },
+            {
+              "after": 0.8519064609972702,
+              "before": 0.8525517769994622
+            },
+            {
+              "before": 0.9052219449986296,
+              "after": 0.8428299770021113
+            },
+            {
+              "after": 0.8633448789987597,
+              "before": 0.8267866739988676
+            },
+            {
+              "before": 0.8658282049982517,
+              "after": 0.8498969190004573
+            },
+            {
+              "after": 0.8691076169998269,
+              "before": 1.0199877499981085
+            },
+            {
+              "before": 0.8572719300027529,
+              "after": 0.8390961190016242
+            },
+            {
+              "after": 0.8349397970014252,
+              "before": 0.8597547509998549
+            },
+            {
+              "before": 0.8630920569994487,
+              "after": 0.8505501769977855
+            },
+            {
+              "after": 0.8507151240009989,
+              "before": 0.8532972020002489
+            },
+            {
+              "before": 0.8910016890004044,
+              "after": 1.0578820340015227
+            }
+          ],
+          "seconds_median": {
+            "before": 0.8597547509998549,
+            "after": 0.8507151240009989
+          },
+          "peak_allocated_bytes": {
+            "before": 88026635,
+            "after": 74251221
+          },
+          "configuration": {
+            "method": "refined-cover",
+            "count": 24,
+            "resolution": 112,
+            "voxel_size": null,
+            "padding": 0.0,
+            "surface_radius": 0.01,
+            "samples": 6000,
+            "seed": 0,
+            "max_grid_cells": 2000000,
+            "max_candidates": 768,
+            "non_watertight": "error",
+            "device": "cpu",
+            "iterations": 120,
+            "refine_samples": 2048,
+            "outside_weight": 10.0,
+            "refine_reference": "voxel",
+            "voxelizer": "subdivide",
+            "voxel_solid_policy": "single"
+          }
+        }
+      }
+    },
+    "voxel-final": {
+      "python": "3.10.0",
+      "platform": "Linux-6.8.0-106-generic-x86_64-with-glibc2.35",
+      "numpy": "1.26.4",
+      "scipy": "1.15.3",
+      "trimesh": "4.12.2",
+      "reference_sha256": "4ea2c14722a5c501b1360fcbf95ac1ce560a9f256f283d52290a133068ff6cd7",
+      "optimized_sha256": "ec40a94201513c7846894ca9bde976c1b324391650b33201d8962dbd98bba0be",
+      "reference_refine_sha256": "eac1efa70884b42fd6ada89daad06da42f75ec55ce8b510bf2e74c3dd05112e7",
+      "optimized_refine_sha256": "eac1efa70884b42fd6ada89daad06da42f75ec55ce8b510bf2e74c3dd05112e7",
+      "optimized_grid_distance_sha256": "1281b9522314408ad0758b5fa1dde5b7a7647901517209498f125cb59442afa6",
+      "threads": {
+        "OPENBLAS_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1"
+      },
+      "memory_scope": "tracemalloc allocation peak; not RSS, native runtimes or device memory",
+      "timing_scope": "warm paired calls, preloaded mesh, alternating call order; no export",
+      "cases": {
+        "subdivide/cpu/cube24/preparation": {
+          "exact_output_match": true,
+          "reference": {
+            "times_s": [
+              0.0274790919975203,
+              0.028814375000365544,
+              0.02857579400006216,
+              0.028383050001139054,
+              0.02829196799939382,
+              0.027592927999648964,
+              0.028239028000825783,
+              0.02802825000253506,
+              0.027936997001233976,
+              0.02846517600119114,
+              0.028109283000958385
+            ],
+            "median_s": 0.028239028000825783,
+            "traced_allocation_peak_bytes": 8874034
+          },
+          "optimized": {
+            "times_s": [
+              0.027942188000452006,
+              0.027724506002414273,
+              0.026790752999659162,
+              0.028071882003132487,
+              0.028625668997847242,
+              0.028947265000169864,
+              0.028170417997898767,
+              0.027724477000447223,
+              0.027286218999506673,
+              0.029056041999865556,
+              0.02854979499898036
+            ],
+            "median_s": 0.028071882003132487,
+            "traced_allocation_peak_bytes": 8874370
+          }
+        },
+        "subdivide/cpu/cube24/voxel": {
+          "exact_output_match": true,
+          "reference": {
+            "times_s": [
+              0.03904761400190182,
+              0.04276740000204882,
+              0.04229202199712745,
+              0.051298393998877145,
+              0.05100600200239569,
+              0.054497575998539105,
+              0.05399704000228667,
+              0.055693225000140956,
+              0.054504370000358904,
+              0.042651542000385234,
+              0.041276894000475295
+            ],
+            "median_s": 0.05100600200239569,
+            "traced_allocation_peak_bytes": 8883866
+          },
+          "optimized": {
+            "times_s": [
+              0.04456774999925983,
+              0.043752481000410626,
+              0.04201414700219175,
+              0.051916299998993054,
+              0.05480803299724357,
+              0.0528441530004784,
+              0.049603783001657575,
+              0.05551285399997141,
+              0.054386466999858385,
+              0.05567870699815103,
+              0.03867062299832469
+            ],
+            "median_s": 0.051916299998993054,
+            "traced_allocation_peak_bytes": 8882147
+          }
+        },
+        "subdivide/cpu/cube24/refined": {
+          "exact_output_match": true,
+          "reference": {
+            "times_s": [
+              0.13248641500103986,
+              0.12710546200105455,
+              0.12777911399825825,
+              0.12651178099986282,
+              0.12529333899874473,
+              0.12550444999942556,
+              0.12548561400035396,
+              0.126349416001176,
+              0.12402096799996798,
+              0.12472118100049556,
+              0.1242989239981398
+            ],
+            "median_s": 0.12550444999942556,
+            "traced_allocation_peak_bytes": 8884139
+          },
+          "optimized": {
+            "times_s": [
+              0.1274125109994202,
+              0.12347044600028312,
+              0.12562932400032878,
+              0.12662999399981345,
+              0.12438646700320533,
+              0.1243297299988626,
+              0.12616453599912347,
+              0.1265125240024645,
+              0.12375700999837136,
+              0.12318899800084182,
+              0.12663420399985625
+            ],
+            "median_s": 0.12562932400032878,
+            "traced_allocation_peak_bytes": 8882363
+          }
+        },
+        "subdivide/cpu/cube24/refined-cover": {
+          "exact_output_match": true,
+          "reference": {
+            "times_s": [
+              0.13223985399963567,
+              0.1459328490018379,
+              0.1311951309980941,
+              0.13176929700057372,
+              0.13280301000122563,
+              0.13324475400077063,
+              0.1523060190011165,
+              0.13293378899834352,
+              0.13328373900003498,
+              0.12652371999865863,
+              0.1321475430013379
+            ],
+            "median_s": 0.13280301000122563,
+            "traced_allocation_peak_bytes": 8884082
+          },
+          "optimized": {
+            "times_s": [
+              0.13255636199755827,
+              0.1557699600016349,
+              0.1305033540011209,
+              0.1307738369978324,
+              0.1335395409987541,
+              0.1330047410010593,
+              0.16852373299843748,
+              0.15774832999886712,
+              0.13206650000211084,
+              0.13124754299860797,
+              0.132714716000919
+            ],
+            "median_s": 0.132714716000919,
+            "traced_allocation_peak_bytes": 8882306
+          }
+        },
+        "subdivide/cpu/cube112/preparation": {
+          "exact_output_match": true,
+          "reference": {
+            "times_s": [
+              0.5134448969984078,
+              0.49829748399861273,
+              0.5032735360000515,
+              0.5137117619997298,
+              0.5218548160009959,
+              0.5263591229995654,
+              0.5323035149995121,
+              0.5209491450004862,
+              0.5430283870009589,
+              0.527737109001464,
+              0.529914116999862
+            ],
+            "median_s": 0.5218548160009959,
+            "traced_allocation_peak_bytes": 83703193
+          },
+          "optimized": {
+            "times_s": [
+              0.5406265450001229,
+              0.5018502519997128,
+              0.5045765699978801,
+              0.49748636999720475,
+              0.525908094998158,
+              0.5243304780015023,
+              0.5135598410015518,
+              0.5202185529997223,
+              0.5159078879987646,
+              0.5869152470004337,
+              0.5529834170010872
+            ],
+            "median_s": 0.5202185529997223,
+            "traced_allocation_peak_bytes": 74243496
+          }
+        },
+        "subdivide/cpu/cube112/voxel": {
+          "exact_output_match": true,
+          "reference": {
+            "times_s": [
+              0.7000838519998069,
+              0.734164609999425,
+              0.7119068970023363,
+              0.6740423919982277,
+              0.6961721609986853,
+              0.7549453079991508,
+              0.6939955199995893,
+              0.7208208640004159,
+              0.7250529140001163,
+              0.6817331890015339,
+              0.7527527470010682
+            ],
+            "median_s": 0.7119068970023363,
+            "traced_allocation_peak_bytes": 83714410
+          },
+          "optimized": {
+            "times_s": [
+              0.6661230809986591,
+              0.7091079479978362,
+              0.7029708399968513,
+              0.6778722519993607,
+              0.6844001780009421,
+              0.7216194559987343,
+              0.7096292309979617,
+              0.710794527996768,
+              0.7280164889998559,
+              0.6770543159982481,
+              0.6799059580007452
+            ],
+            "median_s": 0.7029708399968513,
+            "traced_allocation_peak_bytes": 74251388
+          }
+        },
+        "subdivide/cpu/cube112/refined": {
+          "exact_output_match": true,
+          "reference": {
+            "times_s": [
+              0.8598947030004638,
+              0.8876578290000907,
+              0.8671225079997384,
+              0.8556097310029145,
+              0.9627350650007429,
+              0.8348649729996396,
+              0.857434205001482,
+              0.858727994000219,
+              0.8452578899996297,
+              0.8564540649967967,
+              0.8776865200015891
+            ],
+            "median_s": 0.858727994000219,
+            "traced_allocation_peak_bytes": 83713181
+          },
+          "optimized": {
+            "times_s": [
+              0.8679915880020417,
+              0.8609084330018959,
+              0.8642353219984216,
+              0.9580423020015587,
+              0.9595205210025597,
+              0.8615373950015055,
+              0.8789786090019334,
+              0.8813614890023018,
+              0.8545764430018608,
+              0.839717925999139,
+              0.8426015160002862
+            ],
+            "median_s": 0.8642353219984216,
+            "traced_allocation_peak_bytes": 74251163
+          }
+        },
+        "subdivide/cpu/cube112/refined-cover": {
+          "exact_output_match": true,
+          "reference": {
+            "times_s": [
+              0.8901300979996449,
+              0.8651069579973409,
+              0.8547644130012486,
+              0.8587611990005826,
+              0.8747428629976639,
+              0.881588609998289,
+              0.8625936360003834,
+              0.8434266679978464,
+              0.86872473800031,
+              0.8638754060011706,
+              0.8526227399997879
+            ],
+            "median_s": 0.8638754060011706,
+            "traced_allocation_peak_bytes": 83713292
+          },
+          "optimized": {
+            "times_s": [
+              0.8681597520007927,
+              0.8860549329983769,
+              1.0125055389980844,
+              0.8582307190008578,
+              0.8895985119997931,
+              0.8782919549994403,
+              0.8551639840006828,
+              0.8519195899971237,
+              0.8721460509987082,
+              0.8826163739977346,
+              0.8451387450004404
+            ],
+            "median_s": 0.8721460509987082,
+            "traced_allocation_peak_bytes": 74251278
+          }
+        }
+      }
+    },
+    "repair-final": {
+      "python": "3.10.0",
+      "numpy": "1.26.4",
+      "scipy": "1.15.3",
+      "trimesh": "4.12.2",
+      "platform": "Linux-6.8.0-106-generic-x86_64-with-glibc2.35",
+      "cpu_affinity": [
+        4
+      ],
+      "threads": {
+        "OPENBLAS_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1"
+      },
+      "baseline_sha256": "53b5fd606cc47ea3cf4917236bf4634b5db88fa06f68f179a589113c3f51154b",
+      "current_sha256": "4e83e80c01861cd2d371665ee61a0568a9a1cecb3a63f13d34410da0fd228a72",
+      "timing_scope": "complete warm repair calls, preloaded meshes, alternating call order",
+      "memory_scope": "tracemalloc allocation peak; not RSS or native allocations",
+      "cases": {
+        "icosphere2/enclosed": {
+          "vertex_count": 162,
+          "triangle_count": 320,
+          "sphere_count": 1,
+          "sphere_radius_m": 0.2,
+          "output_sha256": "ea86cd34c187b4030280607f85b83c55864e722e1c73c90468a284595a5bf575",
+          "exact_output": true,
+          "times_s": {
+            "before": [
+              0.0001346239987469744,
+              0.0001126830029534176,
+              0.00010984799882862717,
+              0.00010719199781306088,
+              0.00010714300151448697,
+              0.00010678200123948045,
+              0.00010525899779167958,
+              0.00010604099952615798,
+              0.0001061609982571099,
+              0.0001107989992306102,
+              0.00010602100155665539
+            ],
+            "after": [
+              0.00012088800212950446,
+              0.00012043799870298244,
+              0.00010850499893422239,
+              0.00010890599878621288,
+              0.00010587999713607132,
+              0.0001274210007977672,
+              0.00010684199878596701,
+              0.00010530900181038305,
+              0.0001063009985955432,
+              0.00010604099952615798,
+              0.00010616999861667864
+            ]
+          },
+          "median_s": {
+            "before": 0.00010714300151448697,
+            "after": 0.00010684199878596701
+          },
+          "traced_allocation_peak_bytes": {
+            "before": 114708,
+            "after": 114716
+          }
+        },
+        "icosphere2/growth": {
+          "vertex_count": 162,
+          "triangle_count": 320,
+          "sphere_count": 1,
+          "sphere_radius_m": 0.03,
+          "output_sha256": "0bb89013389834fb50878b8df3cfd3810e3d6d11c1dfad48c6fad35f0100aeeb",
+          "exact_output": true,
+          "times_s": {
+            "before": [
+              0.003559315999154933,
+              0.003431574998103315,
+              0.003259228997194441,
+              0.0031246039980032947,
+              0.0031210579982143827,
+              0.0032303040024999063,
+              0.0031662830006098375,
+              0.0031659030028095003,
+              0.0031133529992075637,
+              0.003345552002429031,
+              0.003218351001123665
+            ],
+            "after": [
+              0.003489253002044279,
+              0.00339310200070031,
+              0.003410684999835212,
+              0.0032510829987586476,
+              0.003137438998237485,
+              0.003182473999913782,
+              0.003183685999829322,
+              0.0030753809987800196,
+              0.0031362469999294262,
+              0.0030437720015470404,
+              0.003325915997265838
+            ]
+          },
+          "median_s": {
+            "before": 0.003218351001123665,
+            "after": 0.003183685999829322
+          },
+          "traced_allocation_peak_bytes": {
+            "before": 2533365,
+            "after": 2532380
+          }
+        },
+        "icosphere5/enclosed": {
+          "vertex_count": 10242,
+          "triangle_count": 20480,
+          "sphere_count": 1,
+          "sphere_radius_m": 0.2,
+          "output_sha256": "99791a4e7071375d1755c94af2abf41f771efd7b41568f4b1a97321a20521d05",
+          "exact_output": true,
+          "times_s": {
+            "before": [
+              0.003104486000665929,
+              0.003090040001552552,
+              0.0030796589999226853,
+              0.003053549997275695,
+              0.003045084999030223,
+              0.0030496019971906208,
+              0.0030466669995803386,
+              0.003092063001531642,
+              0.0030702020012540743,
+              0.003053169999475358,
+              0.0030663439974887297
+            ],
+            "after": [
+              0.003088246001425432,
+              0.003068357997108251,
+              0.0030533899989677593,
+              0.00304958299966529,
+              0.0030472489997919183,
+              0.0030290840004454367,
+              0.00304306999896653,
+              0.003066014000069117,
+              0.0030658439973194618,
+              0.0030326009982672986,
+              0.003044021999812685
+            ]
+          },
+          "median_s": {
+            "before": 0.0030663439974887297,
+            "after": 0.00304958299966529
+          },
+          "traced_allocation_peak_bytes": {
+            "before": 1229968,
+            "after": 1230008
+          }
+        },
+        "icosphere5/growth": {
+          "vertex_count": 10242,
+          "triangle_count": 20480,
+          "sphere_count": 1,
+          "sphere_radius_m": 0.03,
+          "output_sha256": "042501f14e3049835b64820ae1be94834b45e55920aa1096074bd64640f119fc",
+          "exact_output": true,
+          "times_s": {
+            "before": [
+              0.00407119400188094,
+              0.00421843100048136,
+              0.004014475998701528,
+              0.004105167998204706,
+              0.004000690001703333,
+              0.004208050999295665,
+              0.004054471999552334,
+              0.004159890999289928,
+              0.004169959996943362,
+              0.0040409459979855455,
+              0.00406959999963874
+            ],
+            "after": [
+              0.004120046000025468,
+              0.004422305999469245,
+              0.004073046999110375,
+              0.004176603000814794,
+              0.004216367000481114,
+              0.004323519999161363,
+              0.004058930000610417,
+              0.004177193997747963,
+              0.0041059490031329915,
+              0.004061163999722339,
+              0.0040204270007961895
+            ]
+          },
+          "median_s": {
+            "before": 0.00407119400188094,
+            "after": 0.004120046000025468
+          },
+          "traced_allocation_peak_bytes": {
+            "before": 1962028,
+            "after": 1962036
+          }
+        },
+        "icosphere6/enclosed": {
+          "vertex_count": 40962,
+          "triangle_count": 81920,
+          "sphere_count": 1,
+          "sphere_radius_m": 0.2,
+          "output_sha256": "031351d79ed5bdb087da5f6c03a6f00ff37dc46207528c267c249f664cd02c1f",
+          "exact_output": true,
+          "times_s": {
+            "before": [
+              0.01421798800220131,
+              0.013005545999476453,
+              0.013044889998127474,
+              0.014251110002078349,
+              0.014093412002694095,
+              0.01376369900026475,
+              0.014225472001271555,
+              0.014159587997710332,
+              0.014049078003154136,
+              0.01404378799998085,
+              0.01399409499936155
+            ],
+            "after": [
+              0.012650374999793712,
+              0.012277380999876186,
+              0.01265465400138055,
+              0.012369174000923522,
+              0.012237625000125263,
+              0.012387439001031453,
+              0.012758168999425834,
+              0.012114633002056507,
+              0.012628764998225961,
+              0.012219181000546087,
+              0.012451549999241251
+            ]
+          },
+          "median_s": {
+            "before": 0.014049078003154136,
+            "after": 0.012387439001031453
+          },
+          "traced_allocation_peak_bytes": {
+            "before": 4916368,
+            "after": 2820472
+          }
+        },
+        "icosphere6/growth": {
+          "vertex_count": 40962,
+          "triangle_count": 81920,
+          "sphere_count": 1,
+          "sphere_radius_m": 0.03,
+          "output_sha256": "22b324dbc4e7afe61510441d8404f4d45a83de56948ff649a94fa287f0beb95a",
+          "exact_output": true,
+          "times_s": {
+            "before": [
+              0.013685220998013392,
+              0.01346955299959518,
+              0.0139791370020248,
+              0.012617283002327895,
+              0.012926376999530476,
+              0.01338606499848538,
+              0.014170777998515405,
+              0.013492537000274751,
+              0.014136334000795614,
+              0.013607374003186123,
+              0.01401429199904669
+            ],
+            "after": [
+              0.012692013999185292,
+              0.012670272997638676,
+              0.012322676000621868,
+              0.011623665002844064,
+              0.013089785999909509,
+              0.012327175001701107,
+              0.012550416999147274,
+              0.012614727998879971,
+              0.01291297200077679,
+              0.012759271001414163,
+              0.012698586000624346
+            ]
+          },
+          "median_s": {
+            "before": 0.013607374003186123,
+            "after": 0.012670272997638676
+          },
+          "traced_allocation_peak_bytes": {
+            "before": 4916368,
+            "after": 2820472
+          }
+        },
+        "icosphere7/enclosed": {
+          "vertex_count": 163842,
+          "triangle_count": 327680,
+          "sphere_count": 1,
+          "sphere_radius_m": 0.2,
+          "output_sha256": "517168a356ca4305c4a4e5489a09e5dfb4464ca9e629e2e0ae2a84267540392c",
+          "exact_output": true,
+          "times_s": {
+            "before": [
+              0.05485680399942794,
+              0.05422710399943753,
+              0.05447739599912893,
+              0.05580638799801818,
+              0.05410196700177039,
+              0.054190112998185214,
+              0.0520812479990127,
+              0.05489698000019416,
+              0.054677153999364236,
+              0.05389416400066693,
+              0.05524692100152606
+            ],
+            "after": [
+              0.05173720799939474,
+              0.05181083700153977,
+              0.05048779700155137,
+              0.0521029589981481,
+              0.052043636998860165,
+              0.05023758500101394,
+              0.05114368700014893,
+              0.05208721999952104,
+              0.05184057299993583,
+              0.051295273999130586,
+              0.051237494000815786
+            ]
+          },
+          "median_s": {
+            "before": 0.05447739599912893,
+            "after": 0.05173720799939474
+          },
+          "traced_allocation_peak_bytes": {
+            "before": 19661968,
+            "after": 7931680
+          }
+        },
+        "icosphere7/growth": {
+          "vertex_count": 163842,
+          "triangle_count": 327680,
+          "sphere_count": 1,
+          "sphere_radius_m": 0.03,
+          "output_sha256": "c1c141e471541934af968ad970e3e1a9e9621b00eb5e9b9f8eb5e3542aef0c58",
+          "exact_output": true,
+          "times_s": {
+            "before": [
+              0.05413827600204968,
+              0.05417106800086913,
+              0.05447970100067323,
+              0.0526829459995497,
+              0.053312104999349685,
+              0.05633626000053482,
+              0.054995665999740595,
+              0.05408366399933584,
+              0.056386094001936726,
+              0.05351222399986,
+              0.055392767000739696
+            ],
+            "after": [
+              0.05208209999909741,
+              0.05358946900014416,
+              0.05170176200044807,
+              0.05200044599769171,
+              0.05185143400012748,
+              0.05183929299892043,
+              0.0520407529984368,
+              0.051975450001918944,
+              0.05251471799783758,
+              0.052655784998933086,
+              0.051661285000591306
+            ]
+          },
+          "median_s": {
+            "before": 0.05417106800086913,
+            "after": 0.05200044599769171
+          },
+          "traced_allocation_peak_bytes": {
+            "before": 19661968,
+            "after": 7931680
+          }
+        }
+      }
+    }
+  },
+  "validation": {
+    "tests": {
+      "main": {
+        "summary": "652 passed in 16.21s",
+        "log_sha256": "7e2ddb1cea538e170039e60ec7e2e6b1ba8ab5a1bb26586eee2073c0b27b2acd"
+      },
+      "min": {
+        "summary": "579 passed, 42 skipped, 2 warnings in 8.87s",
+        "log_sha256": "de97e3bae623702e7f7b70564c4612cde8cd7d48b86211904ddfbfe878b720d2"
+      },
+      "latest": {
+        "summary": "580 passed, 41 skipped in 9.45s",
+        "log_sha256": "27b4a915a056f6074fff9fe7a55b5bdb408ddbf08ce6fb776b48dc03595c5f93"
+      }
+    },
+    "stage": "frozen source suites complete; independent asset audits and package checks are continuing"
+  }
+}
