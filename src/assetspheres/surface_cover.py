@@ -15,6 +15,45 @@ CENTERS_PER_BLOCK = 128
 MAXIMUM_SUBDIVISION_DEPTH = 8
 MAXIMUM_TRIANGLE_SPLITS = 100_000
 TARGET_EDGE_DIVISOR = 96
+VERTICES_PER_BLOCK = 32768
+
+
+def _normalize_repair_geometry(
+    vertices: np.ndarray, centers: np.ndarray, radii: np.ndarray
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.longdouble]:
+    """Translate before scaling, bounding the extended-precision vertex workspace."""
+    origin = vertices[0].astype(np.longdouble)
+    if len(vertices) <= VERTICES_PER_BLOCK:
+        relative_vertices = vertices.astype(np.longdouble) - origin
+    else:
+        # Subtraction is monotone: coordinate bounds contain the same largest
+        # absolute translated value as the full vertex array, including rounding.
+        relative_vertices = (
+            np.asarray([vertices.min(axis=0), vertices.max(axis=0)], dtype=np.longdouble) - origin
+        )
+    relative_centers = centers.astype(np.longdouble) - origin
+    scale = max(
+        np.max(np.abs(relative_vertices)),
+        np.max(np.abs(relative_centers)),
+        np.max(radii.astype(np.longdouble)),
+    )
+    if len(vertices) <= VERTICES_PER_BLOCK:
+        normalized_vertices = np.asarray(relative_vertices / scale, dtype=np.float64)
+    else:
+        normalized_vertices = np.empty_like(vertices)
+        relative = np.empty((VERTICES_PER_BLOCK, 3), dtype=np.longdouble)
+        for first_vertex in range(0, len(vertices), VERTICES_PER_BLOCK):
+            block = slice(first_vertex, first_vertex + VERTICES_PER_BLOCK)
+            block_relative = relative[: len(vertices[block])]
+            np.subtract(vertices[block], origin, out=block_relative, dtype=np.longdouble)
+            block_relative /= scale
+            normalized_vertices[block] = block_relative
+    return (
+        normalized_vertices,
+        np.asarray(relative_centers / scale, dtype=np.float64),
+        np.asarray(radii.astype(np.longdouble) / scale, dtype=np.float64),
+        scale,
+    )
 
 
 def _triangle_requirements(
@@ -72,24 +111,15 @@ def repair_surface_cover(
     original_radii = np.array([sphere.radius for sphere in spheres])
 
     # Translating in extended precision preserves small geometry at large offsets.
-    origin = vertices[0].astype(np.longdouble)
-    relative_vertices = vertices.astype(np.longdouble) - origin
-    relative_centers = centers.astype(np.longdouble) - origin
-    scale = max(
-        np.max(np.abs(relative_vertices)),
-        np.max(np.abs(relative_centers)),
-        np.max(original_radii.astype(np.longdouble)),
+    normalized_vertices, normalized_centers, normalized_radii, scale = _normalize_repair_geometry(
+        vertices, centers, original_radii
     )
-    normalized_vertices = np.asarray(relative_vertices / scale, dtype=np.float64)
-    normalized_centers = np.asarray(relative_centers / scale, dtype=np.float64)
-    normalized_radii = np.asarray(original_radii.astype(np.longdouble) / scale, dtype=np.float64)
     initial_normalized_radii = normalized_radii.copy()
     target_edge = float(np.ptp(normalized_vertices, axis=0).max()) / TARGET_EDGE_DIVISOR
     coordinate_ulp = abs(np.spacing(float(np.abs(vertices).max())))
     margin = float(256 * np.finfo(float).eps + 8 * np.sqrt(3.0) * coordinate_ulp / scale)
     if not np.isfinite(margin):
         raise ValueError("Mesh coordinates do not permit a finite surface-repair margin")
-    del relative_vertices, relative_centers
 
     split_count = 0
     visited_count = 0

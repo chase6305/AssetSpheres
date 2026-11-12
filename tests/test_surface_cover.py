@@ -8,7 +8,12 @@ import trimesh
 
 from assetspheres import FitConfig, Sphere, fit_mesh
 from assetspheres.geometry import sample_surface, sphere_gaps
-from assetspheres.surface_cover import _triangle_requirements, repair_surface_cover
+from assetspheres.surface_cover import (
+    VERTICES_PER_BLOCK,
+    _normalize_repair_geometry,
+    _triangle_requirements,
+    repair_surface_cover,
+)
 from benchmarks.benchmark_hotpaths import reference_triangle_requirements
 
 
@@ -21,6 +26,103 @@ def coarse_triangle():
 def assert_grown_only(before, after):
     assert len(before) == len(after)
     assert all(a.center == b.center and a.radius <= b.radius for a, b in zip(before, after))
+
+
+def reference_normalize_repair_geometry(vertices, centers, radii):
+    origin = vertices[0].astype(np.longdouble)
+    relative_vertices = vertices.astype(np.longdouble) - origin
+    relative_centers = centers.astype(np.longdouble) - origin
+    scale = max(
+        np.max(np.abs(relative_vertices)),
+        np.max(np.abs(relative_centers)),
+        np.max(radii.astype(np.longdouble)),
+    )
+    return (
+        np.asarray(relative_vertices / scale, dtype=np.float64),
+        np.asarray(relative_centers / scale, dtype=np.float64),
+        np.asarray(radii.astype(np.longdouble) / scale, dtype=np.float64),
+        scale,
+    )
+
+
+@pytest.mark.parametrize("count", [1, VERTICES_PER_BLOCK, VERTICES_PER_BLOCK + 1, 65539])
+@pytest.mark.parametrize("order", ["C", "F", "strided"])
+@pytest.mark.parametrize(
+    "scale,translation",
+    [(1e-200, 0), (1, 0), (1e100, 0), (0.001, 1e10), (1e307, -1e307)],
+)
+def test_repair_normalization_preserves_coordinate_bits(count, order, scale, translation):
+    random = np.random.default_rng(20261112)
+    vertices = random.uniform(-1, 1, size=(count, 3)) * scale + translation
+    if order == "strided":
+        backing = np.empty((count, 6))
+        backing[:, ::2] = vertices
+        vertices = backing[:, ::2]
+    else:
+        vertices = np.array(vertices, order=order)
+    centers = np.array([[0, 0, 0], [1.5, -0.1, 0.3]]) * scale + translation
+    radii = np.array([0.01, 0.3]) * scale
+    original = vertices.copy()
+    expected = reference_normalize_repair_geometry(vertices, centers, radii)
+    actual = _normalize_repair_geometry(vertices, centers, radii)
+    for before, after in zip(expected[:3], actual[:3]):
+        np.testing.assert_array_equal(before.view(np.uint64), after.view(np.uint64))
+    assert expected[3] == actual[3]
+    np.testing.assert_array_equal(vertices, original)
+
+
+@pytest.mark.parametrize("case", ["signed_zero", "subnormal", "maximum", "centers", "radius"])
+def test_large_repair_normalization_preserves_extreme_bits_and_each_scale_source(case):
+    pattern = np.array([[0.0, -0.0, 0.0], [-0.0, 0.0, -0.0], [1.0, -1.0, 0.0]])
+    centers, radii = np.array([[0.0, -0.0, 0.0]]), np.array([0.5])
+    if case == "subnormal":
+        pattern *= np.nextafter(0.0, 1.0)
+        radii[:] = np.nextafter(0.0, 1.0)
+    elif case == "maximum":
+        pattern *= np.finfo(float).max
+    elif case == "centers":
+        centers[0, 0] = 3
+    elif case == "radius":
+        radii[0] = 5
+    vertices = np.tile(pattern, (VERTICES_PER_BLOCK // 3 + 1, 1))
+    expected = reference_normalize_repair_geometry(vertices, centers, radii)
+    actual = _normalize_repair_geometry(vertices, centers, radii)
+    for before, after in zip(expected[:3], actual[:3]):
+        np.testing.assert_array_equal(before.view(np.uint64), after.view(np.uint64))
+    assert actual[3] == expected[3]
+    if case in {"centers", "radius"}:
+        assert actual[3] == (3 if case == "centers" else 5)
+
+
+@pytest.mark.parametrize("translation", [0, 1e12])
+def test_large_repair_normalization_keeps_the_complete_output(monkeypatch, translation):
+    from assetspheres import surface_cover
+
+    mesh = trimesh.creation.icosphere(subdivisions=6, radius=0.1)
+    mesh.vertices += translation
+    initial = [Sphere((translation, translation, translation), 0.01)]
+    monkeypatch.setattr(surface_cover, "MAXIMUM_TRIANGLE_SPLITS", 0)
+    expected = repair_surface_cover(mesh, initial)
+    monkeypatch.setattr(
+        surface_cover, "_normalize_repair_geometry", reference_normalize_repair_geometry
+    )
+    assert repair_surface_cover(mesh, initial) == expected
+
+
+def test_large_repair_keeps_the_unrepresentable_radius_error(monkeypatch):
+    from assetspheres import surface_cover
+
+    if np.finfo(np.longdouble).max <= np.finfo(float).max:
+        pytest.skip("This fixture needs extended precision for the translated coordinate range")
+    vertices = np.zeros((VERTICES_PER_BLOCK + 1, 3))
+    vertices[:3] = [[-1e308, 0, 0], [1e308, 0, 0], [0, 1e308, 0]]
+    mesh = trimesh.Trimesh(vertices=vertices, faces=[[0, 1, 2]], process=False)
+    initial = [Sphere((-1e308, 0, 0), 1)]
+    monkeypatch.setattr(surface_cover, "MAXIMUM_TRIANGLE_SPLITS", 0)
+    for normalizer in (_normalize_repair_geometry, reference_normalize_repair_geometry):
+        monkeypatch.setattr(surface_cover, "_normalize_repair_geometry", normalizer)
+        with pytest.raises(ValueError, match="Repaired enclosing radii cannot be represented"):
+            repair_surface_cover(mesh, initial)
 
 
 @pytest.mark.parametrize("triangle_count,center_count", [(3, 4), (257, 24), (2048, 257)])
