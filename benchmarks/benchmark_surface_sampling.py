@@ -9,6 +9,7 @@ Timing excludes imports, mesh creation and cache warm-up. Peaks use tracemalloc.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
 import platform
@@ -20,6 +21,7 @@ from pathlib import Path
 import numpy as np
 import trimesh
 
+import assetspheres.geometry as geometry
 from assetspheres.geometry import sample_surface
 
 
@@ -66,6 +68,9 @@ def main():
         "numpy": np.__version__,
         "trimesh": trimesh.__version__,
         "baseline": str(args.baseline),
+        "baseline_sha256": hashlib.sha256(args.baseline.read_bytes()).hexdigest(),
+        "current_sha256": hashlib.sha256(Path(geometry.__file__).read_bytes()).hexdigest(),
+        "benchmark_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "cases": cases,
     }
     args.output.write_text(json.dumps(record, indent=2) + "\n")

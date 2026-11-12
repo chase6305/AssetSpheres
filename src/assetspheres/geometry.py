@@ -64,12 +64,21 @@ def _sample_surface_block(
     offsets = random_generator.random((len(triangles), 2))
     outside_triangle = offsets.sum(axis=1) > 1
     offsets[outside_triangle] = 1 - offsets[outside_triangle]
-    # Keep the arithmetic order, including the two successive vertex additions.
-    return (
-        triangles[:, 0]
-        + offsets[:, :1] * (triangles[:, 1] - triangles[:, 0])
-        + offsets[:, 1:] * (triangles[:, 2] - triangles[:, 0])
-    )
+    if type(triangles) is not np.ndarray or triangles.dtype != np.dtype(np.float64):
+        # Preserve dtype promotion and array subclass dispatch on the original path.
+        return (
+            triangles[:, 0]
+            + offsets[:, :1] * (triangles[:, 1] - triangles[:, 0])
+            + offsets[:, 1:] * (triangles[:, 2] - triangles[:, 0])
+        )
+    # Reuse two private vectors, keeping each operation and its operand order.
+    first = triangles[:, 1] - triangles[:, 0]
+    np.multiply(offsets[:, :1], first, out=first)
+    np.add(triangles[:, 0], first, out=first)
+    second = triangles[:, 2] - triangles[:, 0]
+    np.multiply(offsets[:, 1:], second, out=second)
+    np.add(first, second, out=first)
+    return first
 
 
 def sphere_gaps(points: np.ndarray, spheres: list[Sphere]) -> np.ndarray:

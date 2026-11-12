@@ -1,5 +1,7 @@
 """Batched surface interpolation preserves seeded area-weighted samples."""
 
+from types import SimpleNamespace
+
 import numpy as np
 import pytest
 import trimesh
@@ -47,3 +49,62 @@ def test_sample_count_does_not_change_global_random_state():
     assert expected[0] == actual[0]
     np.testing.assert_array_equal(expected[1], actual[1])
     assert expected[2:] == actual[2:]
+
+
+def triangle_provider(triangles):
+    """Expose triangle dtypes/subclasses independently of Trimesh's conversion."""
+    return SimpleNamespace(
+        faces=np.arange(len(triangles)),
+        triangles=triangles,
+        area_faces=np.ones(len(triangles)),
+        area=float(len(triangles)),
+    )
+
+
+@pytest.mark.parametrize("dtype", [np.float32, np.int64, np.longdouble])
+def test_interpolation_retains_original_dtype_promotion(dtype):
+    triangles = np.array([[[0, 0, 0], [2, 0, 0], [0, 3, 0]]], dtype=dtype)
+    provider = triangle_provider(triangles)
+    expected = reference_samples(provider, 17, 831)
+    actual = sample_surface(provider, 17, 831)
+    assert actual.dtype == expected.dtype == np.result_type(dtype, np.float64)
+    np.testing.assert_array_equal(actual, expected)
+
+
+def test_interpolation_preserves_subclasses_that_reject_output_buffers():
+    class NoOutArray(np.ndarray):
+        def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
+            if kwargs.get("out") is not None:
+                raise TypeError("This array subclass does not support out")
+            converted = [
+                np.asarray(value) if isinstance(value, NoOutArray) else value for value in inputs
+            ]
+            result = getattr(ufunc, method)(*converted, **kwargs)
+            return result.view(NoOutArray) if isinstance(result, np.ndarray) else result
+
+    triangles = np.array([[[0.0, 0, 0], [2, 0, 0], [0, 3, 0]]]).view(NoOutArray)
+    provider = triangle_provider(triangles)
+    expected = reference_samples(provider, 17, 831)
+    actual = sample_surface(provider, 17, 831)
+    assert type(actual) is type(expected) is NoOutArray
+    np.testing.assert_array_equal(np.asarray(actual), np.asarray(expected))
+
+
+@pytest.mark.parametrize("kind", ["signed_zero", "subnormal", "extreme"])
+def test_interpolation_retains_float64_bits_for_special_coordinates(kind):
+    if kind == "signed_zero":
+        values = np.array([0.0, -0.0])
+    elif kind == "subnormal":
+        values = np.array([0.0, 1.0, -1.0, 3.0, -5.0]) * np.nextafter(0.0, 1.0)
+    else:
+        maximum = np.finfo(float).max
+        values = np.array([maximum, -maximum, maximum / 4, 0.0])
+    triangles = np.resize(values, (1, 3, 3))
+    original = triangles.tobytes()
+    triangles.flags.writeable = False
+    provider = triangle_provider(triangles)
+    with np.errstate(all="ignore"):
+        expected = reference_samples(provider, 17, 831)
+        actual = sample_surface(provider, 17, 831)
+    np.testing.assert_array_equal(actual.view(np.uint64), expected.view(np.uint64))
+    assert triangles.tobytes() == original
