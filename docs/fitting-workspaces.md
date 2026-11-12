@@ -43,6 +43,33 @@ cube112 有 1,442,897 个占据点，完整调用峰值实际减少约 9.46 MB�
 耗时总体接近，包含略慢的案例；隔离完整拟合的旧路径还包括 patch 上下文开销，
 微小时间或几 KB 的差别不作为算法收益。
 
+## 真实 link 的完整调用
+
+UR5e collision 对照使用独立旧包及其全部拟合实现：每 link 24 球、padding 3 mm、
+6,000 个评价样本、种子 0；refined-cover 为默认 2,048 训练样本和 120 步。
+加载和额外栅格诊断在计时外，表中为 5 次交替配对的中位数，所有球参数和报告精确一致。
+这些是单个 link 的完整 fit_mesh，资产加载、整机调度和导出未计入。
+
+| link / 方法 / 分辨率 | CPU 时长：之前 → 之后 | 分配峰值：之前 → 之后 |
+| --- | ---: | ---: |
+| shoulder / voxel / 48 | 270.89 → 267.54 ms | 13.91 → 13.91 MB |
+| shoulder / refined-cover / 48 | 360.98 → 358.98 ms | 13.91 → 13.91 MB |
+| shoulder / voxel / 96 | 1,142.39 → 1,122.62 ms | 41.81 → 35.86 MB |
+| shoulder / refined-cover / 96 | 1,251.11 → 1,235.20 ms | 47.22 → 39.02 MB |
+| forearm / voxel / 48 | 185.44 → 188.45 ms | 12.59 → 12.59 MB |
+| forearm / refined-cover / 48 | 268.48 → 282.33 ms | 12.59 → 12.59 MB |
+| forearm / voxel / 96 | 724.47 → 738.71 ms | 14.78 → 14.78 MB |
+| forearm / refined-cover / 96 | 822.17 → 827.12 ms | 14.78 → 14.78 MB |
+
+res96 的 shoulder 有 818,583 个格、632,965 个占据点；forearm 有 51,313 个格、
+35,265 个占据点。后者即使触发大点云缓冲复用，完整峰值也基本不变，其他阶段仍可主导分配。
+默认 res48 的这两条 link 均没有明显完整峰值收益，耗时也包含略慢案例。
+
+Panda 的开口 visual `panda_link6` 有 59,934 顶点、21,619 面。
+以同一 visual 的固定 24 球 cover 结果初始化，11 次配对的**完整修补阶段**为
+9.74 → 8.63 ms、7.19 → 3.28 MB；初始化在测量外。
+源资产和许可见[第三方资产说明](third-party-assets.md)，仓库不附带其 URDF 或 mesh。
+
 ## 验证
 
 冻结源码在主环境为 **652 passed**，最低依赖为 **579 passed / 42 skipped**，
@@ -50,6 +77,18 @@ Python 3.12 / NumPy 2 / Trimesh 5 为 **580 passed / 41 skipped**。
 最低依赖保留两条原有 SLSQP 路径的试探步裁剪警告。
 新增检查涵盖分块边界、短尾、只读与非连续数组、longdouble、带符号零、次正规数、
 极端坐标，以及完整球参数、报告和源 mesh 不变的对照。
+
+UR5e / Panda 的 collision 和 visual 共 30 份 link 几何完成 **360 组配置、720 次完整拟合**，
+球参数及全部报告与独立旧包的指纹相同；输入顶点、面索引和两份源码 manifest 均未改变。
+每个方法使用 `(count=8, seed=0)` 和 `(count=24, seed=17)`，res32、1,024 个评价样本，
+refined 的训练样本为 512、迭代为 30；这是正确性审计，不能用作默认配置的性能证据。
+开口 visual 显式设置回退 cover，其中 90 组体积方法请求实际执行 cover；
+有效方法分布逐组保留在原始记录中。
+
+另用两个分离 box 做大多组件对照：subdivide 有 102,675 个占据点，
+Open3D / Warp CPU 各 101,306 个占据点，新路径与原坐标转换的完整球和报告一致。
+五种方法的 JSON、两份 YAML、URDF、GLB 共 **25 份导出文件**与旧包逐字节相同，
+保存结果的回读也保持原值。
 
 ## 复现
 
@@ -68,6 +107,19 @@ python benchmarks/benchmark_voxel_memory.py --reference "$baseline/voxel_fit.py"
   --repeats 11 --full-fit --output outputs/voxel-workspace.json
 python benchmarks/benchmark_repair_workspace.py --baseline "$baseline/surface_cover.py" \
   --repeats 11 --output outputs/repair-workspace.json
+
+python benchmarks/benchmark_robot_workspaces.py --reference "$baseline" \
+  --input /path/to/ur5e/robot.urdf --geometry collision \
+  --link shoulder_link --link forearm_link --resolution 48 --resolution 96 \
+  --repeats 5 --output outputs/ur5e-workspaces.json
+
+python benchmarks/benchmark_robot_workspaces.py --reference "$baseline" \
+  --input /path/to/panda/arm.urdf --geometry visual --link panda_link6 \
+  --repair-only --repair-initial-method cover --repeats 11 \
+  --output outputs/panda-visual-repair.json
+
+python benchmarks/validate_workspaces.py --reference "$baseline" \
+  --input /path/to/robot.urdf --geometry collision --output outputs/workspace-audit.json
 ```
 
 每个基准只替换对应的基线模块或函数，以隔离该项改动；其他步骤使用当前实现。
