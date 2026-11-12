@@ -7,7 +7,7 @@ import math
 import numpy as np
 import trimesh
 
-_TRIANGLE_BATCH_SIZE = 8192
+_TRIANGLE_BATCH_SIZE = 4096
 _MAX_SUBDIVISIONS = 10
 
 
@@ -89,7 +89,14 @@ def subdivide_surface_grid(
                 f"Surface voxelization exceeds {_MAX_SUBDIVISIONS} subdivision rounds; "
                 "increase --voxel-size or use --voxelizer open3d/warp"
             )
-        selected = current[needs_subdivision]
+        selected = (
+            current
+            if type(current) is np.ndarray
+            and current.dtype == np.dtype(np.float64)
+            and current.flags.c_contiguous
+            and bool(needs_subdivision.all())
+            else current[needs_subdivision]
+        )
         del current, needs_subdivision
         if _TRIANGLE_BATCH_SIZE % 4:
             # Retain the old chunk boundaries for widths not divisible by four.

@@ -74,9 +74,11 @@ def test_mixed_subdivision_depths_preserve_surface_and_fill(monkeypatch, batch_s
     np.testing.assert_array_equal(actual.fill().matrix, expected.fill().matrix)
 
 
-@pytest.mark.parametrize("parent_count", [2047, 2048, 2049])
+@pytest.mark.parametrize(
+    "parent_count", [surface_grid._TRIANGLE_BATCH_SIZE // 4 + offset for offset in (-1, 0, 1)]
+)
 def test_independent_child_batch_tails_preserve_lattice_and_readonly_source(parent_count):
-    # One subdivision yields 4N children, crossing the default 8192-child boundary.
+    # One subdivision yields 4N children across the configured child-batch boundary.
     # Repeated faces make the expected lattice independent of the parent count.
     mesh = trimesh.Trimesh(
         vertices=[[0, 0, 0], [1, 0, 0], [0, 1, 0]],
