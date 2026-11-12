@@ -91,6 +91,29 @@ def _transform_voxel_indices(indices: np.ndarray, transform: np.ndarray) -> np.n
     return points
 
 
+def _consume_voxel_indices(indices: np.ndarray, transform: np.ndarray) -> np.ndarray:
+    """Convert exclusively owned occupied indices after their last indexing use.
+
+    Large native intp buffers can hold the float64 points in place while keeping
+    their column-major layout. Other buffers retain the non-consuming path.
+    """
+    if (
+        len(indices) <= _POINT_TRANSFORM_BATCH_SIZE
+        or indices.dtype != np.dtype(np.intp)
+        or indices.dtype.itemsize != 8
+        or not indices.dtype.isnative
+        or not indices.flags.f_contiguous
+        or not indices.flags.writeable
+    ):
+        return _transform_voxel_indices(indices, transform)
+    points = indices.view(np.float64)
+    for first in range(0, len(indices), _POINT_TRANSFORM_BATCH_SIZE):
+        block = slice(first, first + _POINT_TRANSFORM_BATCH_SIZE)
+        # Finish reading each integer block before overwriting its storage.
+        points[block] = trimesh.transform_points(indices[block], transform)
+    return points
+
+
 def _prepare_voxel_candidates(mesh: trimesh.Trimesh, configuration: FitConfig) -> _VoxelCandidates:
     prepared_grid = _prepare_voxel_grid(mesh, configuration)
     backend_details = prepared_grid.backend_details
@@ -143,10 +166,11 @@ def _prepare_voxel_candidates(mesh: trimesh.Trimesh, configuration: FitConfig) -
         representative_indices = np.searchsorted(occupied_flat_indices, component_flat_indices)
         candidate_indices = np.unique(np.r_[candidate_indices, representative_indices])
         del occupied_flat_indices
-    # Release grid workspaces before allocating the occupied point cloud.
+    # Release grid workspaces before converting the occupied point cloud. The
+    # argwhere buffer belongs only to this call and is no longer used as indices.
     del prepared_grid, voxel_grid, occupied_cells, distance_grid, local_maxima
     del remaining_mask, remaining_indices
-    occupied_points = _transform_voxel_indices(occupied_indices, transform)
+    occupied_points = _consume_voxel_indices(occupied_indices, transform)
     coverage_samples = occupied_points
     if len(coverage_samples) > configuration.samples:
         coverage_samples = coverage_samples[
