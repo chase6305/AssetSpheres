@@ -15,6 +15,7 @@ import platform
 import statistics
 import time
 import tracemalloc
+from dataclasses import asdict
 from pathlib import Path
 from unittest.mock import patch
 
@@ -25,32 +26,40 @@ import trimesh
 from assetspheres import FitConfig, fit_mesh, grid_distance, refine, voxel_fit
 
 
+def fingerprint(result):
+    if isinstance(result, np.ndarray):
+        return hashlib.sha256(result.tobytes()).hexdigest()
+    spheres, report = result
+    payload = {"spheres": [sphere.to_dict() for sphere in spheres], "report": report}
+    return hashlib.sha256(json.dumps(payload, sort_keys=True, allow_nan=False).encode()).hexdigest()
+
+
 def paired(calls, repeats):
-    expected, actual = calls["before"](), calls["after"]()
-    assert (
-        expected == actual
-        if isinstance(expected, tuple)
-        else expected.tobytes() == actual.tobytes()
-    )
-    del expected, actual
+    expected = fingerprint(calls["before"]())
+    assert fingerprint(calls["after"]()) == expected
     pairs = []
     for index in range(repeats):
         pair = {}
         for key in list(calls)[:: 1 if index % 2 == 0 else -1]:
             started = time.perf_counter()
-            calls[key]()
+            result = calls[key]()
             pair[key] = time.perf_counter() - started
+            assert fingerprint(result) == expected, (key, index)
+            del result
         pairs.append(pair)
     peaks = {}
     for key, call in calls.items():
         tracemalloc.start()
         try:
-            call()
+            result = call()
             peaks[key] = tracemalloc.get_traced_memory()[1]
         finally:
             tracemalloc.stop()
+        assert fingerprint(result) == expected, key
+        del result
     return {
         "exact_output_match": True,
+        "output_sha256": expected,
         "seconds_pairs": pairs,
         "seconds_median": {key: statistics.median(p[key] for p in pairs) for key in calls},
         "peak_allocated_bytes": peaks,
@@ -97,6 +106,7 @@ def main():
                 cases[f"cube/{resolution}/{method}"] = paired(
                     {"before": old_fit, "after": lambda: fit_mesh(mesh, config)}, args.repeats
                 )
+                cases[f"cube/{resolution}/{method}"]["configuration"] = asdict(config)
     record = {
         "python": platform.python_version(),
         "numpy": np.__version__,
